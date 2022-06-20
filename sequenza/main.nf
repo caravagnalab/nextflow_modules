@@ -6,7 +6,7 @@ process SEQUENZA_EXTRACT {
     path seqzFile
 
     output:
-    var
+    path XXX
 
     script:
     """
@@ -27,44 +27,23 @@ process SEQUENZA_EXTRACT {
       min.reads.normal = 15,
       max.mut.types = 1
   )
-    """
-}
 
-// Fit
-
-process SEQUENZA_FIT {
-
-    input:
-    path seqzExt
-
-    script:
-    """
-    #!/usr/bin/env Rscript
-
-    library(sequenza)
-    
-     PARSE SEQZEXT FILE
-    
-    paraSpace <-
+   paraSpace <-
     sequenza.fit(
-      sequenza.extract = $seqzExt,
+      sequenza.extract = seqzExt,
       cellularity = seq(low_cell, up_cell, 0.01),
       ploidy = seq(low_ploidy, up_ploidy, 0.1),
       chromosome.list = chr.fit,
       female = as.logical(is_female)
-    )
+  )
 
+   sequenza.results(
+     sequenza.extract = seqzExt,
+     cp.table = paraSpace,
+     sample.id = sample_id,
+     out.dir = "results/",
+     female = as.logical(is_female)
+  )
     """
 }
 
-//Results
-
-process SEQUENZA_RESULTS {
-
-    script:
-    """
-    #!/usr/bin/env Rscript
-
-    library(sequenza)
-    """
-}
