@@ -1,0 +1,119 @@
+Jul-05 16:51:48.975 [main] DEBUG nextflow.cli.Launcher - $> nextflow run main.nf
+Jul-05 16:51:49.110 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 21.10.6
+Jul-05 16:51:49.141 [main] INFO  nextflow.cli.CmdRun - Launching `main.nf` [admiring_wescoff] - revision: ed0a93460f
+Jul-05 16:51:49.159 [main] DEBUG nextflow.config.ConfigBuilder - Found config local: /large/___HOME___/cdslab/ncalonaci/sequenza_tests/nextflow.config
+Jul-05 16:51:49.160 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /large/___HOME___/cdslab/ncalonaci/sequenza_tests/nextflow.config
+Jul-05 16:51:49.186 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `standard`
+Jul-05 16:51:50.108 [main] DEBUG nextflow.plugin.PluginsFacade - Setting up plugin manager > mode=prod; plugins-dir=/u/cdslab/ncalonaci/.nextflow/plugins
+Jul-05 16:51:50.109 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins default=[]
+Jul-05 16:51:50.123 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Enabled plugins: []
+Jul-05 16:51:50.125 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Disabled plugins: []
+Jul-05 16:51:50.129 [main] INFO  org.pf4j.DefaultPluginManager - PF4J version 3.4.1 in 'deployment' mode
+Jul-05 16:51:50.140 [main] INFO  org.pf4j.AbstractPluginManager - No plugins
+Jul-05 16:51:50.206 [main] DEBUG nextflow.Session - Session uuid: 9f846a57-398e-424a-8180-a9589d9ceb8b
+Jul-05 16:51:50.207 [main] DEBUG nextflow.Session - Run name: admiring_wescoff
+Jul-05 16:51:50.208 [main] DEBUG nextflow.Session - Executor pool size: 20
+Jul-05 16:51:50.220 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 21.10.6 build 5660
+  Created: 21-12-2021 16:55 UTC (17:55 CEST)
+  System: Linux 5.7.9-1.el7.elrepo.x86_64
+  Runtime: Groovy 3.0.9 on OpenJDK 64-Bit Server VM 1.8.0_265-b01
+  Encoding: UTF-8 (UTF-8)
+  Process: 24494@login.hpc [10.128.2.5]
+  CPUs: 20 - Mem: 125.4 GB (545.2 MB) - Swap: 15.6 GB (10.2 GB)
+Jul-05 16:51:50.242 [main] DEBUG nextflow.Session - Work-dir: /large/___HOME___/cdslab/ncalonaci/sequenza_tests/work [ceph]
+Jul-05 16:51:50.243 [main] DEBUG nextflow.Session - Script base path does not exist or is not a directory: /large/___HOME___/cdslab/ncalonaci/sequenza_tests/bin
+Jul-05 16:51:50.252 [main] DEBUG nextflow.executor.ExecutorFactory - Extension executors providers=[]
+Jul-05 16:51:50.264 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+Jul-05 16:51:50.312 [main] DEBUG nextflow.util.CustomThreadPool - Creating default thread pool > poolSize: 21; maxThreads: 1000
+Jul-05 16:51:50.868 [main] DEBUG nextflow.Session - Session start invoked
+Jul-05 16:51:51.087 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Jul-05 16:51:51.474 [main] DEBUG nextflow.util.CustomThreadPool - Creating default thread pool > poolSize: 21; maxThreads: 1000
+Jul-05 16:51:51.494 [main] DEBUG nextflow.Session - Session aborted -- Cause: No such property: seqz for class: Script_5b9cd428
+Jul-05 16:51:51.512 [main] DEBUG nextflow.Session - The following nodes are still active:
+  [operator] ifEmpty
+
+Jul-05 16:51:51.523 [main] ERROR nextflow.cli.Launcher - @unknown
+groovy.lang.MissingPropertyException: No such property: seqz for class: Script_5b9cd428
+	at org.codehaus.groovy.runtime.ScriptBytecodeAdapter.unwrap(ScriptBytecodeAdapter.java:65)
+	at org.codehaus.groovy.runtime.callsite.PogoGetPropertySite.getProperty(PogoGetPropertySite.java:51)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callGroovyObjectGetProperty(AbstractCallSite.java:341)
+	at Script_5b9cd428.runScript(Script_5b9cd428:7)
+	at nextflow.script.BaseScript.runDsl2(BaseScript.groovy:169)
+	at nextflow.script.BaseScript.run(BaseScript.groovy:200)
+	at nextflow.script.ScriptParser.runScript(ScriptParser.groovy:221)
+	at nextflow.script.ScriptRunner.run(ScriptRunner.groovy:212)
+	at nextflow.script.ScriptRunner.execute(ScriptRunner.groovy:120)
+	at nextflow.cli.CmdRun.run(CmdRun.groovy:308)
+	at nextflow.cli.Launcher.run(Launcher.groovy:480)
+	at nextflow.cli.Launcher.main(Launcher.groovy:639)
+Jul-05 16:51:51.532 [Actor Thread 2] ERROR nextflow.extension.OperatorEx - @unknown
+nextflow.exception.ProcessUnrecoverableException: Cannot find any reads matching: /large/___HOME___/cdslab/ncalonaci/sequenza_tests/mini.seqz.gz
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at org.codehaus.groovy.reflection.CachedConstructor.invoke(CachedConstructor.java:72)
+	at org.codehaus.groovy.runtime.callsite.ConstructorSite$ConstructorSiteNoUnwrapNoCoerce.callConstructor(ConstructorSite.java:105)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallConstructor(CallSiteArray.java:59)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callConstructor(AbstractCallSite.java:263)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callConstructor(AbstractCallSite.java:277)
+	at nextflow.Nextflow.error(Nextflow.groovy:262)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:107)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:323)
+	at org.codehaus.groovy.runtime.callsite.StaticMetaMethodSite$StaticMetaMethodSiteNoUnwrap.invoke(StaticMetaMethodSite.java:131)
+	at org.codehaus.groovy.runtime.callsite.StaticMetaMethodSite.callStatic(StaticMetaMethodSite.java:100)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallStatic(CallSiteArray.java:55)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callStatic(AbstractCallSite.java:217)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callStatic(AbstractCallSite.java:231)
+	at Script_5b9cd428$_runScript_closure1.doCall(Script_5b9cd428:8)
+	at Script_5b9cd428$_runScript_closure1.doCall(Script_5b9cd428)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:107)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:323)
+	at org.codehaus.groovy.runtime.metaclass.ClosureMetaClass.invokeMethod(ClosureMetaClass.java:274)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1035)
+	at org.codehaus.groovy.runtime.callsite.PogoMetaClassSite.call(PogoMetaClassSite.java:38)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCall(CallSiteArray.java:47)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:125)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:130)
+	at nextflow.extension.OperatorEx$_ifEmpty_closure37.doCall(OperatorEx.groovy:1323)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:107)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:323)
+	at org.codehaus.groovy.runtime.metaclass.ClosureMetaClass.invokeMethod(ClosureMetaClass.java:274)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1035)
+	at org.codehaus.groovy.runtime.callsite.PogoMetaClassSite.call(PogoMetaClassSite.java:38)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCall(CallSiteArray.java:47)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:125)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:139)
+	at nextflow.extension.DataflowHelper$3.afterStop(DataflowHelper.groovy:255)
+	at groovyx.gpars.dataflow.operator.DataflowProcessor.fireAfterStop(DataflowProcessor.java:324)
+	at groovyx.gpars.dataflow.operator.DataflowProcessorActor.afterStop(DataflowProcessorActor.java:59)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:107)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:323)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1268)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1035)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokePojoMethod(InvokerHelper.java:1017)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokeMethod(InvokerHelper.java:1008)
+	at groovyx.gpars.actor.Actor.callDynamic(Actor.java:369)
+	at groovyx.gpars.actor.Actor.handleTermination(Actor.java:320)
+	at groovyx.gpars.actor.AbstractLoopingActor$1.handleMessage(AbstractLoopingActor.java:86)
+	at groovyx.gpars.util.AsyncMessagingCore.run(AsyncMessagingCore.java:132)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)

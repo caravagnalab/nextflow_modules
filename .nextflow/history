@@ -1,0 +1,16 @@
+2022-07-05 16:02:18	3.5s	gigantic_monod	ERR	331a897f0129e6b23b2316fabbbbc8da	31e7921f-4b80-4eb2-9e1e-db284c425e3c	nextflow run main.nf
+2022-07-05 16:02:48	23.5s	compassionate_majorana	ERR	331a897f0129e6b23b2316fabbbbc8da	89069b9a-8b3b-459c-a420-d710aaa77344	nextflow run main.nf
+2022-07-05 16:04:49	-	pensive_jepsen	-	331a897f0129e6b23b2316fabbbbc8da	cc7e5f1e-673b-4240-abc7-213a9838506f	nextflow run main.nf
+2022-07-05 16:05:26	6.3s	amazing_gutenberg	ERR	331a897f0129e6b23b2316fabbbbc8da	6d407f3c-acfa-484c-88a4-938977c4af42	nextflow run main.nf
+2022-07-05 16:09:25	-	big_bernard	-	cfa2b4b71e626dc637d2eaff92f89cf9	d9120b67-9902-4c8c-a1c6-528270851388	nextflow run main.nf
+2022-07-05 16:11:28	-	lethal_kalam	-	ea90c8d402ab977985656a15f128f4f9	5dc04363-2028-462e-90e8-8d6e63109c3e	nextflow run main.nf
+2022-07-05 16:11:37	-	hungry_ptolemy	-	9d9954d46688549d178745c5644af672	2e21d9f3-f6e4-4112-8e1b-bacb32b3dd7d	nextflow run main.nf
+2022-07-05 16:17:19	-	deadly_torricelli	-	9d9954d46688549d178745c5644af672	7f96ff66-1542-483d-9dee-999beaa5f7a2	nextflow run main.nf
+2022-07-05 16:24:13	-	tender_babbage	-	10240efc987663a7e1b10ac97f0f7653	1f078ff9-4f70-4394-95f2-0ea7a5f19d34	nextflow run main.nf
+2022-07-05 16:25:38	-	astonishing_mestorf	-	10240efc987663a7e1b10ac97f0f7653	a5e357e3-3025-463c-b5e9-0e8ac816cb53	nextflow run main.nf
+2022-07-05 16:26:23	-	tender_galileo	-	5558df9cb252e559a35b1531d8ad15aa	de458931-941a-4d57-9e9f-c16f68ab11ba	nextflow run main.nf
+2022-07-05 16:34:38	-	sad_gilbert	-	ee7dd16d7b651495de0add321c29c793	392570b0-aa98-4122-8225-1e56b6e59b7e	nextflow run main.nf
+2022-07-05 16:37:03	-	trusting_mcclintock	-	ee7dd16d7b651495de0add321c29c793	eb9d09ab-bfc3-4236-9d64-6fcbb22536e6	nextflow run main.nf
+2022-07-05 16:44:52	-	angry_leavitt	-	ed0a93460fe16f2758e0717be647cecd	ebc9ee24-c104-4626-82f8-431d525ff093	nextflow run main.nf
+2022-07-05 16:51:32	-	grave_hugle	-	8eb40eda0d2447064207331d6d6aef7d	1e39e25b-b7e9-4435-8337-a5eb6d995753	nextflow run main.nf
+2022-07-05 16:51:50	-	admiring_wescoff	-	ed0a93460fe16f2758e0717be647cecd	9f846a57-398e-424a-8180-a9589d9ceb8b	nextflow run main.nf

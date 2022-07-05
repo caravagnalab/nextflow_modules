@@ -1,0 +1,44 @@
+Jul-05 16:26:22.812 [main] DEBUG nextflow.cli.Launcher - $> nextflow run main.nf
+Jul-05 16:26:22.936 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 21.10.6
+Jul-05 16:26:22.964 [main] INFO  nextflow.cli.CmdRun - Launching `main.nf` [tender_galileo] - revision: 5558df9cb2
+Jul-05 16:26:23.051 [main] DEBUG nextflow.plugin.PluginsFacade - Setting up plugin manager > mode=prod; plugins-dir=/u/cdslab/ncalonaci/.nextflow/plugins
+Jul-05 16:26:23.053 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins default=[]
+Jul-05 16:26:23.066 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Enabled plugins: []
+Jul-05 16:26:23.067 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Disabled plugins: []
+Jul-05 16:26:23.071 [main] INFO  org.pf4j.DefaultPluginManager - PF4J version 3.4.1 in 'deployment' mode
+Jul-05 16:26:23.083 [main] INFO  org.pf4j.AbstractPluginManager - No plugins
+Jul-05 16:26:23.152 [main] DEBUG nextflow.Session - Session uuid: de458931-941a-4d57-9e9f-c16f68ab11ba
+Jul-05 16:26:23.152 [main] DEBUG nextflow.Session - Run name: tender_galileo
+Jul-05 16:26:23.154 [main] DEBUG nextflow.Session - Executor pool size: 20
+Jul-05 16:26:23.168 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 21.10.6 build 5660
+  Created: 21-12-2021 16:55 UTC (17:55 CEST)
+  System: Linux 5.7.9-1.el7.elrepo.x86_64
+  Runtime: Groovy 3.0.9 on OpenJDK 64-Bit Server VM 1.8.0_265-b01
+  Encoding: UTF-8 (UTF-8)
+  Process: 20073@login.hpc [10.128.2.5]
+  CPUs: 20 - Mem: 125.4 GB (549.8 MB) - Swap: 15.6 GB (10.2 GB)
+Jul-05 16:26:23.193 [main] DEBUG nextflow.Session - Work-dir: /large/___HOME___/cdslab/ncalonaci/sequenza_tests/work [ceph]
+Jul-05 16:26:23.193 [main] DEBUG nextflow.Session - Script base path does not exist or is not a directory: /large/___HOME___/cdslab/ncalonaci/sequenza_tests/bin
+Jul-05 16:26:23.203 [main] DEBUG nextflow.executor.ExecutorFactory - Extension executors providers=[]
+Jul-05 16:26:23.217 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+Jul-05 16:26:23.364 [main] DEBUG nextflow.util.CustomThreadPool - Creating default thread pool > poolSize: 21; maxThreads: 1000
+Jul-05 16:26:23.471 [main] DEBUG nextflow.Session - Session start invoked
+Jul-05 16:26:24.254 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Jul-05 16:26:24.611 [main] DEBUG nextflow.Session - Session aborted -- Cause: No signature of method: Script_3ca3f93a.includeConfig() is applicable for argument types: (org.codehaus.groovy.runtime.GStringImpl) values: [/large/___HOME___/cdslab/ncalonaci/sequenza_tests/params.config]
+Jul-05 16:26:24.631 [main] ERROR nextflow.cli.Launcher - @unknown
+groovy.lang.MissingMethodException: No signature of method: Script_3ca3f93a.includeConfig() is applicable for argument types: (org.codehaus.groovy.runtime.GStringImpl) values: [/large/___HOME___/cdslab/ncalonaci/sequenza_tests/params.config]
+	at org.codehaus.groovy.runtime.ScriptBytecodeAdapter.unwrap(ScriptBytecodeAdapter.java:70)
+	at org.codehaus.groovy.runtime.callsite.PogoMetaClassSite.callCurrent(PogoMetaClassSite.java:80)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallCurrent(CallSiteArray.java:51)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callCurrent(AbstractCallSite.java:171)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callCurrent(AbstractCallSite.java:185)
+	at Script_3ca3f93a.runScript(Script_3ca3f93a:5)
+	at nextflow.script.BaseScript.runDsl2(BaseScript.groovy:169)
+	at nextflow.script.BaseScript.run(BaseScript.groovy:200)
+	at nextflow.script.ScriptParser.runScript(ScriptParser.groovy:221)
+	at nextflow.script.ScriptRunner.run(ScriptRunner.groovy:212)
+	at nextflow.script.ScriptRunner.execute(ScriptRunner.groovy:120)
+	at nextflow.cli.CmdRun.run(CmdRun.groovy:308)
+	at nextflow.cli.Launcher.run(Launcher.groovy:480)
+	at nextflow.cli.Launcher.main(Launcher.groovy:639)

@@ -17,10 +17,10 @@ def initOptions(Map args) {
     options.up_cell = args.up_cell ?: 1
     options.low_ploidy = args.low_ploidy ?: 1
     options.up_ploidy = args.up_ploidy ?: 1
-    options.is_female = args.is_female ?: "False"
+    options.is_female = args.is_female ?: "FALSE"
 
     options.sample_id = args.sample_id ?: ""
-    options.out_dir = args.out_dir ?: ""
+    options.out_dir = args.out_dir ?: "${baseDir}"
     // options.publish_by_meta = args.publish_by_meta ?: []
     // options.publish_dir     = args.publish_dir ?: ''
     // options.publish_files   = args.publish_files

@@ -1,0 +1,45 @@
+Jul-05 16:37:02.072 [main] DEBUG nextflow.cli.Launcher - $> nextflow run main.nf
+Jul-05 16:37:02.200 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 21.10.6
+Jul-05 16:37:02.229 [main] INFO  nextflow.cli.CmdRun - Launching `main.nf` [trusting_mcclintock] - revision: ee7dd16d7b
+Jul-05 16:37:02.248 [main] DEBUG nextflow.config.ConfigBuilder - Found config local: /large/___HOME___/cdslab/ncalonaci/sequenza_tests/nextflow.config
+Jul-05 16:37:02.248 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /large/___HOME___/cdslab/ncalonaci/sequenza_tests/nextflow.config
+Jul-05 16:37:02.274 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `standard`
+Jul-05 16:37:03.166 [main] DEBUG nextflow.plugin.PluginsFacade - Setting up plugin manager > mode=prod; plugins-dir=/u/cdslab/ncalonaci/.nextflow/plugins
+Jul-05 16:37:03.167 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins default=[]
+Jul-05 16:37:03.181 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Enabled plugins: []
+Jul-05 16:37:03.182 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Disabled plugins: []
+Jul-05 16:37:03.187 [main] INFO  org.pf4j.DefaultPluginManager - PF4J version 3.4.1 in 'deployment' mode
+Jul-05 16:37:03.198 [main] INFO  org.pf4j.AbstractPluginManager - No plugins
+Jul-05 16:37:03.263 [main] DEBUG nextflow.Session - Session uuid: eb9d09ab-bfc3-4236-9d64-6fcbb22536e6
+Jul-05 16:37:03.263 [main] DEBUG nextflow.Session - Run name: trusting_mcclintock
+Jul-05 16:37:03.264 [main] DEBUG nextflow.Session - Executor pool size: 20
+Jul-05 16:37:03.278 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 21.10.6 build 5660
+  Created: 21-12-2021 16:55 UTC (17:55 CEST)
+  System: Linux 5.7.9-1.el7.elrepo.x86_64
+  Runtime: Groovy 3.0.9 on OpenJDK 64-Bit Server VM 1.8.0_265-b01
+  Encoding: UTF-8 (UTF-8)
+  Process: 21956@login.hpc [10.128.2.5]
+  CPUs: 20 - Mem: 125.4 GB (568.6 MB) - Swap: 15.6 GB (10.2 GB)
+Jul-05 16:37:03.299 [main] DEBUG nextflow.Session - Work-dir: /large/___HOME___/cdslab/ncalonaci/sequenza_tests/work [ceph]
+Jul-05 16:37:03.300 [main] DEBUG nextflow.Session - Script base path does not exist or is not a directory: /large/___HOME___/cdslab/ncalonaci/sequenza_tests/bin
+Jul-05 16:37:03.310 [main] DEBUG nextflow.executor.ExecutorFactory - Extension executors providers=[]
+Jul-05 16:37:03.324 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+Jul-05 16:37:03.374 [main] DEBUG nextflow.util.CustomThreadPool - Creating default thread pool > poolSize: 21; maxThreads: 1000
+Jul-05 16:37:03.597 [main] DEBUG nextflow.Session - Session start invoked
+Jul-05 16:37:03.791 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Jul-05 16:37:04.208 [main] DEBUG nextflow.Session - Session aborted -- Cause: No such property: seqz for class: Script_3c953e55
+Jul-05 16:37:04.225 [main] ERROR nextflow.cli.Launcher - @unknown
+groovy.lang.MissingPropertyException: No such property: seqz for class: Script_3c953e55
+	at org.codehaus.groovy.runtime.ScriptBytecodeAdapter.unwrap(ScriptBytecodeAdapter.java:65)
+	at org.codehaus.groovy.runtime.callsite.PogoGetPropertySite.getProperty(PogoGetPropertySite.java:51)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callGroovyObjectGetProperty(AbstractCallSite.java:341)
+	at Script_3c953e55.runScript(Script_3c953e55:7)
+	at nextflow.script.BaseScript.runDsl2(BaseScript.groovy:169)
+	at nextflow.script.BaseScript.run(BaseScript.groovy:200)
+	at nextflow.script.ScriptParser.runScript(ScriptParser.groovy:221)
+	at nextflow.script.ScriptRunner.run(ScriptRunner.groovy:212)
+	at nextflow.script.ScriptRunner.execute(ScriptRunner.groovy:120)
+	at nextflow.cli.CmdRun.run(CmdRun.groovy:308)
+	at nextflow.cli.Launcher.run(Launcher.groovy:480)
+	at nextflow.cli.Launcher.main(Launcher.groovy:639)

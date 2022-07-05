@@ -1,0 +1,69 @@
+Jul-05 16:51:31.621 [main] DEBUG nextflow.cli.Launcher - $> nextflow run main.nf
+Jul-05 16:51:31.759 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 21.10.6
+Jul-05 16:51:31.790 [main] INFO  nextflow.cli.CmdRun - Launching `main.nf` [grave_hugle] - revision: 8eb40eda0d
+Jul-05 16:51:31.810 [main] DEBUG nextflow.config.ConfigBuilder - Found config local: /large/___HOME___/cdslab/ncalonaci/sequenza_tests/nextflow.config
+Jul-05 16:51:31.811 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /large/___HOME___/cdslab/ncalonaci/sequenza_tests/nextflow.config
+Jul-05 16:51:31.837 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `standard`
+Jul-05 16:51:32.740 [main] DEBUG nextflow.plugin.PluginsFacade - Setting up plugin manager > mode=prod; plugins-dir=/u/cdslab/ncalonaci/.nextflow/plugins
+Jul-05 16:51:32.742 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins default=[]
+Jul-05 16:51:32.755 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Enabled plugins: []
+Jul-05 16:51:32.757 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Disabled plugins: []
+Jul-05 16:51:32.761 [main] INFO  org.pf4j.DefaultPluginManager - PF4J version 3.4.1 in 'deployment' mode
+Jul-05 16:51:32.773 [main] INFO  org.pf4j.AbstractPluginManager - No plugins
+Jul-05 16:51:32.838 [main] DEBUG nextflow.Session - Session uuid: 1e39e25b-b7e9-4435-8337-a5eb6d995753
+Jul-05 16:51:32.838 [main] DEBUG nextflow.Session - Run name: grave_hugle
+Jul-05 16:51:32.839 [main] DEBUG nextflow.Session - Executor pool size: 20
+Jul-05 16:51:32.853 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 21.10.6 build 5660
+  Created: 21-12-2021 16:55 UTC (17:55 CEST)
+  System: Linux 5.7.9-1.el7.elrepo.x86_64
+  Runtime: Groovy 3.0.9 on OpenJDK 64-Bit Server VM 1.8.0_265-b01
+  Encoding: UTF-8 (UTF-8)
+  Process: 24294@login.hpc [10.128.2.5]
+  CPUs: 20 - Mem: 125.4 GB (537.7 MB) - Swap: 15.6 GB (10.2 GB)
+Jul-05 16:51:32.876 [main] DEBUG nextflow.Session - Work-dir: /large/___HOME___/cdslab/ncalonaci/sequenza_tests/work [ceph]
+Jul-05 16:51:32.877 [main] DEBUG nextflow.Session - Script base path does not exist or is not a directory: /large/___HOME___/cdslab/ncalonaci/sequenza_tests/bin
+Jul-05 16:51:32.887 [main] DEBUG nextflow.executor.ExecutorFactory - Extension executors providers=[]
+Jul-05 16:51:32.901 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+Jul-05 16:51:32.955 [main] DEBUG nextflow.util.CustomThreadPool - Creating default thread pool > poolSize: 21; maxThreads: 1000
+Jul-05 16:51:33.789 [main] DEBUG nextflow.Session - Session start invoked
+Jul-05 16:51:33.986 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Jul-05 16:51:34.386 [main] DEBUG nextflow.Session - Session aborted -- Cause: No such property: seqz for class: nextflow.script.WorkflowBinding
+Jul-05 16:51:34.401 [main] ERROR nextflow.cli.Launcher - @unknown
+groovy.lang.MissingPropertyException: No such property: seqz for class: nextflow.script.WorkflowBinding
+	at groovy.lang.Binding.getVariable(Binding.java:56)
+	at nextflow.script.WorkflowBinding.getVariable(WorkflowBinding.groovy:132)
+	at groovy.lang.Binding.getProperty(Binding.java:116)
+	at nextflow.script.WorkflowBinding.getProperty(WorkflowBinding.groovy:121)
+	at org.codehaus.groovy.runtime.InvokerHelper.getProperty(InvokerHelper.java:194)
+	at groovy.lang.Closure.getPropertyTryThese(Closure.java:320)
+	at groovy.lang.Closure.getPropertyDelegateFirst(Closure.java:310)
+	at groovy.lang.Closure.getProperty(Closure.java:296)
+	at org.codehaus.groovy.runtime.callsite.PogoGetPropertySite.getProperty(PogoGetPropertySite.java:49)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callGroovyObjectGetProperty(AbstractCallSite.java:341)
+	at Script_bb768531$_runScript_closure1$_closure2.doCall(Script_bb768531:12)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:107)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:323)
+	at org.codehaus.groovy.runtime.metaclass.ClosureMetaClass.invokeMethod(ClosureMetaClass.java:274)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1035)
+	at groovy.lang.Closure.call(Closure.java:412)
+	at groovy.lang.Closure.call(Closure.java:406)
+	at nextflow.script.WorkflowDef.run0(WorkflowDef.groovy:186)
+	at nextflow.script.WorkflowDef.run(WorkflowDef.groovy:170)
+	at nextflow.script.BindableDef.invoke_a(BindableDef.groovy:52)
+	at nextflow.script.ChainableDef$invoke_a.call(Unknown Source)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCall(CallSiteArray.java:47)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:125)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:139)
+	at nextflow.script.BaseScript.runDsl2(BaseScript.groovy:191)
+	at nextflow.script.BaseScript.run(BaseScript.groovy:200)
+	at nextflow.script.ScriptParser.runScript(ScriptParser.groovy:221)
+	at nextflow.script.ScriptRunner.run(ScriptRunner.groovy:212)
+	at nextflow.script.ScriptRunner.execute(ScriptRunner.groovy:120)
+	at nextflow.cli.CmdRun.run(CmdRun.groovy:308)
+	at nextflow.cli.Launcher.run(Launcher.groovy:480)
+	at nextflow.cli.Launcher.main(Launcher.groovy:639)
