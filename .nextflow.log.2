@@ -1,119 +1,110 @@
-Jul-05 16:44:51.521 [main] DEBUG nextflow.cli.Launcher - $> nextflow run main.nf
-Jul-05 16:44:51.645 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 21.10.6
-Jul-05 16:44:51.672 [main] INFO  nextflow.cli.CmdRun - Launching `main.nf` [angry_leavitt] - revision: ed0a93460f
-Jul-05 16:44:51.688 [main] DEBUG nextflow.config.ConfigBuilder - Found config local: /large/___HOME___/cdslab/ncalonaci/sequenza_tests/nextflow.config
-Jul-05 16:44:51.689 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /large/___HOME___/cdslab/ncalonaci/sequenza_tests/nextflow.config
-Jul-05 16:44:51.713 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `standard`
-Jul-05 16:44:52.592 [main] DEBUG nextflow.plugin.PluginsFacade - Setting up plugin manager > mode=prod; plugins-dir=/u/cdslab/ncalonaci/.nextflow/plugins
-Jul-05 16:44:52.594 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins default=[]
-Jul-05 16:44:52.608 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Enabled plugins: []
-Jul-05 16:44:52.609 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Disabled plugins: []
-Jul-05 16:44:52.613 [main] INFO  org.pf4j.DefaultPluginManager - PF4J version 3.4.1 in 'deployment' mode
-Jul-05 16:44:52.624 [main] INFO  org.pf4j.AbstractPluginManager - No plugins
-Jul-05 16:44:52.692 [main] DEBUG nextflow.Session - Session uuid: ebc9ee24-c104-4626-82f8-431d525ff093
-Jul-05 16:44:52.693 [main] DEBUG nextflow.Session - Run name: angry_leavitt
-Jul-05 16:44:52.693 [main] DEBUG nextflow.Session - Executor pool size: 20
-Jul-05 16:44:52.707 [main] DEBUG nextflow.cli.CmdRun - 
-  Version: 21.10.6 build 5660
-  Created: 21-12-2021 16:55 UTC (17:55 CEST)
-  System: Linux 5.7.9-1.el7.elrepo.x86_64
-  Runtime: Groovy 3.0.9 on OpenJDK 64-Bit Server VM 1.8.0_265-b01
+Jul-07 16:46:21.095 [main] DEBUG nextflow.cli.Launcher - $> nextflow run main.nf -with-docker
+Jul-07 16:46:21.265 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 22.04.3
+Jul-07 16:46:21.291 [main] DEBUG nextflow.config.ConfigBuilder - Found config local: /mnt/c/Users/Elena/Desktop/tirocinio/repo/nextflow_modules/nextflow.config
+Jul-07 16:46:21.292 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /mnt/c/Users/Elena/Desktop/tirocinio/repo/nextflow_modules/nextflow.config
+Jul-07 16:46:21.334 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `standard`
+Jul-07 16:46:22.180 [main] DEBUG nextflow.config.ConfigBuilder - Enabling execution in Docker container as requested by cli option `-with-docker -`
+Jul-07 16:46:22.207 [main] DEBUG nextflow.cli.CmdRun - Applied DSL=2 from script declararion
+Jul-07 16:46:22.230 [main] INFO  nextflow.cli.CmdRun - Launching `main.nf` [boring_franklin] DSL2 - revision: 8df554aefe
+Jul-07 16:46:22.252 [main] DEBUG nextflow.plugin.PluginsFacade - Setting up plugin manager > mode=prod; plugins-dir=/home/elena/.nextflow/plugins; core-plugins: nf-amazon@1.7.2,nf-azure@0.13.2,nf-console@1.0.3,nf-ga4gh@1.0.3,nf-google@1.1.4,nf-sqldb@0.4.0,nf-tower@1.4.0
+Jul-07 16:46:22.255 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins default=[]
+Jul-07 16:46:22.279 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Enabled plugins: []
+Jul-07 16:46:22.284 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Disabled plugins: []
+Jul-07 16:46:22.291 [main] INFO  org.pf4j.DefaultPluginManager - PF4J version 3.4.1 in 'deployment' mode
+Jul-07 16:46:22.326 [main] INFO  org.pf4j.AbstractPluginManager - No plugins
+Jul-07 16:46:22.487 [main] DEBUG nextflow.Session - Session uuid: 779a8646-21ba-428e-8fde-7509a248ff37
+Jul-07 16:46:22.488 [main] DEBUG nextflow.Session - Run name: boring_franklin
+Jul-07 16:46:22.491 [main] DEBUG nextflow.Session - Executor pool size: 8
+Jul-07 16:46:22.585 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 22.04.3 build 5703
+  Created: 18-05-2022 19:22 UTC (21:22 CEST)
+  System: Linux 5.10.102.1-microsoft-standard-WSL2
+  Runtime: Groovy 3.0.10 on OpenJDK 64-Bit Server VM 16.0.1+9-Ubuntu-120.04
   Encoding: UTF-8 (UTF-8)
-  Process: 23042@login.hpc [10.128.2.5]
-  CPUs: 20 - Mem: 125.4 GB (3 GB) - Swap: 15.6 GB (10.2 GB)
-Jul-05 16:44:52.730 [main] DEBUG nextflow.Session - Work-dir: /large/___HOME___/cdslab/ncalonaci/sequenza_tests/work [ceph]
-Jul-05 16:44:52.731 [main] DEBUG nextflow.Session - Script base path does not exist or is not a directory: /large/___HOME___/cdslab/ncalonaci/sequenza_tests/bin
-Jul-05 16:44:52.741 [main] DEBUG nextflow.executor.ExecutorFactory - Extension executors providers=[]
-Jul-05 16:44:52.754 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
-Jul-05 16:44:52.806 [main] DEBUG nextflow.util.CustomThreadPool - Creating default thread pool > poolSize: 21; maxThreads: 1000
-Jul-05 16:44:52.933 [main] DEBUG nextflow.Session - Session start invoked
-Jul-05 16:44:53.178 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
-Jul-05 16:44:53.747 [main] DEBUG nextflow.util.CustomThreadPool - Creating default thread pool > poolSize: 21; maxThreads: 1000
-Jul-05 16:44:53.768 [main] DEBUG nextflow.Session - Session aborted -- Cause: No such property: seqz for class: Script_5b9cd428
-Jul-05 16:44:53.787 [main] DEBUG nextflow.Session - The following nodes are still active:
-  [operator] ifEmpty
+  Process: 12334@elena-hp [127.0.1.1]
+  CPUs: 8 - Mem: 12.3 GB (9.6 GB) - Swap: 4 GB (4 GB)
+Jul-07 16:46:22.671 [main] DEBUG nextflow.Session - Work-dir: /mnt/c/Users/Elena/Desktop/tirocinio/repo/nextflow_modules/work [v9fs]
+Jul-07 16:46:22.673 [main] DEBUG nextflow.Session - Script base path does not exist or is not a directory: /mnt/c/Users/Elena/Desktop/tirocinio/repo/nextflow_modules/bin
+Jul-07 16:46:22.688 [main] DEBUG nextflow.executor.ExecutorFactory - Extension executors providers=[]
+Jul-07 16:46:22.711 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+Jul-07 16:46:22.754 [main] DEBUG nextflow.cache.CacheFactory - Using Nextflow cache factory: nextflow.cache.DefaultCacheFactory
+Jul-07 16:46:22.772 [main] DEBUG nextflow.util.CustomThreadPool - Creating default thread pool > poolSize: 9; maxThreads: 1000
+Jul-07 16:46:23.006 [main] DEBUG nextflow.Session - Session start invoked
+Jul-07 16:46:23.286 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Jul-07 16:46:23.658 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Jul-07 16:46:23.659 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jul-07 16:46:23.668 [main] DEBUG nextflow.executor.Executor - [warm up] executor > local
+Jul-07 16:46:23.677 [main] DEBUG n.processor.LocalPollingMonitor - Creating local task monitor for executor 'local' > cpus=8; memory=12.3 GB; capacity=8; pollInterval=100ms; dumpInterval=5m
+Jul-07 16:46:23.810 [main] DEBUG nextflow.Session - Workflow process names [dsl2]: SEQUENZA_EXTRACT
+Jul-07 16:46:23.812 [main] DEBUG nextflow.Session - Ignite dataflow network (1)
+Jul-07 16:46:23.813 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > SEQUENZA_EXTRACT
+Jul-07 16:46:23.815 [main] DEBUG nextflow.script.ScriptRunner - > Await termination 
+Jul-07 16:46:23.816 [main] DEBUG nextflow.Session - Session await
+Jul-07 16:46:24.215 [Task submitter] DEBUG nextflow.executor.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Jul-07 16:46:24.222 [Task submitter] INFO  nextflow.Session - [3b/3e2e46] Submitted process > SEQUENZA_EXTRACT
+Jul-07 16:46:24.515 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 1; name: SEQUENZA_EXTRACT; status: COMPLETED; exit: 125; error: -; workDir: /mnt/c/Users/Elena/Desktop/tirocinio/repo/nextflow_modules/work/3b/3e2e46a37b3e894c62cce27eff18bc]
+Jul-07 16:46:24.548 [Task monitor] ERROR nextflow.processor.TaskProcessor - Error executing process > 'SEQUENZA_EXTRACT'
 
-Jul-05 16:44:53.797 [main] ERROR nextflow.cli.Launcher - @unknown
-groovy.lang.MissingPropertyException: No such property: seqz for class: Script_5b9cd428
-	at org.codehaus.groovy.runtime.ScriptBytecodeAdapter.unwrap(ScriptBytecodeAdapter.java:65)
-	at org.codehaus.groovy.runtime.callsite.PogoGetPropertySite.getProperty(PogoGetPropertySite.java:51)
-	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callGroovyObjectGetProperty(AbstractCallSite.java:341)
-	at Script_5b9cd428.runScript(Script_5b9cd428:7)
-	at nextflow.script.BaseScript.runDsl2(BaseScript.groovy:169)
-	at nextflow.script.BaseScript.run(BaseScript.groovy:200)
-	at nextflow.script.ScriptParser.runScript(ScriptParser.groovy:221)
-	at nextflow.script.ScriptRunner.run(ScriptRunner.groovy:212)
-	at nextflow.script.ScriptRunner.execute(ScriptRunner.groovy:120)
-	at nextflow.cli.CmdRun.run(CmdRun.groovy:308)
-	at nextflow.cli.Launcher.run(Launcher.groovy:480)
-	at nextflow.cli.Launcher.main(Launcher.groovy:639)
-Jul-05 16:44:53.811 [Actor Thread 2] ERROR nextflow.extension.OperatorEx - @unknown
-nextflow.exception.ProcessUnrecoverableException: Cannot find any reads matching: /large/___HOME___/cdslab/ncalonaci/sequenza_tests/mini.seqz.gz
-	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
-	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
-	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
-	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
-	at org.codehaus.groovy.reflection.CachedConstructor.invoke(CachedConstructor.java:72)
-	at org.codehaus.groovy.runtime.callsite.ConstructorSite$ConstructorSiteNoUnwrapNoCoerce.callConstructor(ConstructorSite.java:105)
-	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallConstructor(CallSiteArray.java:59)
-	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callConstructor(AbstractCallSite.java:263)
-	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callConstructor(AbstractCallSite.java:277)
-	at nextflow.Nextflow.error(Nextflow.groovy:262)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.lang.reflect.Method.invoke(Method.java:498)
-	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:107)
-	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:323)
-	at org.codehaus.groovy.runtime.callsite.StaticMetaMethodSite$StaticMetaMethodSiteNoUnwrap.invoke(StaticMetaMethodSite.java:131)
-	at org.codehaus.groovy.runtime.callsite.StaticMetaMethodSite.callStatic(StaticMetaMethodSite.java:100)
-	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallStatic(CallSiteArray.java:55)
-	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callStatic(AbstractCallSite.java:217)
-	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callStatic(AbstractCallSite.java:231)
-	at Script_5b9cd428$_runScript_closure1.doCall(Script_5b9cd428:8)
-	at Script_5b9cd428$_runScript_closure1.doCall(Script_5b9cd428)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.lang.reflect.Method.invoke(Method.java:498)
-	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:107)
-	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:323)
-	at org.codehaus.groovy.runtime.metaclass.ClosureMetaClass.invokeMethod(ClosureMetaClass.java:274)
-	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1035)
-	at org.codehaus.groovy.runtime.callsite.PogoMetaClassSite.call(PogoMetaClassSite.java:38)
-	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCall(CallSiteArray.java:47)
-	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:125)
-	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:130)
-	at nextflow.extension.OperatorEx$_ifEmpty_closure37.doCall(OperatorEx.groovy:1323)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.lang.reflect.Method.invoke(Method.java:498)
-	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:107)
-	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:323)
-	at org.codehaus.groovy.runtime.metaclass.ClosureMetaClass.invokeMethod(ClosureMetaClass.java:274)
-	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1035)
-	at org.codehaus.groovy.runtime.callsite.PogoMetaClassSite.call(PogoMetaClassSite.java:38)
-	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCall(CallSiteArray.java:47)
-	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:125)
-	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:139)
-	at nextflow.extension.DataflowHelper$3.afterStop(DataflowHelper.groovy:255)
-	at groovyx.gpars.dataflow.operator.DataflowProcessor.fireAfterStop(DataflowProcessor.java:324)
-	at groovyx.gpars.dataflow.operator.DataflowProcessorActor.afterStop(DataflowProcessorActor.java:59)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.lang.reflect.Method.invoke(Method.java:498)
-	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:107)
-	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:323)
-	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1268)
-	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1035)
-	at org.codehaus.groovy.runtime.InvokerHelper.invokePojoMethod(InvokerHelper.java:1017)
-	at org.codehaus.groovy.runtime.InvokerHelper.invokeMethod(InvokerHelper.java:1008)
-	at groovyx.gpars.actor.Actor.callDynamic(Actor.java:369)
-	at groovyx.gpars.actor.Actor.handleTermination(Actor.java:320)
-	at groovyx.gpars.actor.AbstractLoopingActor$1.handleMessage(AbstractLoopingActor.java:86)
-	at groovyx.gpars.util.AsyncMessagingCore.run(AsyncMessagingCore.java:132)
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
-	at java.lang.Thread.run(Thread.java:748)
+Caused by:
+  Process `SEQUENZA_EXTRACT` terminated with an error exit status (125)
+
+Command executed:
+
+  #!/usr/bin/env Rscript
+  
+  library(sequenza)
+  
+  chromosomes = 1:24
+  if (as.logical("FALSE"))
+    chromosomes = 1:23
+  
+  seqzExt <- sequenza.extract(
+    file = "mini.seqz.gz",
+    chromosome.list = chromosomes,
+    normalization.method = "median",
+    window = as.numeric("1e5"),
+    gamma = as.integer("280"),
+    kmin = as.integer("300),
+    min.reads.baf = as.integer("50"),
+    min.reads = as.integer("50"),
+    min.reads.normal = as.integer("15"),
+    max.mut.types = as.integer("1")
+    )
+  
+  paraSpace <- sequenza.fit(
+    sequenza.extract = seqzExt,
+    cellularity = seq(as.integer("1"), as.integer("1"), 0.01),
+    ploidy = seq(as.integer("1"), as.integer("1"), 0.1),
+    # chromosome.list = chr.fit,
+    chromosome.list = chromosomes,
+    female = as.logical("FALSE")
+    )
+  
+  sequenza.results(
+    sequenza.extract = seqzExt,
+    cp.table = paraSpace,
+    sample.id = "",
+    out.dir = "/mnt/c/Users/Elena/Desktop/tirocinio/repo/nextflow_modules",  # should it be the process folder?
+    female = as.logical("FALSE")
+    )
+
+Command exit status:
+  125
+
+Command output:
+  (empty)
+
+Command error:
+  docker: Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?.
+  See 'docker run --help'.
+
+Work dir:
+  /mnt/c/Users/Elena/Desktop/tirocinio/repo/nextflow_modules/work/3b/3e2e46a37b3e894c62cce27eff18bc
+
+Tip: you can try to figure out what's wrong by changing to the process work dir and showing the script file named `.command.sh`
+Jul-07 16:46:24.558 [main] DEBUG nextflow.Session - Session await > all process finished
+Jul-07 16:46:24.564 [Task monitor] DEBUG nextflow.Session - Session aborted -- Cause: Process `SEQUENZA_EXTRACT` terminated with an error exit status (125)
+Jul-07 16:46:24.599 [main] DEBUG nextflow.Session - Session await > all barriers passed
+Jul-07 16:46:24.616 [main] DEBUG nextflow.trace.WorkflowStatsObserver - Workflow completed > WorkflowStats[succeededCount=0; failedCount=1; ignoredCount=0; cachedCount=0; pendingCount=0; submittedCount=0; runningCount=0; retriesCount=0; abortedCount=0; succeedDuration=0ms; failedDuration=221ms; cachedDuration=0ms;loadCpus=0; loadMemory=0; peakRunning=1; peakCpus=1; peakMemory=0; ]
+Jul-07 16:46:24.776 [main] DEBUG nextflow.cache.CacheDB - Closing CacheDB done
+Jul-07 16:46:24.822 [main] DEBUG nextflow.script.ScriptRunner - > Execution complete -- Goodbye

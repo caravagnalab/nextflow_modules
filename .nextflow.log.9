@@ -1,44 +1,109 @@
-Jul-05 16:26:22.812 [main] DEBUG nextflow.cli.Launcher - $> nextflow run main.nf
-Jul-05 16:26:22.936 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 21.10.6
-Jul-05 16:26:22.964 [main] INFO  nextflow.cli.CmdRun - Launching `main.nf` [tender_galileo] - revision: 5558df9cb2
-Jul-05 16:26:23.051 [main] DEBUG nextflow.plugin.PluginsFacade - Setting up plugin manager > mode=prod; plugins-dir=/u/cdslab/ncalonaci/.nextflow/plugins
-Jul-05 16:26:23.053 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins default=[]
-Jul-05 16:26:23.066 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Enabled plugins: []
-Jul-05 16:26:23.067 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Disabled plugins: []
-Jul-05 16:26:23.071 [main] INFO  org.pf4j.DefaultPluginManager - PF4J version 3.4.1 in 'deployment' mode
-Jul-05 16:26:23.083 [main] INFO  org.pf4j.AbstractPluginManager - No plugins
-Jul-05 16:26:23.152 [main] DEBUG nextflow.Session - Session uuid: de458931-941a-4d57-9e9f-c16f68ab11ba
-Jul-05 16:26:23.152 [main] DEBUG nextflow.Session - Run name: tender_galileo
-Jul-05 16:26:23.154 [main] DEBUG nextflow.Session - Executor pool size: 20
-Jul-05 16:26:23.168 [main] DEBUG nextflow.cli.CmdRun - 
-  Version: 21.10.6 build 5660
-  Created: 21-12-2021 16:55 UTC (17:55 CEST)
-  System: Linux 5.7.9-1.el7.elrepo.x86_64
-  Runtime: Groovy 3.0.9 on OpenJDK 64-Bit Server VM 1.8.0_265-b01
+Jul-07 16:39:48.675 [main] DEBUG nextflow.cli.Launcher - $> nextflow run main.nf
+Jul-07 16:39:48.832 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 22.04.3
+Jul-07 16:39:48.858 [main] DEBUG nextflow.config.ConfigBuilder - Found config local: /mnt/c/Users/Elena/Desktop/tirocinio/repo/nextflow_modules/nextflow.config
+Jul-07 16:39:48.859 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /mnt/c/Users/Elena/Desktop/tirocinio/repo/nextflow_modules/nextflow.config
+Jul-07 16:39:48.893 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `standard`
+Jul-07 16:39:49.685 [main] DEBUG nextflow.cli.CmdRun - Applied DSL=2 from script declararion
+Jul-07 16:39:49.705 [main] INFO  nextflow.cli.CmdRun - Launching `main.nf` [ecstatic_bartik] DSL2 - revision: 8df554aefe
+Jul-07 16:39:49.739 [main] DEBUG nextflow.plugin.PluginsFacade - Setting up plugin manager > mode=prod; plugins-dir=/home/elena/.nextflow/plugins; core-plugins: nf-amazon@1.7.2,nf-azure@0.13.2,nf-console@1.0.3,nf-ga4gh@1.0.3,nf-google@1.1.4,nf-sqldb@0.4.0,nf-tower@1.4.0
+Jul-07 16:39:49.742 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins default=[]
+Jul-07 16:39:49.768 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Enabled plugins: []
+Jul-07 16:39:49.773 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Disabled plugins: []
+Jul-07 16:39:49.780 [main] INFO  org.pf4j.DefaultPluginManager - PF4J version 3.4.1 in 'deployment' mode
+Jul-07 16:39:49.856 [main] INFO  org.pf4j.AbstractPluginManager - No plugins
+Jul-07 16:39:49.983 [main] DEBUG nextflow.Session - Session uuid: be6020f1-1eca-4bf8-b361-211a510997aa
+Jul-07 16:39:49.984 [main] DEBUG nextflow.Session - Run name: ecstatic_bartik
+Jul-07 16:39:49.986 [main] DEBUG nextflow.Session - Executor pool size: 8
+Jul-07 16:39:50.091 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 22.04.3 build 5703
+  Created: 18-05-2022 19:22 UTC (21:22 CEST)
+  System: Linux 5.10.102.1-microsoft-standard-WSL2
+  Runtime: Groovy 3.0.10 on OpenJDK 64-Bit Server VM 16.0.1+9-Ubuntu-120.04
   Encoding: UTF-8 (UTF-8)
-  Process: 20073@login.hpc [10.128.2.5]
-  CPUs: 20 - Mem: 125.4 GB (549.8 MB) - Swap: 15.6 GB (10.2 GB)
-Jul-05 16:26:23.193 [main] DEBUG nextflow.Session - Work-dir: /large/___HOME___/cdslab/ncalonaci/sequenza_tests/work [ceph]
-Jul-05 16:26:23.193 [main] DEBUG nextflow.Session - Script base path does not exist or is not a directory: /large/___HOME___/cdslab/ncalonaci/sequenza_tests/bin
-Jul-05 16:26:23.203 [main] DEBUG nextflow.executor.ExecutorFactory - Extension executors providers=[]
-Jul-05 16:26:23.217 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
-Jul-05 16:26:23.364 [main] DEBUG nextflow.util.CustomThreadPool - Creating default thread pool > poolSize: 21; maxThreads: 1000
-Jul-05 16:26:23.471 [main] DEBUG nextflow.Session - Session start invoked
-Jul-05 16:26:24.254 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
-Jul-05 16:26:24.611 [main] DEBUG nextflow.Session - Session aborted -- Cause: No signature of method: Script_3ca3f93a.includeConfig() is applicable for argument types: (org.codehaus.groovy.runtime.GStringImpl) values: [/large/___HOME___/cdslab/ncalonaci/sequenza_tests/params.config]
-Jul-05 16:26:24.631 [main] ERROR nextflow.cli.Launcher - @unknown
-groovy.lang.MissingMethodException: No signature of method: Script_3ca3f93a.includeConfig() is applicable for argument types: (org.codehaus.groovy.runtime.GStringImpl) values: [/large/___HOME___/cdslab/ncalonaci/sequenza_tests/params.config]
-	at org.codehaus.groovy.runtime.ScriptBytecodeAdapter.unwrap(ScriptBytecodeAdapter.java:70)
-	at org.codehaus.groovy.runtime.callsite.PogoMetaClassSite.callCurrent(PogoMetaClassSite.java:80)
-	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallCurrent(CallSiteArray.java:51)
-	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callCurrent(AbstractCallSite.java:171)
-	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callCurrent(AbstractCallSite.java:185)
-	at Script_3ca3f93a.runScript(Script_3ca3f93a:5)
-	at nextflow.script.BaseScript.runDsl2(BaseScript.groovy:169)
-	at nextflow.script.BaseScript.run(BaseScript.groovy:200)
-	at nextflow.script.ScriptParser.runScript(ScriptParser.groovy:221)
-	at nextflow.script.ScriptRunner.run(ScriptRunner.groovy:212)
-	at nextflow.script.ScriptRunner.execute(ScriptRunner.groovy:120)
-	at nextflow.cli.CmdRun.run(CmdRun.groovy:308)
-	at nextflow.cli.Launcher.run(Launcher.groovy:480)
-	at nextflow.cli.Launcher.main(Launcher.groovy:639)
+  Process: 10793@elena-hp [127.0.1.1]
+  CPUs: 8 - Mem: 12.3 GB (9.7 GB) - Swap: 4 GB (4 GB)
+Jul-07 16:39:50.178 [main] DEBUG nextflow.Session - Work-dir: /mnt/c/Users/Elena/Desktop/tirocinio/repo/nextflow_modules/work [v9fs]
+Jul-07 16:39:50.180 [main] DEBUG nextflow.Session - Script base path does not exist or is not a directory: /mnt/c/Users/Elena/Desktop/tirocinio/repo/nextflow_modules/bin
+Jul-07 16:39:50.206 [main] DEBUG nextflow.executor.ExecutorFactory - Extension executors providers=[]
+Jul-07 16:39:50.231 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+Jul-07 16:39:50.278 [main] DEBUG nextflow.cache.CacheFactory - Using Nextflow cache factory: nextflow.cache.DefaultCacheFactory
+Jul-07 16:39:50.301 [main] DEBUG nextflow.util.CustomThreadPool - Creating default thread pool > poolSize: 9; maxThreads: 1000
+Jul-07 16:39:50.508 [main] DEBUG nextflow.Session - Session start invoked
+Jul-07 16:39:50.787 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Jul-07 16:39:51.186 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Jul-07 16:39:51.187 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jul-07 16:39:51.198 [main] DEBUG nextflow.executor.Executor - [warm up] executor > local
+Jul-07 16:39:51.206 [main] DEBUG n.processor.LocalPollingMonitor - Creating local task monitor for executor 'local' > cpus=8; memory=12.3 GB; capacity=8; pollInterval=100ms; dumpInterval=5m
+Jul-07 16:39:51.336 [main] DEBUG nextflow.Session - Workflow process names [dsl2]: SEQUENZA_EXTRACT
+Jul-07 16:39:51.338 [main] DEBUG nextflow.Session - Ignite dataflow network (1)
+Jul-07 16:39:51.339 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > SEQUENZA_EXTRACT
+Jul-07 16:39:51.340 [main] DEBUG nextflow.script.ScriptRunner - > Await termination 
+Jul-07 16:39:51.341 [main] DEBUG nextflow.Session - Session await
+Jul-07 16:39:51.735 [Task submitter] DEBUG nextflow.executor.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Jul-07 16:39:51.740 [Task submitter] INFO  nextflow.Session - [c0/a7bb3d] Submitted process > SEQUENZA_EXTRACT
+Jul-07 16:39:51.981 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 1; name: SEQUENZA_EXTRACT; status: COMPLETED; exit: 1; error: -; workDir: /mnt/c/Users/Elena/Desktop/tirocinio/repo/nextflow_modules/work/c0/a7bb3d12e0dae1bf5a9f6dbc18b0fe]
+Jul-07 16:39:52.024 [Task monitor] ERROR nextflow.processor.TaskProcessor - Error executing process > 'SEQUENZA_EXTRACT'
+
+Caused by:
+  Process `SEQUENZA_EXTRACT` terminated with an error exit status (1)
+
+Command executed:
+
+  #!/usr/bin/env Rscript
+  
+  library(sequenza)
+  
+  chromosomes = 1:24
+  if (as.logical("FALSE"))
+    chromosomes = 1:23
+  
+  seqzExt <- sequenza.extract(
+    file = "mini.seqz.gz",
+    chromosome.list = chromosomes,
+    normalization.method = "median",
+    window = as.numeric("1e5"),
+    gamma = as.integer("280"),
+    kmin = as.integer("300),
+    min.reads.baf = as.integer("50"),
+    min.reads = as.integer("50"),
+    min.reads.normal = as.integer("15"),
+    max.mut.types = as.integer("1")
+    )
+  
+  paraSpace <- sequenza.fit(
+    sequenza.extract = seqzExt,
+    cellularity = seq(as.integer("1"), as.integer("1"), 0.01),
+    ploidy = seq(as.integer("1"), as.integer("1"), 0.1),
+    # chromosome.list = chr.fit,
+    chromosome.list = chromosomes,
+    female = as.logical("FALSE")
+    )
+  
+  sequenza.results(
+    sequenza.extract = seqzExt,
+    cp.table = paraSpace,
+    sample.id = "",
+    out.dir = "/mnt/c/Users/Elena/Desktop/tirocinio/repo/nextflow_modules",  # should it be the process folder?
+    female = as.logical("FALSE")
+    )
+
+Command exit status:
+  1
+
+Command output:
+  (empty)
+
+Command error:
+  Error in library(sequenza) : there is no package called ‘sequenza’
+  Execution halted
+
+Work dir:
+  /mnt/c/Users/Elena/Desktop/tirocinio/repo/nextflow_modules/work/c0/a7bb3d12e0dae1bf5a9f6dbc18b0fe
+
+Tip: view the complete command output by changing to the process work dir and entering the command `cat .command.out`
+Jul-07 16:39:52.040 [main] DEBUG nextflow.Session - Session await > all process finished
+Jul-07 16:39:52.046 [Task monitor] DEBUG nextflow.Session - Session aborted -- Cause: Process `SEQUENZA_EXTRACT` terminated with an error exit status (1)
+Jul-07 16:39:52.084 [main] DEBUG nextflow.Session - Session await > all barriers passed
+Jul-07 16:39:52.100 [main] DEBUG nextflow.trace.WorkflowStatsObserver - Workflow completed > WorkflowStats[succeededCount=0; failedCount=1; ignoredCount=0; cachedCount=0; pendingCount=0; submittedCount=0; runningCount=0; retriesCount=0; abortedCount=0; succeedDuration=0ms; failedDuration=155ms; cachedDuration=0ms;loadCpus=0; loadMemory=0; peakRunning=1; peakCpus=1; peakMemory=0; ]
+Jul-07 16:39:52.268 [main] DEBUG nextflow.cache.CacheDB - Closing CacheDB done
+Jul-07 16:39:52.311 [main] DEBUG nextflow.script.ScriptRunner - > Execution complete -- Goodbye

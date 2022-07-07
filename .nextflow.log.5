@@ -1,81 +1,110 @@
-Jul-05 16:29:34.629 [main] DEBUG nextflow.cli.Launcher - $> nextflow run main.nf
-Jul-05 16:29:34.760 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 21.10.6
-Jul-05 16:29:34.788 [main] INFO  nextflow.cli.CmdRun - Launching `main.nf` [exotic_babbage] - revision: 10240efc98
-Jul-05 16:29:34.805 [main] DEBUG nextflow.config.ConfigBuilder - Found config local: /large/___HOME___/cdslab/ncalonaci/sequenza_tests/nextflow.config
-Jul-05 16:29:34.806 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /large/___HOME___/cdslab/ncalonaci/sequenza_tests/nextflow.config
-Jul-05 16:29:34.831 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `standard`
-Jul-05 16:29:35.759 [main] DEBUG nextflow.config.ConfigBuilder - In the following config snippet the attribute `params.base_dir` is empty:
-  seqz=[:]/mini.seqz.gz
+Jul-07 16:43:40.098 [main] DEBUG nextflow.cli.Launcher - $> nextflow run main.nf -with-docker
+Jul-07 16:43:40.261 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 22.04.3
+Jul-07 16:43:40.288 [main] DEBUG nextflow.config.ConfigBuilder - Found config local: /mnt/c/Users/Elena/Desktop/tirocinio/repo/nextflow_modules/nextflow.config
+Jul-07 16:43:40.290 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /mnt/c/Users/Elena/Desktop/tirocinio/repo/nextflow_modules/nextflow.config
+Jul-07 16:43:40.323 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `standard`
+Jul-07 16:43:41.125 [main] DEBUG nextflow.config.ConfigBuilder - Enabling execution in Docker container as requested by cli option `-with-docker -`
+Jul-07 16:43:41.157 [main] DEBUG nextflow.cli.CmdRun - Applied DSL=2 from script declararion
+Jul-07 16:43:41.185 [main] INFO  nextflow.cli.CmdRun - Launching `main.nf` [backstabbing_wescoff] DSL2 - revision: 8df554aefe
+Jul-07 16:43:41.210 [main] DEBUG nextflow.plugin.PluginsFacade - Setting up plugin manager > mode=prod; plugins-dir=/home/elena/.nextflow/plugins; core-plugins: nf-amazon@1.7.2,nf-azure@0.13.2,nf-console@1.0.3,nf-ga4gh@1.0.3,nf-google@1.1.4,nf-sqldb@0.4.0,nf-tower@1.4.0
+Jul-07 16:43:41.214 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins default=[]
+Jul-07 16:43:41.236 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Enabled plugins: []
+Jul-07 16:43:41.241 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Disabled plugins: []
+Jul-07 16:43:41.249 [main] INFO  org.pf4j.DefaultPluginManager - PF4J version 3.4.1 in 'deployment' mode
+Jul-07 16:43:41.276 [main] INFO  org.pf4j.AbstractPluginManager - No plugins
+Jul-07 16:43:41.472 [main] DEBUG nextflow.Session - Session uuid: 6afced50-5ee9-4739-a4fb-d8430fe2aca4
+Jul-07 16:43:41.475 [main] DEBUG nextflow.Session - Run name: backstabbing_wescoff
+Jul-07 16:43:41.479 [main] DEBUG nextflow.Session - Executor pool size: 8
+Jul-07 16:43:41.603 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 22.04.3 build 5703
+  Created: 18-05-2022 19:22 UTC (21:22 CEST)
+  System: Linux 5.10.102.1-microsoft-standard-WSL2
+  Runtime: Groovy 3.0.10 on OpenJDK 64-Bit Server VM 16.0.1+9-Ubuntu-120.04
+  Encoding: UTF-8 (UTF-8)
+  Process: 11371@elena-hp [127.0.1.1]
+  CPUs: 8 - Mem: 12.3 GB (9.7 GB) - Swap: 4 GB (4 GB)
+Jul-07 16:43:41.695 [main] DEBUG nextflow.Session - Work-dir: /mnt/c/Users/Elena/Desktop/tirocinio/repo/nextflow_modules/work [v9fs]
+Jul-07 16:43:41.697 [main] DEBUG nextflow.Session - Script base path does not exist or is not a directory: /mnt/c/Users/Elena/Desktop/tirocinio/repo/nextflow_modules/bin
+Jul-07 16:43:41.717 [main] DEBUG nextflow.executor.ExecutorFactory - Extension executors providers=[]
+Jul-07 16:43:41.745 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+Jul-07 16:43:41.786 [main] DEBUG nextflow.cache.CacheFactory - Using Nextflow cache factory: nextflow.cache.DefaultCacheFactory
+Jul-07 16:43:41.816 [main] DEBUG nextflow.util.CustomThreadPool - Creating default thread pool > poolSize: 9; maxThreads: 1000
+Jul-07 16:43:42.051 [main] DEBUG nextflow.Session - Session start invoked
+Jul-07 16:43:42.327 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Jul-07 16:43:42.677 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Jul-07 16:43:42.678 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jul-07 16:43:42.689 [main] DEBUG nextflow.executor.Executor - [warm up] executor > local
+Jul-07 16:43:42.696 [main] DEBUG n.processor.LocalPollingMonitor - Creating local task monitor for executor 'local' > cpus=8; memory=12.3 GB; capacity=8; pollInterval=100ms; dumpInterval=5m
+Jul-07 16:43:42.827 [main] DEBUG nextflow.Session - Workflow process names [dsl2]: SEQUENZA_EXTRACT
+Jul-07 16:43:42.828 [main] DEBUG nextflow.Session - Ignite dataflow network (1)
+Jul-07 16:43:42.830 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > SEQUENZA_EXTRACT
+Jul-07 16:43:42.831 [main] DEBUG nextflow.script.ScriptRunner - > Await termination 
+Jul-07 16:43:42.833 [main] DEBUG nextflow.Session - Session await
+Jul-07 16:43:43.241 [Task submitter] DEBUG nextflow.executor.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Jul-07 16:43:43.247 [Task submitter] INFO  nextflow.Session - [e8/3816bf] Submitted process > SEQUENZA_EXTRACT
+Jul-07 16:43:43.727 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 1; name: SEQUENZA_EXTRACT; status: COMPLETED; exit: 125; error: -; workDir: /mnt/c/Users/Elena/Desktop/tirocinio/repo/nextflow_modules/work/e8/3816bf2dd667dbc9abe1b7d29d811a]
+Jul-07 16:43:43.771 [Task monitor] ERROR nextflow.processor.TaskProcessor - Error executing process > 'SEQUENZA_EXTRACT'
 
-Jul-05 16:29:35.764 [main] ERROR nextflow.cli.Launcher - Unknown config attribute `params.base_dir` -- check config file: /large/___HOME___/cdslab/ncalonaci/sequenza_tests/nextflow.config
-nextflow.exception.ConfigParseException: Unknown config attribute `params.base_dir` -- check config file: /large/___HOME___/cdslab/ncalonaci/sequenza_tests/nextflow.config
-	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
-	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
-	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
-	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
-	at org.codehaus.groovy.reflection.CachedConstructor.invoke(CachedConstructor.java:72)
-	at org.codehaus.groovy.runtime.callsite.ConstructorSite$ConstructorSiteNoUnwrapNoCoerce.callConstructor(ConstructorSite.java:105)
-	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallConstructor(CallSiteArray.java:59)
-	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callConstructor(AbstractCallSite.java:263)
-	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callConstructor(AbstractCallSite.java:277)
-	at nextflow.config.ConfigBuilder.validate(ConfigBuilder.groovy:450)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.lang.reflect.Method.invoke(Method.java:498)
-	at org.codehaus.groovy.runtime.callsite.PlainObjectMetaMethodSite.doInvoke(PlainObjectMetaMethodSite.java:43)
-	at org.codehaus.groovy.runtime.callsite.PogoMetaMethodSite$PogoCachedMethodSiteNoUnwrapNoCoerce.invoke(PogoMetaMethodSite.java:193)
-	at org.codehaus.groovy.runtime.callsite.PogoMetaMethodSite.callCurrent(PogoMetaMethodSite.java:61)
-	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallCurrent(CallSiteArray.java:51)
-	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callCurrent(AbstractCallSite.java:171)
-	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callCurrent(AbstractCallSite.java:212)
-	at nextflow.config.ConfigBuilder.validate(ConfigBuilder.groovy:457)
-	at nextflow.config.ConfigBuilder.validate(ConfigBuilder.groovy:437)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.lang.reflect.Method.invoke(Method.java:498)
-	at org.codehaus.groovy.runtime.callsite.PlainObjectMetaMethodSite.doInvoke(PlainObjectMetaMethodSite.java:43)
-	at org.codehaus.groovy.runtime.callsite.PogoMetaMethodSite$PogoCachedMethodSiteNoUnwrapNoCoerce.invoke(PogoMetaMethodSite.java:193)
-	at org.codehaus.groovy.runtime.callsite.PogoMetaMethodSite.callCurrent(PogoMetaMethodSite.java:61)
-	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallCurrent(CallSiteArray.java:51)
-	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callCurrent(AbstractCallSite.java:171)
-	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callCurrent(AbstractCallSite.java:194)
-	at nextflow.config.ConfigBuilder.merge0(ConfigBuilder.groovy:411)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.lang.reflect.Method.invoke(Method.java:498)
-	at org.codehaus.groovy.runtime.callsite.PlainObjectMetaMethodSite.doInvoke(PlainObjectMetaMethodSite.java:43)
-	at org.codehaus.groovy.runtime.callsite.PogoMetaMethodSite$PogoCachedMethodSiteNoUnwrapNoCoerce.invoke(PogoMetaMethodSite.java:193)
-	at org.codehaus.groovy.runtime.callsite.PogoMetaMethodSite.callCurrent(PogoMetaMethodSite.java:61)
-	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallCurrent(CallSiteArray.java:51)
-	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callCurrent(AbstractCallSite.java:171)
-	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callCurrent(AbstractCallSite.java:203)
-	at nextflow.config.ConfigBuilder.buildConfig0(ConfigBuilder.groovy:360)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.lang.reflect.Method.invoke(Method.java:498)
-	at org.codehaus.groovy.runtime.callsite.PlainObjectMetaMethodSite.doInvoke(PlainObjectMetaMethodSite.java:43)
-	at org.codehaus.groovy.runtime.callsite.PogoMetaMethodSite$PogoCachedMethodSiteNoUnwrapNoCoerce.invoke(PogoMetaMethodSite.java:193)
-	at org.codehaus.groovy.runtime.callsite.PogoMetaMethodSite.callCurrent(PogoMetaMethodSite.java:61)
-	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallCurrent(CallSiteArray.java:51)
-	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callCurrent(AbstractCallSite.java:171)
-	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callCurrent(AbstractCallSite.java:194)
-	at nextflow.config.ConfigBuilder.buildGivenFiles(ConfigBuilder.groovy:316)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.lang.reflect.Method.invoke(Method.java:498)
-	at org.codehaus.groovy.runtime.callsite.PlainObjectMetaMethodSite.doInvoke(PlainObjectMetaMethodSite.java:43)
-	at org.codehaus.groovy.runtime.callsite.PogoMetaMethodSite$PogoCachedMethodSiteNoUnwrapNoCoerce.invoke(PogoMetaMethodSite.java:193)
-	at org.codehaus.groovy.runtime.callsite.PogoMetaMethodSite.callCurrent(PogoMetaMethodSite.java:61)
-	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallCurrent(CallSiteArray.java:51)
-	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callCurrent(AbstractCallSite.java:171)
-	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callCurrent(AbstractCallSite.java:185)
-	at nextflow.config.ConfigBuilder.buildConfigObject(ConfigBuilder.groovy:735)
-	at nextflow.config.ConfigBuilder.build(ConfigBuilder.groovy:748)
-	at nextflow.cli.CmdRun.run(CmdRun.groovy:271)
-	at nextflow.cli.Launcher.run(Launcher.groovy:480)
-	at nextflow.cli.Launcher.main(Launcher.groovy:639)
+Caused by:
+  Process `SEQUENZA_EXTRACT` terminated with an error exit status (125)
+
+Command executed:
+
+  #!/usr/bin/env Rscript
+  
+  library(sequenza)
+  
+  chromosomes = 1:24
+  if (as.logical("FALSE"))
+    chromosomes = 1:23
+  
+  seqzExt <- sequenza.extract(
+    file = "mini.seqz.gz",
+    chromosome.list = chromosomes,
+    normalization.method = "median",
+    window = as.numeric("1e5"),
+    gamma = as.integer("280"),
+    kmin = as.integer("300),
+    min.reads.baf = as.integer("50"),
+    min.reads = as.integer("50"),
+    min.reads.normal = as.integer("15"),
+    max.mut.types = as.integer("1")
+    )
+  
+  paraSpace <- sequenza.fit(
+    sequenza.extract = seqzExt,
+    cellularity = seq(as.integer("1"), as.integer("1"), 0.01),
+    ploidy = seq(as.integer("1"), as.integer("1"), 0.1),
+    # chromosome.list = chr.fit,
+    chromosome.list = chromosomes,
+    female = as.logical("FALSE")
+    )
+  
+  sequenza.results(
+    sequenza.extract = seqzExt,
+    cp.table = paraSpace,
+    sample.id = "",
+    out.dir = "/mnt/c/Users/Elena/Desktop/tirocinio/repo/nextflow_modules",  # should it be the process folder?
+    female = as.logical("FALSE")
+    )
+
+Command exit status:
+  125
+
+Command output:
+  (empty)
+
+Command error:
+  docker: Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?.
+  See 'docker run --help'.
+
+Work dir:
+  /mnt/c/Users/Elena/Desktop/tirocinio/repo/nextflow_modules/work/e8/3816bf2dd667dbc9abe1b7d29d811a
+
+Tip: you can try to figure out what's wrong by changing to the process work dir and showing the script file named `.command.sh`
+Jul-07 16:43:43.785 [main] DEBUG nextflow.Session - Session await > all process finished
+Jul-07 16:43:43.790 [Task monitor] DEBUG nextflow.Session - Session aborted -- Cause: Process `SEQUENZA_EXTRACT` terminated with an error exit status (125)
+Jul-07 16:43:43.831 [main] DEBUG nextflow.Session - Session await > all barriers passed
+Jul-07 16:43:43.848 [main] DEBUG nextflow.trace.WorkflowStatsObserver - Workflow completed > WorkflowStats[succeededCount=0; failedCount=1; ignoredCount=0; cachedCount=0; pendingCount=0; submittedCount=0; runningCount=0; retriesCount=0; abortedCount=0; succeedDuration=0ms; failedDuration=414ms; cachedDuration=0ms;loadCpus=0; loadMemory=0; peakRunning=1; peakCpus=1; peakMemory=0; ]
+Jul-07 16:43:44.021 [main] DEBUG nextflow.cache.CacheDB - Closing CacheDB done
+Jul-07 16:43:44.072 [main] DEBUG nextflow.script.ScriptRunner - > Execution complete -- Goodbye
