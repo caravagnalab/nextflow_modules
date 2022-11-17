@@ -1,4 +1,0 @@
-Error in contour.default(x = cp.table$ploidy, y = cp.table$cellularity,  : 
-  no proper 'z' matrix specified
-Calls: sequenza.results -> cp.plot.contours -> contour -> contour.default
-Execution halted

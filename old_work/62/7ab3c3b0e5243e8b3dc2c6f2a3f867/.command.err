@@ -1,4 +1,0 @@
-Error in do.call(rbind, sequenza.extract$mutations[chromosome.list]) : 
-  object 'seqz_prova' not found
-Calls: sequenza.fit -> do.call
-Execution halted
