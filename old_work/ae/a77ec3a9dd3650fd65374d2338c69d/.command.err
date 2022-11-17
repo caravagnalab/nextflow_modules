@@ -1,0 +1,11 @@
+Collecting GC information . done
+
+Processing chr1:
+   1 variant calls.
+   1 copy-number segments.
+   115 heterozygous positions.
+   9845 homozygous positions.
+Error in if (!is.na(mat[x, ]$Bf) & !is.na(mat[x, ]$sd.Bf/sqrt(mat[x, ]$weight.Bf))) { : 
+  argument is of length zero
+Calls: sequenza.fit ... lapply -> FUN -> baf.bayes -> mapply -> <Anonymous>
+Execution halted

@@ -1,0 +1,4 @@
+Error in do.call(rbind, sequenza.extract$segments[chromosome.list]) : 
+  object 'seqzExt' not found
+Calls: sequenza.results -> do.call
+Execution halted

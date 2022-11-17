@@ -13,11 +13,11 @@ if (as.logical("FALSE"))
   chromosomes = paste0("", 1:23)
 
 
-write.table(x=example.seqz, file = "./seqz_prova3.seqz", row.names = F, col.names = T, sep="\t")
-# pr = read.seqz("seqz_prova3.seqz")
+write.table(x=example.seqz, file = "./example_data/example.seqz", row.names = F, col.names = T, sep="\t")
+pr = read.seqz("./example_data/example.seqz")
 
 
-seqzExt <- sequenza.extract(file = "seqz_prova3.seqz",
+seqzExt <- sequenza.extract(file = "./example_data/example.seqz",
                             chromosome.list = chromosomes,
                             # normalization.method = "$norm_method",
                             # window = as.numeric("$window"),

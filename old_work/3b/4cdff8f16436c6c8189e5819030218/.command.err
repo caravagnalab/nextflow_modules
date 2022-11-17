@@ -1,0 +1,6 @@
+Collecting GC information . done
+
+Error in split.default(lis_obj, names(lis_obj)) : 
+  first argument must be a vector
+Calls: sequenza.extract ... unfold_gc -> get_gc -> splash_table -> split -> split.default
+Execution halted

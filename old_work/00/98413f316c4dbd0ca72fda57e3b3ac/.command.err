@@ -1,0 +1,8 @@
+Error in segs.all[filt.test, ] : incorrect number of dimensions
+Calls: sequenza.fit
+In addition: Warning messages:
+1: In max(segs.all$sd.BAF, na.rm = TRUE) :
+  no non-missing arguments to max; returning -Inf
+2: In max(segs.all$sd.ratio, na.rm = TRUE) :
+  no non-missing arguments to max; returning -Inf
+Execution halted

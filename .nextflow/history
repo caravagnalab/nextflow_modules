@@ -130,3 +130,13 @@
 2022-11-16 17:55:22	1.5s	cranky_majorana	ERR	792b1bb3dd5cab977367179d2ca2aecb	1c5fbfb4-b6ef-43d5-8287-07135eedabb9	nextflow main.nf -with-docker
 2022-11-16 17:55:39	19.8s	lethal_cori	ERR	792b1bb3dd5cab977367179d2ca2aecb	c866ef29-f5d8-482b-a0f6-471de67dfa56	nextflow main.nf -with-docker
 2022-11-16 18:17:06	21s	serene_stone	OK	792b1bb3dd5cab977367179d2ca2aecb	022bc50f-4302-415c-9422-0b16f99f3ea4	nextflow main.nf -with-docker
+2022-11-17 09:44:49	2.9s	trusting_albattani	ERR	792b1bb3dd5cab977367179d2ca2aecb	a1bec781-7bb0-415e-8266-6257b1dc4585	nextflow main.nf
+2022-11-17 09:46:39	2.9s	cranky_lovelace	ERR	792b1bb3dd5cab977367179d2ca2aecb	faf496fd-f734-4e8c-9211-931ad51a1d8c	nextflow main.nf
+2022-11-17 09:47:41	2s	exotic_lamarr	ERR	792b1bb3dd5cab977367179d2ca2aecb	04894875-5818-4a73-90cc-793b2470f041	nextflow main.nf
+2022-11-17 09:51:07	2.5s	mighty_sinoussi	ERR	792b1bb3dd5cab977367179d2ca2aecb	b5b0d4ab-39d5-495b-9b04-316d8806d189	nextflow main.nf
+2022-11-17 09:52:04	2.5s	gloomy_brenner	ERR	792b1bb3dd5cab977367179d2ca2aecb	2cdf1ba7-d4d2-4ab1-af8e-e04fc69b4181	nextflow main.nf
+2022-11-17 09:52:44	2.4s	furious_austin	ERR	792b1bb3dd5cab977367179d2ca2aecb	c74b016e-f5d4-4188-9921-24ebd6e20877	nextflow main.nf
+2022-11-17 09:53:31	2.5s	insane_northcutt	ERR	792b1bb3dd5cab977367179d2ca2aecb	79a1aea2-c6ff-4c6b-8540-c7d0e99f2130	nextflow main.nf
+2022-11-17 09:53:41	2.6s	pedantic_blackwell	ERR	792b1bb3dd5cab977367179d2ca2aecb	a5816681-306b-4cf2-a709-8395f42039d9	nextflow main.nf
+2022-11-17 09:54:28	4m 15s	grave_swartz	OK	792b1bb3dd5cab977367179d2ca2aecb	382db6bb-43f5-4d45-8456-88539c1e57de	nextflow main.nf -with-docker
+2022-11-17 10:00:56	4m 33s	nasty_kowalevski	OK	792b1bb3dd5cab977367179d2ca2aecb	376e5f65-e23d-49ea-a494-f6f5c4bd900c	nextflow main.nf -with-docker

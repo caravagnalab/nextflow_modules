@@ -1,0 +1,3 @@
+Error in gzfile(file, "rb") : object 'mini.seqz.gz' not found
+Calls: sequenza.extract -> gc.sample.stats -> gzfile
+Execution halted

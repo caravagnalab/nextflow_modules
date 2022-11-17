@@ -1,0 +1,15 @@
+Unable to find image 'quay.io/biocontainers/r-sequenza:3.0.0--r42h3342da4_5' locally
+3.0.0--r42h3342da4_5: Pulling from biocontainers/r-sequenza
+c1a16a04cedd: Already exists
+4ca545ee6d5d: Already exists
+2377b2325362: Pulling fs layer
+2377b2325362: Download complete
+2377b2325362: Pull complete
+Digest: sha256:200a1a345af39828bb42d04ba632ffafedad5b1992820541fe61d2172a73136a
+Status: Downloaded newer image for quay.io/biocontainers/r-sequenza:3.0.0--r42h3342da4_5
+Collecting GC information . done
+
+Error in split.default(lis_obj, names(lis_obj)) : 
+  first argument must be a vector
+Calls: sequenza.extract ... unfold_gc -> get_gc -> splash_table -> split -> split.default
+Execution halted
