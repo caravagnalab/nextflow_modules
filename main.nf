@@ -1,13 +1,20 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 
-// Channel
-//     .fromPath( params.seqz )
-//     .ifEmpty { error "Cannot find any reads matching: ${params.seqz}" } // if empty, complains
-//     .set {seqzFile}
-
 include { SEQUENZA_EXTRACT } from "${baseDir}/sequenza/main"
+// include { PARSE_INPUT } from "${baseDir}/sequenza/main"
 
 workflow {
-  SEQUENZA_EXTRACT(params.seqz)
+  // WORKING
+  // Channel.fromPath(params.samples) \
+  //   | splitCsv(header: true) \
+  //   | map{row ->
+  //       tuple(row.patient.toString(), row.sample.toString(), file(row.file))} \
+  //   | SEQUENZA_EXTRACT
+  
+  input_rows = Channel.fromPath(params.samples).
+    splitCsv(header: true).
+    map{row ->
+      tuple(row.patient.toString(), row.sample.toString(), file(row.file))}  
+  SEQUENZA_EXTRACT(input_rows)
 }
