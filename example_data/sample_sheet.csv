@@ -1,4 +1,4 @@
 patient,sample,seqz_file,vcf_file
-p1,s1,/Users/elenab/Desktop/repo/nextflow_modules/example_data/example.seqz,/Users/elenab/Desktop/repo/nextflow_modules/example_data/example.vcf
-p2,s1,/Users/elenab/Desktop/repo/nextflow_modules/example_data/example.seqz,/Users/elenab/Desktop/repo/nextflow_modules/example_data/example.vcf
-p1,s2,/Users/elenab/Desktop/repo/nextflow_modules/example_data/example.seqz,/Users/elenab/Desktop/repo/nextflow_modules/example_data/example.vcf
+p1,s1,/u/cdslab/ncalonaci/nextflow_modules/example_data/example.seqz,/u/cdslab/ncalonaci/nextflow_modules/example_data/example.vcf
+p2,s1,/u/cdslab/ncalonaci/nextflow_modules/example_data/example.seqz,/u/cdslab/ncalonaci/nextflow_modules/example_data/example.vcf
+p1,s2,/u/cdslab/ncalonaci/nextflow_modules/example_data/example.seqz,/u/cdslab/ncalonaci/nextflow_modules/example_data/example.vcf
