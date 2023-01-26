@@ -4,3 +4,5 @@
 .Rhistory
 out_files
 **.DS_Store
+*reference*
+*example_data/example.vcf
