@@ -1,0 +1,11 @@
+patient,sample,vcf_file,index_file
+P0001,J970002,/mnt/CDSLab/LT_storage/shared/prj_hypermutant/data/P0001/J970002/J970002_filtered.vcf.gz,/mnt/CDSLab/LT_storage/shared/prj_hypermutant/data/P0001/J970002/J970002_filtered.vcf.gz.csi
+P0001,J970003,/mnt/CDSLab/LT_storage/shared/prj_hypermutant/data/P0001/J970003/J970003_filtered.vcf.gz,/mnt/CDSLab/LT_storage/shared/prj_hypermutant/data/P0001/J970003/J970003_filtered.vcf.gz.csi
+P0002,J970005,/mnt/CDSLab/LT_storage/shared/prj_hypermutant/data/P0002/J970005/J970005_filtered.vcf.gz,/mnt/CDSLab/LT_storage/shared/prj_hypermutant/data/P0002/J970005/J970005_filtered.vcf.gz.csi
+P0002,J970006,/mnt/CDSLab/LT_storage/shared/prj_hypermutant/data/P0002/J970006/J970006_filtered.vcf.gz,/mnt/CDSLab/LT_storage/shared/prj_hypermutant/data/P0002/J970006/J970006_filtered.vcf.gz.csi
+P0003,J970008,/mnt/CDSLab/LT_storage/shared/prj_hypermutant/data/P0003/J970008/J970008_filtered.vcf.gz,/mnt/CDSLab/LT_storage/shared/prj_hypermutant/data/P0003/J970008/J970008_filtered.vcf.gz.csi
+P0003,J970009,/mnt/CDSLab/LT_storage/shared/prj_hypermutant/data/P0003/J970009/J970009_filtered.vcf.gz,/mnt/CDSLab/LT_storage/shared/prj_hypermutant/data/P0003/J970009/J970009_filtered.vcf.gz.csi
+P0004,J970011,/mnt/CDSLab/LT_storage/shared/prj_hypermutant/data/P0004/J970011/J970011_filtered.vcf.gz,/mnt/CDSLab/LT_storage/shared/prj_hypermutant/data/P0004/J970011/J970011_filtered.vcf.gz.csi
+P0004,J970012,/mnt/CDSLab/LT_storage/shared/prj_hypermutant/data/P0004/J970012/J970012_filtered.vcf.gz,/mnt/CDSLab/LT_storage/shared/prj_hypermutant/data/P0004/J970012/J970012_filtered.vcf.gz.csi
+P0005,J970014,/mnt/CDSLab/LT_storage/shared/prj_hypermutant/data/P0005/J970014/J970014_filtered.vcf.gz,/mnt/CDSLab/LT_storage/shared/prj_hypermutant/data/P0005/J970014/J970014_filtered.vcf.gz.csi
+P0005,J970015,/mnt/CDSLab/LT_storage/shared/prj_hypermutant/data/P0005/J970015/J970015_filtered.vcf.gz,/mnt/CDSLab/LT_storage/shared/prj_hypermutant/data/P0005/J970015/J970015_filtered.vcf.gz.csi
