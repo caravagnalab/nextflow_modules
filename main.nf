@@ -13,17 +13,17 @@ workflow {
   input_vcf = Channel.fromPath(params.samples).
       splitCsv(header: true).
       map{row ->
-        tuple(row.patient.toString(), row.sample.toString(), file(row.vcf_file))} 
+        tuple(row.patient.toString(), row.sample.toString(), file(row.vcf))} 
 
   //input_sequenza = Channel.fromPath(params.samples).
   //  splitCsv(header: true).
   //  map{row ->
-  //    tuple(row.patient.toString(), row.timepoint.toString(), row.sample.toString(), row.sex.toString(), file(row.seqz_file), file(row.snv_vcf_file))}
+  //    tuple(row.patient.toString(), row.sample.toString(), row.sex.toString(), file(row.seqz), file(row.vcf))}
 
   //input_multisample = Channel.fromPath(params.samples).
   //    splitCsv(header: true).
   //    map{row ->
-  //      tuple(row.patient.toString(), file(row.tumor_bam), file(row.tumor_bai), file(row.normal_bam), file(row.normal_bai), file(row.snv_vcf_file), file(row.snv_tbi_file), file(row.indel_vcf_file), file(row.indel_tbi_file))} 
+  //      tuple(row.patient.toString(), file(row.tumour_bam), file(row.tumour_bai), file(row.normal_bam), file(row.normal_bai), file(row.vcf), file(row.vcf_tbi))} 
   
   vep_output = VEP_ANNOTATE(input_vcf)
   //VCF2MAF(input_vcf)
