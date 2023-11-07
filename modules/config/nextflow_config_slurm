@@ -5,7 +5,7 @@ includeConfig "$baseDir/modules/config/params.config"
 
  singularity {
      enabled = true
-     runOptions = '--bind /mnt:/mnt'
+     runOptions = '--bind /orfeo:/orfeo'
  }
  
 process{
@@ -22,8 +22,36 @@ process {
   }
 
   withName: 'VCF2MAF' {
-      container = 'quay.io/biocontainers/mulled-v2-b6fc09bed47d0dc4d8384ce9e04af5806f2cc91b:305092c6f8420acd17377d2cc8b96e1c3ccb7d26-0'
+      container =  'https://depot.galaxyproject.org/singularity/mulled-v2-b6fc09bed47d0dc4d8384ce9e04af5806f2cc91b:305092c6f8420acd17377d2cc8b96e1c3ccb7d26-0'
   }
+
+process {
+
+  withName: 'ANNOVAR_ANNOTATE' {
+    time='24h'
+    container = 'shub://IARCbioinfo/table_annovar-nf:v1.1'
+    memory='4 GB'
+  }
+}
+
+process {
+
+  withName: 'ANNOVAR2MAF' {
+    time='24h'
+    //container = 'https://singularityhub.github.io/shpc-registry/r/quay.io-biocontainers-bioconductor-maftools/'
+    memory='4 GB'
+  }
+}
+
+
+process {
+
+  withName: 'SNPEFF_ANNOTATE' {
+    time='24h'
+    container = 'https://depot.galaxyproject.org/singularity/snpeff:5.1--hdfd78af_2'
+    memory='16 GB'
+  }
+}
 
   withName: 'PLATYPUS_CALL_VARIANTS' {
     time='24h'
