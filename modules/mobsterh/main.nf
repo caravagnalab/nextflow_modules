@@ -5,7 +5,7 @@ process MOBSTERh {
     tuple val(patientID), val(timepointID), val(sampleID), path(joint_table)
 
   output:
-    path("$patientID/$timepointID/$sampleID/*.rds")
+    tuple path("$patientID/$timepointID/$sampleID/*.rds"), path("$patientID/$timepointID/$sampleID/*.pdf")
 
   script:
     def args = task.ext.args ?: ''
