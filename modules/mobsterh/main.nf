@@ -1,46 +1,59 @@
 process MOBSTERh {
-
   publishDir params.publish_dir
 
   input:
-
     tuple val(patientID), val(timepointID), val(sampleID), val(sex), path(joint_table)
 
   output:
-
     path("$patientID/$timepointID/$sampleID/*.rds")
 
   script:
-
     def args = task.ext.args ?: ''
     def K = args!='' && args.K ? "$args.K" : "1:3"
     def samples = args!='' && args.samples ? "$args.samples" : "5"
-    def gamma = args!='' && args.gamma ? "$args.gamma" : "280"  // gamma
-    def kmin = args!='' && args.kmin ? "$args.kmin" : "300"  // kmin
-    def min_reads_baf = args!='' && args.min_reads_baf ? "$args.min_reads_baf" : "50"
-    def min_reads = args!='' && args.min_reads ?  "$args.min_reads" : "50"
-    def min_reads_normal = args!='' && args.min_reads_normal ? "$args.min_reads_normal": "15"
-    def max_mut_types = args!='' && args.max_mut_types ? "$args.max_mut_types" : "1"
-    
-    def low_cell = args!='' && args.low_cell ? "$args.low_cell" : "0.95"
-    def up_cell = args!='' && args.up_cell ? "$args.up_cell" : "1.0"
-    def low_ploidy = args!='' && args.low_ploidy ? "$args.low_ploidy" : "1.8"
-    def up_ploidy = args!='' && args.up_ploidy ? "$args.up_ploidy" : "5.4"
-    def delta_cellularity = args!='' && args.delta_cellularity ? "$args.delta_cellularity" : "0.05"
-    def delta_ploidy = args!='' && args.delta_ploidy ? "$args.delta_ploidy" : "0.25"
+    def init = args!='' && args.init ? "$args.init" : "peaks"
+    def tail = args!='' && args.tail ? "$args.tail" : "c(TRUE,FALSE)"
+    def epsilon = args!='' && args.epsilon ? "$args.epsilon" : "1e-10"
+    def maxIter = args!='' && args.maxIter ? "$args.maxIter" : "250"
+    def fit_type = args!='' && args.fit_type ? "$args.fit_type" : "MM"
+    def seed = args!='' && args.seed ? "$args.seed" : "12345"
+    def model_selection = args!='' && args.model_selection ? "$args.model_selection" : "reICL"
+    def trace = args!='' && args.trace ? "$args.trace" : "FALSE"
+    def parallel = args!='' && args.parallel ? "$args.parallel" : "TRUE"
+    def pi_cutoff = args!='' && args.pi_cutoff ? "$args.pi_cutoff" : "0.02"
+    def n_cutoff = args!='' && args.n_cutoff ? "$args.n_cutoff" : "10"
+    def auto_setup = args!='' && args.auto_setup ? "$args.auto_setup" : "NULL"
+    def silent = args!='' && args.silent ? "$args.silent" : "FALSE"
     
     """
     #!/usr/bin/env Rscript
 
     # Sys.setenv("VROOM_CONNECTION_SIZE"=99999999)
 
-    # library(maftools)  # check if present in the image
     library(mobster)
+    description = paste($patientID, $timepointID, $sampleID, sep="_")
+    input_tab = read.csv($joint_table)
+    fit = mobster_fit(x = input_tab,
+                      K = eval(parse(text=$K)),
+                      samples = as.integer($samples),
+                      init = $init,
+                      tail = eval(parse(text=$tail)),
+                      epsilon = as.numeric($epsilon),
+                      maxIter = as.integer($maxIter),
+                      fit.type = $fit_type,
+                      seed = as.integer($seed),
+                      model.selection = $model_selection,
+                      trace = as.logical($trace),
+                      parallel = as.logical($parallel),
+                      pi_cutoff = as.numeric($pi_cutoff),
+                      N_cutoff = as.integer($n_cutoff),
+                      auto_setup = eval(parse(text=$auto_setup)),
+                      silent = as.logical($silent),
+                      description = description)
     
-    fit = mobster_fit(x = $joint_table, K = $K, samples = $samples, init = $init, tail = $tail, epsilon = $epsilon, maxIter = $maxIter, fit.type=$fit_type, seed = $seed, model.selection=$model_selection, trace=$trace, parallel = $parallel, pi_cutoff = $pi_cutoff, N_cutoff = $N_cutoff, auto_setup = $auto_setup, silent =$silent, description=$description)
-    best_fit = fit$best
-    
-    p <- plot(best_fit) 
+    best_fit = fit[["best"]]
+    p = plot(best_fit) 
+
     dir.create(paste0("$patientID","/","$timepointID","/","$sampleID"), recursive = TRUE)
     saveRDS(object=fit, file=paste0("$patientID","/","$timepointID","/","$sampleID","/mobsterh.rds"))
     ggsave(filename = paste0("$patientID","/","$timepointID","/","$sampleID","/mobsterh.pdf"), plot=p)
