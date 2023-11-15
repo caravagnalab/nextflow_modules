@@ -2,7 +2,7 @@ process MOBSTERh {
   publishDir params.publish_dir
 
   input:
-    tuple val(patientID), val(timepointID), val(sampleID), val(sex), path(joint_table)
+    tuple val(patientID), val(timepointID), val(sampleID), path(joint_table)
 
   output:
     path("$patientID/$timepointID/$sampleID/*.rds")
