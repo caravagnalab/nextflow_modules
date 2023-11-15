@@ -1,5 +1,5 @@
 process MOBSTERh {
-  publishDir params.publish_dir
+  publishDir params.publish_dir, mode: 'copy'
 
   input:
     tuple val(patientID), val(timepointID), val(sampleID), path(joint_table)
@@ -50,12 +50,14 @@ process MOBSTERh {
                       auto_setup = eval(parse(text="$auto_setup")),
                       silent = as.logical("$silent"),
                       description = description)
-    
+
     best_fit = fit[["best"]]
     p = plot(best_fit) 
 
     dir.create(paste0("$patientID","/","$timepointID","/","$sampleID"), recursive = TRUE)
     saveRDS(object=fit, file=paste0("$patientID","/","$timepointID","/","$sampleID","/mobsterh.rds"))
-    ggsave(filename = paste0("$patientID","/","$timepointID","/","$sampleID","/mobsterh.pdf"), plot=p)
+    pdf(paste0("$patientID","/","$timepointID","/","$sampleID","/mobsterh.pdf"))
+    print(p)
+    dev.off()
     """
 }
