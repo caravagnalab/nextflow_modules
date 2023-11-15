@@ -19,7 +19,7 @@ process SNPEFF_ANNOTATE {
     gzip -dc $vcf_File > vcf_File
 
 
-    java -Xmx8g -jar /orfeo/LTS/CDSLab/LT_storage/variant_annotation/snpEff/snpEff.jar -c /orfeo/LTS/CDSLab/LT_storage/variant_annotation/snpEff/snpEff.config -v GRCh37.75 vcf_File > $patientID/$sampleID/SNPEFF/snpEff_ann.vcf
+    java -Xmx8g -jar snpEff.jar -c snpEff.config -v GRCh37.75 vcf_File > $patientID/$sampleID/SNPEFF/snpEff_ann.vcf
 
     """
 }
