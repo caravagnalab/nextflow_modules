@@ -31,24 +31,24 @@ process MOBSTERh {
     # Sys.setenv("VROOM_CONNECTION_SIZE"=99999999)
 
     library(mobster)
-    description = paste($patientID, $timepointID, $sampleID, sep="_")
-    input_tab = read.csv($joint_table)
+    description = paste("$patientID", "$timepointID", "$sampleID", sep="_")
+    input_tab = read.csv("$joint_table")
     fit = mobster_fit(x = input_tab,
-                      K = eval(parse(text=$K)),
-                      samples = as.integer($samples),
-                      init = $init,
-                      tail = eval(parse(text=$tail)),
-                      epsilon = as.numeric($epsilon),
-                      maxIter = as.integer($maxIter),
-                      fit.type = $fit_type,
-                      seed = as.integer($seed),
-                      model.selection = $model_selection,
-                      trace = as.logical($trace),
-                      parallel = as.logical($parallel),
-                      pi_cutoff = as.numeric($pi_cutoff),
-                      N_cutoff = as.integer($n_cutoff),
-                      auto_setup = eval(parse(text=$auto_setup)),
-                      silent = as.logical($silent),
+                      K = eval(parse(text="$K")),
+                      samples = as.integer("$samples"),
+                      init = "$init",
+                      tail = eval(parse(text="$tail")),
+                      epsilon = as.numeric("$epsilon"),
+                      maxIter = as.integer("$maxIter"),
+                      fit.type = "$fit_type",
+                      seed = as.integer("$seed"),
+                      model.selection = "$model_selection",
+                      trace = as.logical("$trace"),
+                      parallel = as.logical("$parallel"),
+                      pi_cutoff = as.numeric("$pi_cutoff"),
+                      N_cutoff = as.integer("$n_cutoff"),
+                      auto_setup = eval(parse(text="$auto_setup")),
+                      silent = as.logical("$silent"),
                       description = description)
     
     best_fit = fit[["best"]]

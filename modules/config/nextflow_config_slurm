@@ -3,11 +3,11 @@ cleanup=true
 
 includeConfig "$baseDir/modules/config/params.config"
 
- singularity {
-     enabled = true
-     runOptions = '--bind /mnt:/mnt'
+singularity {
+    enabled = true
+    runOptions = '--bind /orfeo:/orfeo'
  }
- 
+
 process{
    executor='slurm'
    queue='THIN'
@@ -15,7 +15,6 @@ process{
 }
 
 process {
-
   withName: 'VEP_ANNOTATE' {
     time='12h'
     container = 'https://depot.galaxyproject.org/singularity/ensembl-vep:110.1--pl5321h2a3209d_0'
@@ -31,7 +30,7 @@ process {
   }
 
   withName: 'BCFTOOLS_SPLIT_VEP' {
-      container = 'https://depot.galaxyproject.org/singularity/bcftools%3A1.14--hde04aa1_1'
+    container = 'https://depot.galaxyproject.org/singularity/bcftools%3A1.14--hde04aa1_1'
   }
 
   withName: 'SEQUENZA_CNAqc' {
@@ -39,6 +38,12 @@ process {
     time='24h'
     container = 'file:///mnt/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
     errorStrategy = 'finish'
+  }
+
+  withName: "MOBSTERh" {
+    memory='128 GB'
+    time='2h'
+    container='/u/cdslab/ebusca00/scratch/singularity/cdslab.sif'
   }
 
 }
