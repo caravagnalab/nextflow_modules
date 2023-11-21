@@ -44,6 +44,24 @@ process {
     memory='128 GB'
     time='2h'
     container='/u/cdslab/ebusca00/scratch/singularity/cdslab.sif'
+
+    ext.args = {[
+      "K" = params.mobster_K,
+      "samples" = params.mobster_samples,
+      "init" = params.mobster_init,
+      "tail" = params.mobster_tail,
+      "epsilon" = params.mobster_epsilon,
+      "maxIter" = params.mobster_maxIter,
+      "fit_type" = params.mobster_fit_type,
+      "seed" = params.mobster_seed,
+      "model_selection" = params.mobster_model_selection,
+      "trace" = params.mobster_trace,
+      "parallel" = params.mobster_parallel,
+      "pi_cutoff" = params.mobster_pi_cutoff,
+      "n_cutoff" = params.mobster_n_cutoff,
+      "auto_setup" = params.mobster_auto_setup,
+      "silent" = params.mobster_silent
+    ]}
   }
 
 }
