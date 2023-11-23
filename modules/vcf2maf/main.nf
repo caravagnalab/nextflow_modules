@@ -9,7 +9,7 @@ process VCF2MAF {
 
     output:
 
-      tuple val(patientID), val(sampleID),  path("$patientID/$sampleID/VCF2MAF/data_vep.maf"), path("combined_vep.maf.gz")
+      tuple val(patientID), val(sampleID),  path("$patientID/$sampleID/VCF2MAF/*.maf")
 
     script:
 
@@ -29,7 +29,5 @@ process VCF2MAF {
     --inhibit-vep \\
     --ncbi-build $params.assembly
 
-    cat $patientID/$sampleID/VCF2MAF/data_vep.maf $patientID/$sampleID/VCF2MAF/data_vep.maf >> combined_vep.maf
-    gzip combined_vep.maf
     """
 }
