@@ -5,9 +5,9 @@ includeConfig "$baseDir/modules/config/params.config"
 
  singularity {
      enabled = true
-     runOptions = '--bind /mnt:/mnt'
+     runOptions = '--bind /orfeo:/orfeo'
  }
- 
+
 process{
    executor='slurm'
    queue='THIN'
@@ -39,6 +39,33 @@ process {
     time='24h'
     container = 'file:///mnt/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
     errorStrategy = 'finish'
+  }
+
+  withName: 'VARTRIX' {
+    memory='50 GB'
+    time='2h'
+    container = 'https://depot.galaxyproject.org/singularity/vartrix%3A1.1.22--h27d5293_3'
+    ext.args   = { [
+        "scoring": params.vartrix_scoring_method,
+        "padding": params.vartrix_padding,
+        "umi": params.vartrix_umi
+    ]
+    }
+  }
+
+
+
+  withName: 'PYCLONEVI' {
+    memory='50 GB'
+    time='2h'
+    container = 'https://depot.galaxyproject.org/singularity/pyclone-vi%3A0.1.3--pyhca03a8a_0'
+    ext.args   = { [
+        "n_cluster": params.pyclonevi_n_cluster,
+        "density": params.pyclonevi_density,
+        "n_grid_point": params.pyclonevi_n_grid_point,
+        "n_restarts": params.pyclonevi_n_restarts
+    ]
+    }
   }
 
 }
