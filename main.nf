@@ -49,6 +49,7 @@ workflow {
   // vartrix = VARTRIX(input_vartrix)
   // pyclonevi = PYCLONEVI(input_pyclonevi)
   viber = VIBER(input_pyclonevi)
+
   // vep_output = VEP_ANNOTATE(input_vcf)
   //VCF2MAF(input_vcf)
   //BCFTOOLS_SPLIT_VEP(vep_output)
