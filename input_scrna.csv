@@ -1,0 +1,2 @@
+patient,sample,sex,bam,bai,vcf,barcode
+test_dna,test_dna,,/orfeo/cephfs/scratch/cdslab/ggandolfi/test_data_vartrix/test_dna.bam,/orfeo/cephfs/scratch/cdslab/ggandolfi/test_data_vartrix/test_dna.bam.bai,/orfeo/cephfs/scratch/cdslab/ggandolfi/test_data_vartrix/test_dna.vcf,/orfeo/cephfs/scratch/cdslab/ggandolfi/test_data_vartrix/dna_barcodes.tsv

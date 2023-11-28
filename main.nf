@@ -4,7 +4,8 @@ nextflow.enable.dsl=2
 //include { SEQUENZA_EXTRACT } from "${baseDir}/modules/sequenza/main"
 // include { VEP_ANNOTATE } from "${baseDir}/modules/VEP/main"
 // include { MOBSTERh } from "${baseDir}/modules/mobsterh/main"
-include { PYCLONEVI } from "${baseDir}/modules/pyclonevi/main"
+// include { PYCLONEVI } from "${baseDir}/modules/pyclonevi/main"
+include { VIBER } from "${baseDir}/modules/viber/main"
 // include { VARTRIX } from "${baseDir}/modules/vartrix/main"
 //include { VCF2MAF } from "${baseDir}/modules/vcf2maf/main"
 //include { BCFTOOLS_SPLIT_VEP } from "${baseDir}/modules/bcftools/main"
@@ -46,7 +47,8 @@ workflow {
 
   // mobster = MOBSTERh(input_mobsterh)
   // vartrix = VARTRIX(input_vartrix)
-  pyclonevi = PYCLONEVI(input_pyclonevi)
+  // pyclonevi = PYCLONEVI(input_pyclonevi)
+  viber = VIBER(input_pyclonevi)
   // vep_output = VEP_ANNOTATE(input_vcf)
   //VCF2MAF(input_vcf)
   //BCFTOOLS_SPLIT_VEP(vep_output)
