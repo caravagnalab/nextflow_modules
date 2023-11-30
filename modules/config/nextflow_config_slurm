@@ -19,26 +19,29 @@ process {
   withName: 'VEP_ANNOTATE' {
     time='12h'
     container = 'https://depot.galaxyproject.org/singularity/ensembl-vep:110.1--pl5321h2a3209d_0'
-    memory = '10 GB'
+    memory = '20 GB'
   }
 
   withName: 'VCF2MAF' {
-      //container =  'https://depot.galaxyproject.org/singularity/mulled-v2-b6fc09bed47d0dc4d8384ce9e04af5806f2cc91b:305092c6f8420acd17377d2cc8b96e1c3ccb7d26-0'
-      container = 'https://depot.galaxyproject.org/singularity/vcf2maf%3A1.6.20--0'
+    container = 'https://depot.galaxyproject.org/singularity/vcf2maf%3A1.6.20--0'
+  }
+
+  withName: 'MAFTOOLS' {
+    memory = '5 GB'
   }
  }
+
 process {
 
   withName: 'ANNOVAR_ANNOTATE' {
     time='12h'
-    //container = 'shub://IARCbioinfo/table_annovar-nf:v1.1'
+    container = 'shub://IARCbioinfo/table_annovar-nf:v1.1'
     memory='10 GB'
   }
 
   withName: 'ANNOVAR2MAF' {
     time='24h'
-    //container = 'https://singularityhub.github.io/shpc-registry/r/quay.io-biocontainers-bioconductor-maftools/'
-    memory='4 GB'
+    memory='5 GB'
   }
 }
 

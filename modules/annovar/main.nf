@@ -4,18 +4,18 @@ process ANNOVAR_ANNOTATE {
 
     input:
 
-      tuple val(patientID), val(sampleID), path(vcf_File)
+      tuple val(datasetID), val(patientID), val(sampleID), path(vcf_File)
 
 
     output:
 
-      tuple val(patientID), val(sampleID), path("$patientID/$sampleID/ANNOVAR/annovar.hg38_multianno.txt"), path("$patientID/$sampleID/ANNOVAR/annovar.hg38_multianno.vcf.gz")
+      tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/$sampleID/ANNOVAR/annovar.hg38_multianno.txt"), path("$datasetID/$patientID/$sampleID/ANNOVAR/annovar.hg38_multianno.vcf.gz")
 
     script:
 
     """
 
-    mkdir -p $patientID/$sampleID/ANNOVAR
+    mkdir -p $datasetID/$patientID/$sampleID/ANNOVAR
     gzip -dc $vcf_File > vcf_File
 
 
@@ -24,7 +24,7 @@ process ANNOVAR_ANNOTATE {
     vcf_File \\
     $params.humandb \\
     -buildver $params.buildver \\
-    -out $patientID/$sampleID/ANNOVAR/annovar \\
+    -out $datasetID/$patientID/$sampleID/ANNOVAR/annovar \\
     -protocol refGene \\
     -operation g \\
     -nastring . \\
@@ -34,7 +34,7 @@ process ANNOVAR_ANNOTATE {
     -thread 4
 
 
-    bcftools view $patientID/$sampleID/ANNOVAR/annovar.hg38_multianno.vcf -Oz -o  $patientID/$sampleID/ANNOVAR/annovar.hg38_multianno.vcf.gz
+    bcftools view $datasetID/$patientID/$sampleID/ANNOVAR/annovar.hg38_multianno.vcf -Oz -o  $datasetID/$patientID/$sampleID/ANNOVAR/annovar.hg38_multianno.vcf.gz
 
 
 
