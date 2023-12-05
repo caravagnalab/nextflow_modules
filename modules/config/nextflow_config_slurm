@@ -5,10 +5,10 @@ includeConfig "$baseDir/modules/config/params.config"
 
  singularity {
      enabled = true
-     runOptions = '--bind /mnt:/mnt'
+     runOptions = '--bind /orfeo:/orfeo'
  }
  
-process{
+process {
    executor='slurm'
    queue='THIN'
    errorStrategy = 'finish'
@@ -35,10 +35,31 @@ process {
   }
 
   withName: 'SEQUENZA_CNAqc' {
-    memory='128 GB'
-    time='24h'
-    container = 'file:///mnt/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
+    memory = '300 GB'
+    time = '3h'
     errorStrategy = 'finish'
-  }
 
+    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
+    //scratch = '/orfeo/LTS/LADE/LT_storage/lvaleriani/tmp'
+
+    ext.args = {[
+      "norm_method": params.seqcna_norm_method,
+      "window": params.seqcna_window,
+      "gamma": params.seqcna_gamma,
+      "kmin": params.seqcna_kmin,
+      "min_reads_baf": params.seqcna_min_reads_baf,
+      "min_reads": params.seqcna_min_reads,
+      "min_reads_normal": params.seqcna_reads_normal,
+      "max_mut_types": params.seqcna_max_mut_types,
+
+      "low_cell": params.seqcna_low_cell,
+      "up_cell": params.seqcna_up_cell,
+      "low_ploidy": params.seqcna_low_ploidy,
+      "up_ploidy": params.seqcna_up_ploidy,
+      "delta_cellularity": params.seqcna_delta_cellularity,
+      "delta_ploidy": params.seqcna_delta_ploidy,
+
+      "matching_strategy": params.seqcna_matching_strategy
+      ]}
+  }
 }
