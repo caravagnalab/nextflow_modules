@@ -8,7 +8,7 @@ includeConfig "$baseDir/modules/config/params.config"
      runOptions = '--bind /orfeo:/orfeo'
 }
 
-process{
+process {
    executor='slurm'
    queue='THIN'
    errorStrategy = 'finish'
@@ -44,18 +44,32 @@ process {
     memory='50 GB'
     time='2h'
     container = 'https://depot.galaxyproject.org/singularity/vartrix%3A1.1.22--h27d5293_3'
-    ext.args   = { [
+    ext.args   = {[
         "scoring": params.vartrix_scoring_method,
         "padding": params.vartrix_padding,
         "umi": params.vartrix_umi
-    ]
-    }
+    ]}
   }
 
   withName: 'VIBER' {
     memory='128 GB'
     time='2h'
     container='/orfeo/cephfs/scratch/cdslab/shared/singularity/cdslab.sif'
+    ext.args = {[
+      "K" = params.viber_K,
+      "samples" = params.viber_samples,
+      "alpha_0" = params.viber_alpha_0,
+      "a_0" = params.viber_a_0,
+      "b_0" = params.viber_b_0,
+      "maxIter" = params.viber_maxIter,
+      "epsilon_conv" = params.viber_epsilon_conv,
+      "q_init" = params.viber_q_init,
+      "trace" = params.viber_trace,
+      "binomial_cutoff" = params.viber_binomial_cutoff,
+      "dimensions_cutoff" = params.viber_dimensions_cutoff,
+      "pi_cutoff" = params.viber_pi_cutoff,
+      "re_assign" = params.viber_re_assign
+    ]}
   }
 
   withName: 'PYCLONEVI' {
@@ -67,14 +81,14 @@ process {
         "density": params.pyclonevi_density,
         "n_grid_point": params.pyclonevi_n_grid_point,
         "n_restarts": params.pyclonevi_n_restarts
-    ]
-    }
+    ]}
+  }
+
 
   withName: "MOBSTERh" {
     memory='128 GB'
     time='2h'
     container='/u/cdslab/ebusca00/scratch/singularity/cdslab.sif'
-
     ext.args = {[
       "K" = params.mobster_K,
       "samples" = params.mobster_samples,
