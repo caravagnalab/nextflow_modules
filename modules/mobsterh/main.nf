@@ -30,6 +30,8 @@ process MOBSTERh {
 
     # Sys.setenv("VROOM_CONNECTION_SIZE"=99999999)
 
+    out_dirname = paste0("$patientID","/","$timepointID","/","$sampleID", "/")
+
     library(mobster)
     description = paste("$patientID", "$timepointID", "$sampleID", sep="_")
     input_tab = read.csv("$joint_table")
@@ -54,11 +56,45 @@ process MOBSTERh {
     best_fit = fit[["best"]]
     plot_fit = plot(best_fit) 
 
-    dir.create(paste0("$patientID","/","$timepointID","/","$sampleID"), recursive = TRUE)
-    saveRDS(object=fit, file=paste0("$patientID","/","$timepointID","/","$sampleID","/mobsterh.rds"))
+    # generate output for ctree
+    cluster_table = best_fit[["Clusters"]] %>% 
+      dplyr::filter(cluster != "Tail", type == "Mean") %>%
+      dplyr::select(cluster, fit.value) %>% 
+      dplyr::rename(R1 = fit.value) %>% 
+      dplyr::mutate(patientID = patientID)
+    cluster_table[["nMuts"]] = best_fit[["N.k"]][cluster_table[["cluster"]]]
+    cluster_table[["is.clonal"]] = FALSE
+    cluster_table[["is.clonal"]][which.max(cluster_table[["R1"]])] = TRUE
+
+    drivers_collapse = best_fit[["data"]] %>% dplyr::filter(is_driver) %>% 
+      pull(cluster) %>% unique
+
+    cluster_table[["is.driver"]] = FALSE
+    cluster_table[["is.driver"]][which(cluster_table[["cluster"]] %in% drivers_collapse)] = TRUE
+    drivers_table = best_fit[["data"]] %>% as_tibble() %>% dplyr::filter(is_driver) %>% 
+      dplyr::rename(variantID = driver_label, is.driver = is_driver) %>% 
+      dplyr::mutate(patientID = patientID, R1 = VAF) %>% 
+      dplyr::select(-R1, -VAF)
+    drivers_table[["is.clonal"]] = FALSE
+    drivers_table[["is.clonal"]][which(drivers_table[["cluster"]] == cluster_table %>% 
+                                    dplyr::filter(is.clonal) %>% dplyr::pull(cluster))] = TRUE
+    drivers_table = drivers_table %>% 
+      dplyr::select(patientID, variantID, is.driver, is.clonal, 
+                    cluster, dplyr::everything())
+
+    ctree_input = dplyr::full_join(drivers_table, cluster_table, 
+                                   by=c("patientID", "is.driver", 
+                                        "is.clonal", "cluster"))
+
+    # save rds and plots
+    dir.create(out_dirname, recursive = TRUE)
+
+    saveRDS(object=fit, file=paste0(out_dirname, "mobsterh.rds"))
     
-    pdf(paste0("$patientID","/","$timepointID","/","$sampleID","/mobsterh.pdf"))
+    pdf(paste0(out_dirname, "mobsterh.pdf"))
     print(plot_fit)
     dev.off()
+
+    write.csv(x=ctree_input, file=paste0(out_dirname, "ctree_input.csv"), row.names=F)
     """
 }
