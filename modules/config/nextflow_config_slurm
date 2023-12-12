@@ -108,4 +108,15 @@ process {
     ]}
   }
 
+  withName: "CTREE" {
+    memory='128 GB'
+    time='2h'
+    container='/u/cdslab/ebusca00/scratch/singularity/cdslab.sif'
+    ext.args = {[
+      "sspace_cutoff" : params.ctree_sspace_cutoff,
+      "n_sampling" : params.ctree_n_sampling,
+      "store_max" : params.ctree_store_max
+    ]}
+  }
+
 }
