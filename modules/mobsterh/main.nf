@@ -9,22 +9,22 @@ process MOBSTERh {
 
   script:
     def args = task.ext.args ?: ''
-    def K = args!='' && args.K ? "$args.K" : "1:3"
-    def samples = args!='' && args.samples ? "$args.samples" : "5"
-    def init = args!='' && args.init ? "$args.init" : "peaks"
-    def tail = args!='' && args.tail ? "$args.tail" : "c(TRUE,FALSE)"
-    def epsilon = args!='' && args.epsilon ? "$args.epsilon" : "1e-10"
-    def maxIter = args!='' && args.maxIter ? "$args.maxIter" : "250"
-    def fit_type = args!='' && args.fit_type ? "$args.fit_type" : "MM"
-    def seed = args!='' && args.seed ? "$args.seed" : "12345"
-    def model_selection = args!='' && args.model_selection ? "$args.model_selection" : "reICL"
-    def trace = args!='' && args.trace ? "$args.trace" : "FALSE"
-    def parallel = args!='' && args.parallel ? "$args.parallel" : "TRUE"
-    def pi_cutoff = args!='' && args.pi_cutoff ? "$args.pi_cutoff" : "0.02"
-    def n_cutoff = args!='' && args.n_cutoff ? "$args.n_cutoff" : "10"
-    def auto_setup = args!='' && args.auto_setup ? "$args.auto_setup" : "NULL"
-    def silent = args!='' && args.silent ? "$args.silent" : "FALSE"
-    
+    def K = args!='' && args.K ? "$args.K" : ""
+    def samples = args!='' && args.samples ? "$args.samples" : ""
+    def init = args!='' && args.init ? "$args.init" : ""
+    def tail = args!='' && args.tail ? "$args.tail" : ""
+    def epsilon = args!='' && args.epsilon ? "$args.epsilon" : ""
+    def maxIter = args!='' && args.maxIter ? "$args.maxIter" : ""
+    def fit_type = args!='' && args.fit_type ? "$args.fit_type" : ""
+    def seed = args!='' && args.seed ? "$args.seed" : ""
+    def model_selection = args!='' && args.model_selection ? "$args.model_selection" : ""
+    def trace = args!='' && args.trace ? "$args.trace" : ""
+    def parallel = args!='' && args.parallel ? "$args.parallel" : ""
+    def pi_cutoff = args!='' && args.pi_cutoff ? "$args.pi_cutoff" : ""
+    def n_cutoff = args!='' && args.n_cutoff ? "$args.n_cutoff" : ""
+    def auto_setup = args!='' && args.auto_setup ? "$args.auto_setup" : ""
+    def silent = args!='' && args.silent ? "$args.silent" : ""
+
     """
     #!/usr/bin/env Rscript
 
@@ -52,12 +52,13 @@ process MOBSTERh {
                       description = description)
 
     best_fit = fit[["best"]]
-    p = plot(best_fit) 
+    plot_fit = plot(best_fit) 
 
     dir.create(paste0("$patientID","/","$timepointID","/","$sampleID"), recursive = TRUE)
     saveRDS(object=fit, file=paste0("$patientID","/","$timepointID","/","$sampleID","/mobsterh.rds"))
+    
     pdf(paste0("$patientID","/","$timepointID","/","$sampleID","/mobsterh.pdf"))
-    print(p)
+    print(plot_fit)
     dev.off()
     """
 }
