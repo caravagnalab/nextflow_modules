@@ -10,22 +10,22 @@ process MOBSTERh {
           path("$patientID/$timepointID/$sampleID/*.csv")
 
   script:
-    def args = task.ext.args ?: ''
-    def K = args!='' && args.K ? "$args.K" : ""
-    def samples = args!='' && args.samples ? "$args.samples" : ""
-    def init = args!='' && args.init ? "$args.init" : ""
-    def tail = args!='' && args.tail ? "$args.tail" : ""
-    def epsilon = args!='' && args.epsilon ? "$args.epsilon" : ""
-    def maxIter = args!='' && args.maxIter ? "$args.maxIter" : ""
-    def fit_type = args!='' && args.fit_type ? "$args.fit_type" : ""
-    def seed = args!='' && args.seed ? "$args.seed" : ""
-    def model_selection = args!='' && args.model_selection ? "$args.model_selection" : ""
-    def trace = args!='' && args.trace ? "$args.trace" : ""
-    def parallel = args!='' && args.parallel ? "$args.parallel" : ""
-    def pi_cutoff = args!='' && args.pi_cutoff ? "$args.pi_cutoff" : ""
-    def n_cutoff = args!='' && args.n_cutoff ? "$args.n_cutoff" : ""
-    def auto_setup = args!='' && args.auto_setup ? "$args.auto_setup" : ""
-    def silent = args!='' && args.silent ? "$args.silent" : ""
+    def args = task.ext.args ?: ""
+    def K = args!="" && args.K ? "$args.K" : ""
+    def samples = args!="" && args.samples ? "$args.samples" : ""
+    def init = args!="" && args.init ? "$args.init" : ""
+    def tail = args!="" && args.tail ? "$args.tail" : ""
+    def epsilon = args!="" && args.epsilon ? "$args.epsilon" : ""
+    def maxIter = args!="" && args.maxIter ? "$args.maxIter" : ""
+    def fit_type = args!="" && args.fit_type ? "$args.fit_type" : ""
+    def seed = args!="" && args.seed ? "$args.seed" : ""
+    def model_selection = args!="" && args.model_selection ? "$args.model_selection" : ""
+    def trace = args!="" && args.trace ? "$args.trace" : ""
+    def parallel = args!="" && args.parallel ? "$args.parallel" : ""
+    def pi_cutoff = args!="" && args.pi_cutoff ? "$args.pi_cutoff" : ""
+    def n_cutoff = args!="" && args.n_cutoff ? "$args.n_cutoff" : ""
+    def auto_setup = args!="" && args.auto_setup ? "$args.auto_setup" : ""
+    def silent = args!="" && args.silent ? "$args.silent" : ""
 
     """
     #!/usr/bin/env Rscript
