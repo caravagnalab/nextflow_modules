@@ -5,7 +5,9 @@ process MOBSTERh {
     tuple val(patientID), val(timepointID), val(sampleID), path(joint_table)
 
   output:
-    tuple path("$patientID/$timepointID/$sampleID/*.rds"), path("$patientID/$timepointID/$sampleID/*.pdf")
+    tuple path("$patientID/$timepointID/$sampleID/*.rds"), 
+          path("$patientID/$timepointID/$sampleID/*.pdf"),
+          path("$patientID/$timepointID/$sampleID/*.csv")
 
   script:
     def args = task.ext.args ?: ''
@@ -35,6 +37,7 @@ process MOBSTERh {
     library(mobster)
     description = paste("$patientID", "$timepointID", "$sampleID", sep="_")
     input_tab = read.csv("$joint_table")
+
     fit = mobster_fit(x = input_tab,
                       K = eval(parse(text="$K")),
                       samples = as.integer("$samples"),
@@ -83,8 +86,10 @@ process MOBSTERh {
                     cluster, dplyr::everything())
 
     ctree_input = dplyr::full_join(drivers_table, cluster_table, 
-                                   by=c("patientID", "is.driver", 
-                                        "is.clonal", "cluster"))
+                    by=c("patientID", "is.driver", "is.clonal", "cluster")) %>% 
+      reshape2::melt(id=c("patientID", "variantID", "is.driver", 
+                          "is.clonal", "cluster", "nMuts"), 
+                    variable.name="sampleID", value.name="CCF")
 
     # save rds and plots
     dir.create(out_dirname, recursive = TRUE)

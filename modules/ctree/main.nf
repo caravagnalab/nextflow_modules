@@ -2,7 +2,7 @@ process CTREE {
   publishDir params.publish_dir, mode: 'copy'
 
   input:
-    tuple val(patientID), val(timepointID), val(sampleID), path(ccf_table)
+    tuple val(patientID), val(timepointID), val(sampleID), path(ctree_input)
 
   output:
     tuple path("$patientID/$timepointID/$sampleID/*.rds"), path("$patientID/$timepointID/$sampleID/*.pdf")
@@ -16,49 +16,29 @@ process CTREE {
     """
     #!/usr/bin/env Rscript
 
+    out_dirname = paste0("$patientID","/","$timepointID","/","$sampleID", "/")
+
     library(ctree)
     library(dplyr)
 
-    input_tab = read.csv("$ccf_table")
+    ctree_input = read.csv("$ctree_input")
 
     # the CCF table must report CCF values for each cluster and sample
     # cluster | nMuts | is.driver | is.clonal | sample1 | sample2 | ...
-    CCF_table = input_tab %>% 
-        # remove mutations in the tail
-        dplyr::filter(cluster != "Tail")
+    CCF_table = ctree_input %>% 
+      dplyr::filter(cluster != "Tail") %>% 
+      dplyr::select(-variantID) %>% unique() %>% 
+      tidyr::pivot_wider(names_from="sampleID", values_from="CCF")
 
     # the driver table must contain patient and variant IDs and report clonality and driver status
     # patientID | variantID | is.driver | is.clonal | cluster | sample1 | sample2 | ...
-    drivers_table = input_tab # ... reformat
+    drivers_table = ctree_input %>% dplyr::filter(is.driver) %>% 
+      tidyr::pivot_wider(names_from="sampleID", values_from="CCF")
 
-    samples = c("$sampleID")  # if multisample, this is a list
-    patient = "$patientID"
+    samples = unique(ctree_input[["sampleID"]])  # if multisample, this is a list
+    patient = unique(ctree_input[["patientID"]])
 
-
-    ## from MOBSTER object
-    cluster_table = mobster_fit[["Clusters"]] %>% 
-        dplyr::filter(cluster != "Tail", type == "Mean") %>% 
-        dplyr::select(cluster, fit.value) %>% 
-        rename(R1 = fit.value)
-    cluster_table[["nMuts"]] = mobster_fit[["N.k"]][cluster_table[["cluster"]]]
-    cluster_table[["is.clonal"]] = FALSE
-    cluster_table[["is.clonal"]][which.max(cluster_table[["R1"]])] = TRUE
-
-    drivers_collapse = mobster_fit[["data"]] %>% 
-        dplyr::filter(is_driver) %>% 
-        dplyr::pull(cluster) %>% unique
-    cluster_table[["is.driver"]] = FALSE
-    cluster_table[["is.driver"]][which(cluster_table[["cluster"]] %in% drivers_collapse)] = TRUE
-    drivers_table = mobster_fit[["data"]] %>% dplyr::as_tibble() %>% 
-        dplyr::filter(is_driver) %>% 
-        dplyr::rename(variantID = driver_label, is.driver = is_driver) %>% 
-        dplyr::mutate(patientID = patientID, R1 = VAF)
-    drivers_table[["is.clonal"]] = FALSE
-    drivers_table[["is.clonal"]][which(drivers_table[["cluster"]] == cluster_table %>% 
-        dplyr::filter(is.clonal) %>% dplyr::pull(cluster))] = TRUE
-    drivers_table = drivers_table %>% dplyr::select(patientID, variantID, is.driver, is.clonal, cluster, R1, dplyr::everything())
-
-    trees = ctrees(CCF_clusters = cluster_table,
+    trees = ctrees(CCF_clusters = CCF_table,
                   drivers = drivers_table,
                   samples = samples,
                   patient = patient,
@@ -69,9 +49,12 @@ process CTREE {
     # plot the best tree
     plot_tree = plot(trees[[1]]) 
 
-    dir.create(paste0("$patientID","/","$timepointID","/","$sampleID"), recursive = TRUE)
-    saveRDS(object=trees, file=paste0("$patientID","/","$timepointID","/","$sampleID","/ctree.rds"))
-    pdf(paste0("$patientID","/","$timepointID","/","$sampleID","/plot_tree.pdf"))
+    # save rds and plots
+    dir.create(out_dirname, recursive = TRUE)
+    
+    saveRDS(object=trees, file=paste0(out_dirname, "ctree.rds"))
+
+    pdf(paste0(out_dirname, "plot_tree.pdf"))
     print(plot_tree)
     dev.off()
     """
