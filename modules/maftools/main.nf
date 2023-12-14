@@ -4,7 +4,7 @@ process MAFTOOLS {
 
     input:
 
-      tuple val(datasetID), val(patientID), val(sampleID), path(vcf_File)
+      tuple val(datasetID), val(patientID), val(sampleID), path(maf_File, stageAs: 'data_vep*.maf')
 
     output:
 
@@ -17,11 +17,11 @@ process MAFTOOLS {
 
 
     library(maftools)
-
+    
     dir.create(paste0("$datasetID","/maftools"), recursive = TRUE)
 
-    maf_vep <- read.maf(maf = "$vcf_File")
-    mafs <- list(maf_vep)
+    mafs <- lapply(X = "$maf_File", FUN = maftools::read.maf)
+    
     maf_merged = maftools:::merge_mafs(maf = mafs, verbose = TRUE)
 
     saveRDS(object = maf_merged, file = paste0("$datasetID","/",maftools/maf_merged.rds")

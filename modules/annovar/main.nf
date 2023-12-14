@@ -9,7 +9,7 @@ process ANNOVAR_ANNOTATE {
 
     output:
 
-      tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/$sampleID/ANNOVAR/annovar.hg38_multianno.txt"), path("$datasetID/$patientID/$sampleID/ANNOVAR/annovar.hg38_multianno.vcf.gz")
+      tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/$sampleID/ANNOVAR/annovar.hg38_multianno.txt")
 
     script:
 
@@ -32,10 +32,6 @@ process ANNOVAR_ANNOTATE {
     -polish \\
     -remove \\
     -thread 4
-
-
-    bcftools view $datasetID/$patientID/$sampleID/ANNOVAR/annovar.hg38_multianno.vcf -Oz -o  $datasetID/$patientID/$sampleID/ANNOVAR/annovar.hg38_multianno.vcf.gz
-
 
 
     """

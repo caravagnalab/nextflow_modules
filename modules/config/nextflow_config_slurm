@@ -10,7 +10,7 @@ includeConfig "$baseDir/nextflow_modules/modules/config/params.config"
  
 process{
    executor='slurm'
-   queue='THIN'
+   queue='EPYC'
    errorStrategy = 'finish'
 }
 

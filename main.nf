@@ -20,7 +20,6 @@ workflow {
       map{row ->
         tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.vcf))}
   
-  
 
   //input_bam = Channel.fromPath(params.samples).
   //splitCsv(header: true).
@@ -42,10 +41,11 @@ vep_output = VEP_ANNOTATE(input_vcf)
   //PLATYPUS_CALL_VARIANTS(input_multisample.groupTuple(by: [0,3,4]))
   //JOINT_TABLE()
   //SEQUENZA_CNAqc(input_sequenza)
-  //annovar_output = ANNOVAR_ANNOTATE(input_vcf)
-  //annovar2maf_output = ANNOVAR2MAF(annovar_output)
+//annovar_output = ANNOVAR_ANNOTATE(input_vcf)
+//annovar2maf_output = ANNOVAR2MAF(annovar_output)
 vcf2maf_output = VCF2MAF(vep_output)
-maf_output = MAFTOOLS(vcf2maf_output.groupTuple(by: [0,1])) 
+maf_output = MAFTOOLS(vcf2maf_output.groupTuple(by: 0).view())
+ 
  
 }
 			     
