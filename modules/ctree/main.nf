@@ -2,7 +2,7 @@ process CTREE {
   publishDir params.publish_dir, mode: 'copy'
 
   input:
-    tuple val(patientID)
+    tuple val(patientID), path(ctree_input), path(subclonal_output1), path(subclonal_output2)
 
   output:
     tuple path("$patientID/ctree/*.rds"), path("$patientID/ctree/*.pdf")
@@ -17,23 +17,25 @@ process CTREE {
     #!/usr/bin/env Rscript
 
     out_dirname = paste0("$patientID", "/ctree/")
-    ctree_input = paste0(out_dirname, "ctree_input.csv")
 
     library(ctree)
     library(dplyr)
 
-    ctree_input = read.csv("ctree_input")
+    ctree_input = read.csv("$ctree_input")
 
     # the CCF table must report CCF values for each cluster and sample
     # cluster | nMuts | is.driver | is.clonal | sample1 | sample2 | ...
     CCF_table = ctree_input %>% 
+      dplyr::select(sampleID, cluster, nMuts, is.driver, is.clonal, CCF) %>% 
       dplyr::filter(cluster != "Tail") %>% 
       dplyr::select(-variantID) %>% unique() %>% 
       tidyr::pivot_wider(names_from="sampleID", values_from="CCF")
 
     # the driver table must contain patient and variant IDs and report clonality and driver status
     # patientID | variantID | is.driver | is.clonal | cluster | sample1 | sample2 | ...
-    drivers_table = ctree_input %>% dplyr::filter(is.driver) %>% 
+    drivers_table = ctree_input %>% 
+      dplyr::select(patientID, sampleID, variantID, cluster, is.driver, is.clonal, CCF) %>% 
+      dplyr::filter(is.driver) %>% 
       tidyr::pivot_wider(names_from="sampleID", values_from="CCF")
 
     samples = unique(ctree_input[["sampleID"]])  # if multisample, this is a list
