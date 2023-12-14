@@ -14,6 +14,12 @@ workflow {
        map{row ->
          tuple(row.patient.toString(), row.timepoint.toString(), row.sample.toString(), file(row.joint_table))}
 
+  input_ctree = Channel.fromPath(params.samples).
+       splitCsv(header: true).
+       map{row ->
+         tuple(row.patient.toString())}
+
+
   //input_vartrix = Channel.fromPath(params.samples).
   //    splitCsv(header: true).
   //    map{row ->
@@ -24,9 +30,8 @@ workflow {
   //     map{row ->
   //       tuple(row.patient.toString(), file(row.joint_table))}
 
-
-  mobster = MOBSTERh(input_mobsterh)
-  CTREE(mobster)
+  MOBSTERh(input_mobsterh)
+  CTREE(input_ctree)
   // vartrix = VARTRIX(input_vartrix)
   // pyclonevi = PYCLONEVI(input_pyclonevi)
   // viber = VIBER(input_pyclonevi)

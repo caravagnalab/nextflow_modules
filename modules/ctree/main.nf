@@ -2,7 +2,7 @@ process CTREE {
   publishDir params.publish_dir, mode: 'copy'
 
   input:
-    tuple val(patientID), path(ctree_input), path(subclonal_output1), path(subclonal_output2)
+    tuple val(patientID)
 
   output:
     tuple path("$patientID/ctree/*.rds"), path("$patientID/ctree/*.pdf")
@@ -17,11 +17,12 @@ process CTREE {
     #!/usr/bin/env Rscript
 
     out_dirname = paste0("$patientID", "/ctree/")
+    ctree_input = paste0(out_dirname, "ctree_input.csv")
 
     library(ctree)
     library(dplyr)
 
-    ctree_input = read.csv("$ctree_input")
+    ctree_input = read.csv("ctree_input")
 
     # the CCF table must report CCF values for each cluster and sample
     # cluster | nMuts | is.driver | is.clonal | sample1 | sample2 | ...

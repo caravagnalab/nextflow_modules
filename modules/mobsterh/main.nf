@@ -89,9 +89,7 @@ process MOBSTERh {
 
     ctree_input = dplyr::full_join(drivers_table, cluster_table, 
                     by=c("patientID", "is.driver", "is.clonal", "cluster")) %>% 
-      reshape2::melt(id=c("patientID", "variantID", "is.driver", 
-                          "is.clonal", "cluster", "nMuts"), 
-                    variable.name="sampleID", value.name="CCF")
+      tidyr::pivot_longer(cols="R1", names_to="sampleID", values_to="CCF")
 
     # save rds and plots
     out_dirname_mobsterh = paste0("$patientID","/","$timepointID","/","$sampleID", "/")
