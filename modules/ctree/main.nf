@@ -28,7 +28,7 @@ process CTREE {
     CCF_table = ctree_input %>% 
       dplyr::select(sampleID, cluster, nMuts, is.driver, is.clonal, CCF) %>% 
       dplyr::filter(cluster != "Tail") %>% 
-      dplyr::select(-variantID) %>% unique() %>% 
+      unique() %>% 
       tidyr::pivot_wider(names_from="sampleID", values_from="CCF")
 
     # the driver table must contain patient and variant IDs and report clonality and driver status
