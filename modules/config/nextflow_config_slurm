@@ -3,15 +3,15 @@ cleanup=true
 
 includeConfig "$baseDir/modules/config/params.config"
 
- singularity {
-     enabled = true
-     runOptions = '--bind /orfeo:/orfeo'
+singularity {
+    enabled = true
+    runOptions = '--bind /orfeo:/orfeo'
 }
 
 process {
-   executor='slurm'
-   queue='THIN'
-   errorStrategy = 'finish'
+    executor='slurm'
+    queue='THIN'
+    errorStrategy = 'finish'
 }
 
 process {
@@ -86,7 +86,7 @@ process {
 
 
   withName: "MOBSTERh" {
-    memory='128 GB'
+    memory='50 GB'
     time='2h'
     container='/u/cdslab/ebusca00/scratch/singularity/cdslab.sif'
     ext.args = {[
@@ -109,7 +109,7 @@ process {
   }
 
   withName: "CTREE" {
-    memory='128 GB'
+    memory='50 GB'
     time='2h'
     container='/u/cdslab/ebusca00/scratch/singularity/cdslab.sif'
     ext.args = {[
