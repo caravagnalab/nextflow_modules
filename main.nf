@@ -1,12 +1,12 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 
-include { VEP_ANNOTATE } from "${baseDir}/nextflow_modules/modules/VEP/main"
-include { VCF2MAF } from "${baseDir}/nextflow_modules/modules/vcf2maf/main"
-include { MAFTOOLS } from "${baseDir}/nextflow_modules/modules/maftools/main"
-include { ANNOVAR_ANNOTATE } from "${baseDir}/nextflow_modules/modules/annovar/main"
+include { VEP_ANNOTATE } from "${baseDir}/modules/VEP/main"
+include { VCF2MAF } from "${baseDir}/modules/vcf2maf/main"
+include { MAFTOOLS } from "${baseDir}/modules/maftools/main"
+include { ANNOVAR_ANNOTATE } from "${baseDir}/modules/annovar/main"
 include { SEQUENZA_CNAqc } from "${baseDir}/modules/Sequenza_CNAqc/main"
-//include { BCFTOOLS_SPLIT_VEP } from "${baseDir}/nextflow_modules/modules/bcftools/main"
+//include { BCFTOOLS_SPLIT_VEP } from "${baseDir}/modules/bcftools/main"
 //include { JOIN_TABLES } from "${baseDir}/modules/join_tables/main"
 //include { SEQUENZA_CNAqc } from "${baseDir}/modules/Sequenza_CNAqc/main"
 
@@ -26,7 +26,7 @@ workflow {
 vep_output = VEP_ANNOTATE(input_vcf) 
 annovar_output = ANNOVAR_ANNOTATE(input_vcf)
 vcf2maf_output = VCF2MAF(vep_output)
-maf_output = MAFTOOLS(vcf2maf_output.groupTuple(by: 0).view())
+maf_output = MAFTOOLS(vcf2maf_output.groupTuple(by: 0))
 //BCFTOOLS_SPLIT_VEP(vep_output)
 //PLATYPUS_CALL_VARIANTS(input_multisample.groupTuple(by: [0,3,4]))
 //JOINT_TABLE()

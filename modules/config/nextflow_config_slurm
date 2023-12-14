@@ -1,7 +1,7 @@
 nextflow.enable.dsl=2
 cleanup=true
 
-includeConfig "$baseDir/nextflow_modules/modules/config/params.config"
+includeConfig "$baseDir/modules/config/params.config"
 
  singularity {
      enabled = true
@@ -68,6 +68,7 @@ process {
   }
 }
 
+process {
 
   withName: 'SEQUENZA_CNAqc' {
     memory = '300 GB'
@@ -76,7 +77,6 @@ process {
     errorStrategy = 'finish'
 
     container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
-    //scratch = '/orfeo/LTS/LADE/LT_storage/lvaleriani/tmp'
 
     ext.args = {[
       "norm_method": params.seqcna_norm_method,

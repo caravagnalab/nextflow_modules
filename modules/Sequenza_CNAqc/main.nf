@@ -4,7 +4,7 @@ process SEQUENZA_CNAqc {
   
   input:
     
-    tuple val(patientID), val(sampleID), val(sex), path(seqzFile), path(snv_vcfFile)
+    tuple val(datasetID), val(patientID), val(sampleID), val(sex), path(seqzFile), path(snv_vcfFile)
   
   output:
   
@@ -39,7 +39,7 @@ process SEQUENZA_CNAqc {
     library(CNAqc)
     library(evoverse)
     
-    res_dir = paste0("$patientID", "/", "$sampleID", "/SEQUENZA_CNAqc/")
+    res_dir = paste0("$datasetID", "/", "$patientID", "/", "$sampleID", "/SEQUENZA_CNAqc/")
     dir.create(res_dir, recursive = TRUE)
 
     SNV = evoverse::evoparse_mutect_mutations("$snv_vcfFile")
