@@ -5,9 +5,10 @@ process MOBSTERh {
     tuple val(patientID), val(timepointID), val(sampleID), path(joint_table)
 
   output:
-    tuple path("$patientID/$timepointID/$sampleID/*.rds"), 
-          path("$patientID/$timepointID/$sampleID/*.pdf"),
-          path("$patientID/$timepointID/$sampleID/*.csv")
+    tuple val(patientID), val(timepointID), val(sampleID),
+          path("$patientID/ctree/ctree_input.csv"),
+          path("$patientID/$timepointID/$sampleID/*.rds"),
+          path("$patientID/$timepointID/$sampleID/*.pdf")
 
   script:
     def args = task.ext.args ?: ""
@@ -32,9 +33,9 @@ process MOBSTERh {
 
     # Sys.setenv("VROOM_CONNECTION_SIZE"=99999999)
 
-    out_dirname = paste0("$patientID","/","$timepointID","/","$sampleID", "/")
-
     library(mobster)
+    library(dplyr)
+
     description = paste("$patientID", "$timepointID", "$sampleID", sep="_")
     input_tab = read.csv("$joint_table")
 
@@ -60,6 +61,7 @@ process MOBSTERh {
     plot_fit = plot(best_fit) 
 
     # generate output for ctree
+    patientID = "$patientID"
     cluster_table = best_fit[["Clusters"]] %>% 
       dplyr::filter(cluster != "Tail", type == "Mean") %>%
       dplyr::select(cluster, fit.value) %>% 
@@ -92,14 +94,18 @@ process MOBSTERh {
                     variable.name="sampleID", value.name="CCF")
 
     # save rds and plots
-    dir.create(out_dirname, recursive = TRUE)
+    out_dirname_mobsterh = paste0("$patientID","/","$timepointID","/","$sampleID", "/")
+    out_dirname_ctree = paste0("$patientID","/ctree/")
 
-    saveRDS(object=fit, file=paste0(out_dirname, "mobsterh.rds"))
+    dir.create(out_dirname_mobsterh, recursive = TRUE)
+    dir.create(out_dirname_ctree, recursive = TRUE)
+
+    saveRDS(object=fit, file=paste0(out_dirname_mobsterh, "mobsterh.rds"))
     
-    pdf(paste0(out_dirname, "mobsterh.pdf"))
+    pdf(paste0(out_dirname_mobsterh, "mobsterh.pdf"))
     print(plot_fit)
     dev.off()
 
-    write.csv(x=ctree_input, file=paste0(out_dirname, "ctree_input.csv"), row.names=F)
+    write.csv(x=ctree_input, file=paste0(out_dirname_ctree, "ctree_input.csv"), row.names=F)
     """
 }

@@ -2,10 +2,11 @@ process CTREE {
   publishDir params.publish_dir, mode: 'copy'
 
   input:
-    tuple val(patientID), val(timepointID), val(sampleID), path(ctree_input)
+    tuple val(patientID), val(timepointID), val(sampleID), path(ctree_input), 
+          path(subclonal_output1), path(subclonal_output2)
 
   output:
-    tuple path("$patientID/$timepointID/$sampleID/*.rds"), path("$patientID/$timepointID/$sampleID/*.pdf")
+    tuple path("$patientID/ctree/*.rds"), path("$patientID/ctree/*.pdf")
 
   script:
     def args = task.ext.args ?: ''
@@ -16,7 +17,7 @@ process CTREE {
     """
     #!/usr/bin/env Rscript
 
-    out_dirname = paste0("$patientID","/","$timepointID","/","$sampleID", "/")
+    out_dirname = paste0("$patientID", "/ctree/")
 
     library(ctree)
     library(dplyr)
