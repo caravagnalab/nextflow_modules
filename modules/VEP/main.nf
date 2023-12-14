@@ -3,20 +3,20 @@ process VEP_ANNOTATE {
 
     input:
 
-      tuple val(patientID), val(sampleID), path(vcf_File)  
+      tuple val(datasetID), val(patientID), val(sampleID), path(vcf_File)  
 
     output:
 
-      tuple val(patientID), val(sampleID), path("$patientID/$sampleID/VEP/*.vcf.gz")
+      tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/$sampleID/VEP/*.vcf.gz")
 
     script:
 
     """
 
-    mkdir -p $patientID/$sampleID/VEP
+    mkdir -p $datasetID/$patientID/$sampleID/VEP
 
     vep --input_file $vcf_File \\
-    --output_file $patientID/$sampleID/VEP/vep.vcf.gz \\
+    --output_file $datasetID/$patientID/$sampleID/VEP/vep.vcf.gz \\
     --vcf \\
     --plugin SingleLetterAA \\
     --compress_output gzip \\

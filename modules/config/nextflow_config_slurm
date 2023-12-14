@@ -1,7 +1,7 @@
 nextflow.enable.dsl=2
 cleanup=true
 
-includeConfig "$baseDir/modules/config/params.config"
+includeConfig "$baseDir/nextflow_modules/modules/config/params.config"
 
  singularity {
      enabled = true
@@ -10,7 +10,7 @@ includeConfig "$baseDir/modules/config/params.config"
  
 process {
    executor='slurm'
-   queue='THIN'
+   queue='EPYC'
    errorStrategy = 'finish'
 }
 
@@ -19,24 +19,60 @@ process {
   withName: 'VEP_ANNOTATE' {
     time='12h'
     container = 'https://depot.galaxyproject.org/singularity/ensembl-vep:110.1--pl5321h2a3209d_0'
+    memory = '20 GB'
   }
 
   withName: 'VCF2MAF' {
-      container = 'quay.io/biocontainers/mulled-v2-b6fc09bed47d0dc4d8384ce9e04af5806f2cc91b:305092c6f8420acd17377d2cc8b96e1c3ccb7d26-0'
+    container = 'https://depot.galaxyproject.org/singularity/vcf2maf%3A1.6.20--0'
   }
 
+  withName: 'MAFTOOLS' {
+    memory = '5 GB'
+  }
+ }
+
+process {
+
+  withName: 'ANNOVAR_ANNOTATE' {
+    time='12h'
+    container = 'shub://IARCbioinfo/table_annovar-nf:v1.1'
+    memory='10 GB'
+  }
+
+  withName: 'ANNOVAR2MAF' {
+    time='24h'
+    memory='5 GB'
+  }
+}
+
+
+process {
+
+  withName: 'SNPEFF_ANNOTATE' {
+    time='24h'
+    container = 'https://depot.galaxyproject.org/singularity/snpeff:5.1--hdfd78af_2'
+    memory='16 GB'
+  }
+}
+process {
   withName: 'PLATYPUS_CALL_VARIANTS' {
     time='24h'
     container = 'https://depot.galaxyproject.org/singularity/platypus-variant%3A0.8.1.1--htslib1.5_0'
   }
+}
 
-  withName: 'BCFTOOLS_SPLIT_VEP' {
-      container = 'https://depot.galaxyproject.org/singularity/bcftools%3A1.14--hde04aa1_1'
+process {
+
+   withName: 'BCFTOOLS_SPLIT_VEP' {
+   container = 'https://depot.galaxyproject.org/singularity/bcftools%3A1.14--hde04aa1_1'
   }
+}
+
 
   withName: 'SEQUENZA_CNAqc' {
     memory = '300 GB'
     time = '3h'
+    
     errorStrategy = 'finish'
 
     container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
