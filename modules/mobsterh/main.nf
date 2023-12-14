@@ -5,7 +5,7 @@ process MOBSTERh {
     tuple val(patientID), val(timepointID), val(sampleID), path(joint_table)
 
   output:
-    tuple val(patientID), val(timepointID), val(sampleID),
+    tuple val(patientID), 
           path("$patientID/ctree/ctree_input.csv"),
           path("$patientID/$timepointID/$sampleID/*.rds"),
           path("$patientID/$timepointID/$sampleID/*.pdf")
