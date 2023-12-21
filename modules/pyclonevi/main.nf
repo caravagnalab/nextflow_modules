@@ -7,8 +7,7 @@ process PYCLONEVI {
       tuple val(patientID), path(joint_table)
 
     output:
-
-      tuple path("$patientID/pyclonevi/all_fits.h5"), path("$patientID/pyclonevi/best_fit.tsv")
+      tuple val(patientID), path("$patientID/ctree/ctree_input.csv"), path("$patientID/pyclonevi/all_fits.h5"), path("$patientID/pyclonevi/best_fit.tsv")
 
     script:
       def args = task.ext.args ?: ''
@@ -20,6 +19,7 @@ process PYCLONEVI {
 
       """
       mkdir -p $patientID/pyclonevi
+      mkdir -p $patientID/ctree
 
       pyclone-vi fit -i $joint_table \\
       -o $patientID/pyclonevi/all_fits.h5 -c $n_cluster_arg \\
@@ -29,6 +29,11 @@ process PYCLONEVI {
 
       pyclone-vi write-results-file -i $patientID/pyclonevi/all_fits.h5  \\
       -o $patientID/pyclonevi/best_fit.tsv
+
+      python3 pyclone_ctree.py $joint_table \\
+      $patientID/pyclonevi/best_fit.tsv \\
+      $patientID/ctree/ctree_input.csv
+
 
       """
 }
