@@ -13,5 +13,5 @@ module load java/19.0.1
 
 /orfeo/LTS/LADE/LT_storage/lvaleriani/nextflow/nextflow run /orfeo/LTS/LADE/LT_storage/lvaleriani/nextflow_modules/main.nf \
  -c /orfeo/LTS/LADE/LT_storage/lvaleriani/nextflow_modules/modules/config/nextflow_config_slurm \
- --samples small_input.csv
+ --samples /orfeo/LTS/LADE/LT_storage/lvaleriani/nextflow_modules/new_input.csv
 

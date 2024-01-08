@@ -36,7 +36,8 @@ process CNAqc {
         SNV = evoverse::evoparse_platypus_mutations("$snv_vcfFile")
         SNV = SNV[[1]]
         SNV = SNV\$mutations
-    }
+
+    } else { stop("Not valid Mutation caller!") }
 
     SNV = SNV %>% 
         dplyr::filter(ref %in% c('A', 'C', 'T', 'G'), alt %in% c('A', 'C', 'T', 'G')) %>%
@@ -45,7 +46,8 @@ process CNAqc {
 
     if ("$cna_caller" == "sequenza"){
         CNA = evoverse::evoparse_Sequenza_CNAs(paste("$cnaDir", "$patientID", sep = '/'))
-    }
+    
+    } else { stop("Not valid CNA caller!") }
 
     x = CNAqc::init(
         mutations = SNV,
