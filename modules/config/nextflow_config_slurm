@@ -52,6 +52,7 @@ process {
     ext.args = {[
       "cna_caller": params.cna_caller,
       "variant_caller": params.cna_variant_caller,
+      "matching_strategy": params.cna_matching_strategy
     ]}
 }
 

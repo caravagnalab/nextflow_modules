@@ -14,6 +14,7 @@ process CNAqc {
     def args              = task.ext.args                         ?: ''
     def cna_caller        = args!='' && args.cna_caller           ? "$args.cna_caller" : "sequenza"
     def variant_caller    = args!='' && args.variant_caller       ? "$args.variant_caller" : "mutect"
+    def matching_strategy = args!='' && args.matching_strategy    ? "$args.matching_strategy" : "rightmost"
 
     """
     #!/usr/bin/env Rscript
@@ -53,7 +54,7 @@ process CNAqc {
         ref = "$params.assembly")
 
     x = CNAqc::analyze_peaks(x, 
-        matching_strategy = 'closest')
+        matching_strategy = "$matching_strategy")
 
     x = CNAqc::compute_CCF(
       x,

@@ -36,7 +36,6 @@ workflow {
   //    map{row ->
   //      tuple(row.patient.toString(), file(row.tumour_bam), file(row.tumour_bai), file(row.normal_bam), file(row.normal_bai), file(row.vcf), file(row.vcf_tbi))} 
   
-
   //vep_output = VEP_ANNOTATE(input_vcf)
   //VCF2MAF(input_vcf)
   //BCFTOOLS_SPLIT_VEP(vep_output)
