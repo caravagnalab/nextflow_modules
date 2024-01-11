@@ -2,10 +2,13 @@ process CTREE {
   publishDir params.publish_dir, mode: 'copy'
 
   input:
-    tuple val(patientID), path(ctree_input), path(subclonal_output1), path(subclonal_output2)
+    tuple val(patientID), path(ctree_input)
+    // tuple val(patientID), path(subclonal_output1)
+    // tuple val(patientID), path(subclonal_output2)
 
   output:
-    tuple path("$patientID/ctree/*.rds"), path("$patientID/ctree/*.pdf")
+    tuple val(patientID), path("$patientID/ctree/*.rds"), emit: ctree_rds 
+    tuple val(patientID), path("$patientID/ctree/*.pdf"), emit: ctree_plot 
 
   script:
     def args = task.ext.args ?: ''
