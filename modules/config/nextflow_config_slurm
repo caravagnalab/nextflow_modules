@@ -9,9 +9,9 @@ singularity {
 }
 
 process {
-    executor='slurm'
-    queue='THIN'
-    errorStrategy = 'finish'
+  executor='slurm'
+  queue='THIN'
+  errorStrategy = 'finish'
 }
 
 process {
@@ -71,19 +71,17 @@ process {
       "re_assign" : params.viber_re_assign
     ]}
   }
-
   withName: 'PYCLONEVI' {
     memory='50 GB'
     time='2h'
     container = 'https://depot.galaxyproject.org/singularity/pyclone-vi%3A0.1.3--pyhca03a8a_0'
     ext.args   = { [
-        "n_cluster": params.pyclonevi_n_cluster,
-        "density": params.pyclonevi_density,
-        "n_grid_point": params.pyclonevi_n_grid_point,
-        "n_restarts": params.pyclonevi_n_restarts
+      "n_cluster": params.pyclonevi_n_cluster,
+      "density": params.pyclonevi_density,
+      "n_grid_point": params.pyclonevi_n_grid_point,
+      "n_restarts": params.pyclonevi_n_restarts
     ]}
   }
-
 
   withName: "MOBSTERh" {
     memory='50 GB'
@@ -111,12 +109,11 @@ process {
   withName: "CTREE" {
     memory='50 GB'
     time='2h'
-    container='/u/cdslab/ebusca00/scratch/singularity/cdslab.sif'
+    container='/orfeo/cephfs/scratch/cdslab/shared/singularity/cdslab.sif'
     ext.args = {[
       "sspace_cutoff" : params.ctree_sspace_cutoff,
       "n_sampling" : params.ctree_n_sampling,
       "store_max" : params.ctree_store_max
     ]}
   }
-
 }
