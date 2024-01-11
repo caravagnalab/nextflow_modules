@@ -1,5 +1,4 @@
 process PYCLONEVI {
-
     publishDir params.publish_dir, mode: 'copy'
 
     input:
@@ -7,7 +6,10 @@ process PYCLONEVI {
       tuple val(patientID), path(joint_table)
 
     output:
-      tuple val(patientID), path("$patientID/ctree/ctree_input.csv"), path("$patientID/pyclonevi/all_fits.h5"), path("$patientID/pyclonevi/best_fit.tsv")
+      tuple val(patientID), path("$patientID/ctree/ctree_input.csv"), emit: ctree_input
+      tuple val(patientID), path("$patientID/pyclonevi/all_fits.h5"),  emit: pyclone_all_fits
+      tuple val(patientID), path("$patientID/pyclonevi/best_fit.tsv"), emit: pyclone_best_fit
+      // tuple val(patientID), path("$patientID/pyclonevi/pyclone_report.pdf"), emit: pyclone_report
 
     script:
       def args = task.ext.args ?: ''
@@ -30,9 +32,13 @@ process PYCLONEVI {
       pyclone-vi write-results-file -i $patientID/pyclonevi/all_fits.h5  \\
       -o $patientID/pyclonevi/best_fit.tsv
 
-      python3 pyclone_ctree.py $joint_table \\
+      python3 /orfeo/cephfs/scratch/cdslab/ggandolfi/nextflow_modules/modules/pyclonevi/pyclone_ctree.py $joint_table \\
       $patientID/pyclonevi/best_fit.tsv \\
       $patientID/ctree/ctree_input.csv
+      
+      #python3 /orfeo/cephfs/scratch/cdslab/ggandolfi/nextflow_modules/modules/pyclonevi/pyclone_plot.py $joint_table \\
+      #$patientID/pyclonevi/best_fit.tsv \\
+      #$patientID/pyclonevi/pyclone_report.pdf
 
 
       """
