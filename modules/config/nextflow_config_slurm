@@ -19,8 +19,15 @@ process {
   withName: 'VEP_ANNOTATE' {
     time='12h'
     container = 'https://depot.galaxyproject.org/singularity/ensembl-vep:110.1--pl5321h2a3209d_0'
-  }
+    memory='20 GB'
+ }
 
+  withName: 'ANNOVAR_ANNOTATE' {
+    time='12h'
+    container = 'shub://IARCbioinfo/table_annovar-nf:v1.1'
+    memory='10 GB'
+  }
+  
   withName: 'VCF2MAF' {
       container = 'quay.io/biocontainers/mulled-v2-b6fc09bed47d0dc4d8384ce9e04af5806f2cc91b:305092c6f8420acd17377d2cc8b96e1c3ccb7d26-0'
   }
@@ -42,7 +49,25 @@ process {
       container = 'https://depot.galaxyproject.org/singularity/sequenza-utils%3A3.0.0--py39he10ea66_6'  
 }
 
-  withName: 'CNAqc' {
+
+  withName: 'CNA_PROCESSING' {
+    memory = '100 GB'
+    time = '1h'
+    errorStrategy = 'finish'
+
+    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
+}
+
+  withName: 'VCF_PROCESSING' {
+    memory = '100 GB'
+    time = '1h'
+    errorStrategy = 'finish'
+
+    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
+}
+
+
+  withName: 'CNAQC_ANALYSIS' {
     memory = '100 GB'
     time = '3h'
     errorStrategy = 'finish'

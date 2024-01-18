@@ -1,20 +1,20 @@
-process CNAqc {
+process CNAQC_ANALYSIS {
   publishDir params.publish_dir, mode: 'copy'
 
   input:
     
-    tuple val(datasetID), val(patientID), val(sampleID), path(cnaDir), path(snv_vcfFile)
+    tuple val(datasetID), val(patientID), val(sampleID), path(cna_RDS)
+    tuple val(datasetID), val(patientID), val(sampleID), path(snv_RDS)
   
   output:
-  
-    tuple(path("$datasetID/$patientID/$sampleID/CNAqc/*.rds"), path("$datasetID/$patientID/$sampleID/CNAqc/*.pdf"))
-  
+
+    tuple val(patientID), path("$datasetID/$patientID/$sampleID/CNAqc/*.rds"), emit: rds
+    tuple val(patientID), path("$datasetID/$patientID/$sampleID/CNAqc/*.pdf"), emit: pdf
+    
   script:
 
     def args              = task.ext.args                         ?: ''
-    def cna_caller        = args!='' && args.cna_caller           ? "$args.cna_caller" : "sequenza"
-    def variant_caller    = args!='' && args.variant_caller       ? "$args.variant_caller" : "mutect"
-    def matching_strategy = args!='' && args.matching_strategy    ? "$args.matching_strategy" : "rightmost"
+    def matching_strategy = args!='' && args.matching_strategy    ?  "$args.matching_strategy" : "closest"
 
     """
     #!/usr/bin/env Rscript
@@ -27,36 +27,22 @@ process CNAqc {
     res_dir = paste0("$datasetID", "/", "$patientID", "/", "$sampleID", "/CNAqc/")
     dir.create(res_dir, recursive = TRUE)
 
-    if ("$variant_caller" == "mutect"){
-        SNV = evoverse::evoparse_mutect_mutations("$snv_vcfFile")
-        SNV = SNV[[1]]
-        SNV = SNV\$mutations
+    SNV = readRDS("$snv_RDS")
+    SNV = SNV[[1]]
+    SNV = SNV\$mutations
 
-    } else if ("$variant_caller" == "platypus"){
-        SNV = evoverse::evoparse_platypus_mutations("$snv_vcfFile")
-        SNV = SNV[[1]]
-        SNV = SNV\$mutations
-
-    } else { stop("Not valid Mutation caller!") }
-
-    SNV = SNV %>% 
-        dplyr::filter(ref %in% c('A', 'C', 'T', 'G'), alt %in% c('A', 'C', 'T', 'G')) %>%
-        dplyr::filter(VAF > 0.05) %>% 
-        dplyr::select(chr, from, to, ref, alt, NV, DP, VAF)
-
-    if ("$cna_caller" == "sequenza"){
-        CNA = evoverse::evoparse_Sequenza_CNAs(paste("$cnaDir", "$patientID", sep = '/'))
-    
-    } else { stop("Not valid CNA caller!") }
-
+    CNA = readRDS("$cna_RDS")
     x = CNAqc::init(
         mutations = SNV,
         cna = CNA\$segments,
         purity = CNA\$purity ,
         ref = "$params.assembly")
+    
+    # require packages not include in the singularity image
+    # x = CNAqc::annotate_variants(x, drivers = CNAqc::intogen_drivers)
 
     x = CNAqc::analyze_peaks(x, 
-        matching_strategy = "$matching_strategy")
+      matching_strategy = "$matching_strategy")
 
     x = CNAqc::compute_CCF(
       x,
@@ -100,6 +86,4 @@ process CNAqc {
     ggplot2::ggsave(plot = pl_exp, filename = paste0(res_dir, "data.pdf"), width = 12, height = 18, units = 'in', dpi = 200)
     ggplot2::ggsave(plot = pl_qc, filename = paste0(res_dir, "qc.pdf"), width = 12, height = 18, units = 'in', dpi = 200)
     """
-
-
 }

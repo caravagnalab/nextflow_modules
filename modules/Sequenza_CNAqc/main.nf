@@ -45,6 +45,7 @@ process SEQUENZA_CNAqc {
     SNV = evoverse::evoparse_mutect_mutations("$snv_vcfFile")
     SNV = SNV[[1]] 
     SNV\$mutations = SNV\$mutations %>% dplyr::select(chr, from, to, ref, alt, NV, DP, VAF)
+    SNV\$mutations = annotate_variants(SNV\$mutations)
 
     file = R.utils::gunzip("$seqzFile", remove=FALSE)
     out = CNAqc::Sequenza_CNAqc(
