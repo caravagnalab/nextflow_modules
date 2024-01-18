@@ -1,5 +1,17 @@
+// nextflow.enable.moduleBinaries = true
+
 process PYCLONEVI {
-    publishDir params.publish_dir, mode: 'copy'
+    publishDir (
+      params.publish_dir,
+      mode: 'copy',
+      pattern: "$patientID/{ctree,pyclonevi}/*",
+      saveAs: { fn ->
+          if (fn.contains("ctree")) {"null"}
+          else if (fn.contains("all_fits.h5")) {"$patientID/pyclonevi/all_fits.h5"}
+          else if (fn.contains("best_fit.tsv")) {"$patientID/pyclonevi/best_fit.tsv"}
+      }
+    )
+               
 
     input:
 
