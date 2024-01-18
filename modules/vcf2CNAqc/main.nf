@@ -20,8 +20,8 @@ process VCF_PROCESSING {
 
     annotation = "VEP"  
     if (annotation == "VEP"){
-        vcf = read.vcfR("$vcfFile")
-        tb = vcfR2tidy(vcf)
+        vcf = vcfR::read.vcfR("$vcfFile")
+        tb = vcfR::vcfR2tidy(vcf)
 
         gt_field = tb\$gt %>% 
             tidyr::separate(gt_AD, sep = ',', into = c("NR", "NV")) %>%

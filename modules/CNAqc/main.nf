@@ -20,9 +20,7 @@ process CNAQC_ANALYSIS {
     #!/usr/bin/env Rscript
 
     library(tidyverse)
-    library(sequenza)
     library(CNAqc)
-    library(evoverse)
     
     res_dir = paste0("$datasetID", "/", "$patientID", "/", "$sampleID", "/CNAqc/")
     dir.create(res_dir, recursive = TRUE)

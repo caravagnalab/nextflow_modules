@@ -16,7 +16,6 @@ process CNA_PROCESSING {
     #!/usr/bin/env Rscript 
     
     library(tidyverse)
-    library(vcfR)
 
     res_dir = paste0("$datasetID", "/", "$patientID", "/", "$sampleID", "/cna2CNAqc/")
     dir.create(res_dir, recursive = TRUE)
