@@ -5,7 +5,9 @@ includeConfig "$baseDir/modules/config/params.config"
 
 singularity {
     enabled = true
-    runOptions = '--bind /orfeo:/orfeo'
+    singularity.cacheDir = "/orfeo/LTS/CDSLab/LT_storage/ebusca00/nf_cache/"
+    singularity.envWhitelist = ["SINGULARITY_TMPDIR=/orfeo/LTS/CDSLab/LT_storage/ebusca00/nf_tmp/"]
+    runOptions = '--bind /orfeo:/orfeo --bind $SINGULARITY_TMPDIR:/tmp'
 }
 
 process {
@@ -54,7 +56,7 @@ process {
   withName: 'VIBER' {
     memory='128 GB'
     time='2h'
-    container='/orfeo/cephfs/scratch/cdslab/shared/singularity/cdslab.sif'
+    container='file:///fast/cdslab/ebusca00/singularity/cdslab.sif'
     ext.args = {[
       "K" : params.viber_K,
       "samples" : params.viber_samples,
@@ -86,7 +88,7 @@ process {
   withName: "MOBSTERh" {
     memory='50 GB'
     time='2h'
-    container='/u/cdslab/ebusca00/scratch/singularity/cdslab.sif'
+    container='file:///fast/cdslab/ebusca00/singularity/cdslab.sif'
     ext.args = {[
       "K" : params.mobster_K,
       "samples" : params.mobster_samples,
@@ -109,7 +111,7 @@ process {
   withName: "CTREE" {
     memory='50 GB'
     time='2h'
-    container='/orfeo/cephfs/scratch/cdslab/shared/singularity/cdslab.sif'
+    container='file:///fast/cdslab/ebusca00/singularity/cdslab.sif'
     ext.args = {[
       "sspace_cutoff" : params.ctree_sspace_cutoff,
       "n_sampling" : params.ctree_n_sampling,
@@ -117,3 +119,4 @@ process {
     ]}
   }
 }
+
