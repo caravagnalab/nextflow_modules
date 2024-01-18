@@ -5,10 +5,10 @@ process MOBSTERh {
     tuple val(patientID), path(joint_table)
 
   output:
-    tuple val(patientID), path("$patientID/ctree/ctree_input.csv"), emit: ctree_input  // do not save or save inside mobster
+    tuple val(patientID), path("$patientID/ctree/ctree_input_mobsterh.csv"), emit: ctree_input  // do not save or save inside mobster
     // tuple val(patientID), path("$patientID/*/mobster/*.rds")  // save also fits for each sample in mobster/sample_id/mobster.rds
     tuple val(patientID), path("$patientID/mobster/*.rds"), emit: mobster_rds  // save also fits for each sample in mobster/sample_id/mobster.rds
-    tuple val(patientID), path("$patientID/mobster/*.pdf"), emit: mobster_rds
+    tuple val(patientID), path("$patientID/mobster/*.pdf"), emit: mobster_pdf
 
   script:
     def args = task.ext.args ?: ""
@@ -36,8 +36,9 @@ process MOBSTERh {
     library(mobster)
     library(dplyr)
 
-    description = "$patientID"
-    input_tab = read.csv("$joint_table", sep="\t") 
+    patientID = "$patientID"
+    description = patientID
+    input_tab = read.csv("$joint_table", sep="\t") %>%
       dplyr::filter(patientID==patientID) %>% 
       dplyr::mutate(DP=ref_counts+alt_counts, 
                     VAF=alt_counts/DP) %>%
@@ -46,6 +47,8 @@ process MOBSTERh {
       dplyr::rename(is_driver=is.driver, driver_label=variantID)
 
     multisample = length(unique(input_tab[["sample_id"]])) > 1
+
+    print(multisample)
 
     run_mobster_fit = function(inp_tb, descr) {
       mobster_fit(x = inp_tb,
@@ -67,7 +70,6 @@ process MOBSTERh {
                   description = descr)
     }
 
-    patientID = "$patientID"
     ## If single sample
     if (!multisample) {
       fit = run_mobster_fit(inp_tb = input_tab, descr = description)
@@ -159,11 +161,13 @@ process MOBSTERh {
         dplyr::rename_all(function(x) stringr::str_remove_all(x,"alt_counts."))
       
       # Fit and plot
-      viber_cl = VIBER::variational_fit(nv, dp, 
-                                        K=eval(parse(text="$K")), 
-                                        data=reads_data)  ## add all parameters
+      viber_K = eval(parse(text="$K")) 
+      viber_K[which.min(viber_K)] = 2
+      fit = VIBER::variational_fit(nv, dp, 
+                                   K=unique(viber_K), 
+                                   data=reads_data %>% dplyr::filter(mutation_id %in% non_tail))
 
-      best_fit = viber_cl
+      best_fit = fit
       plot_fit = plot(best_fit)
 
       ## generate cluster table for ctree
@@ -231,12 +235,13 @@ process MOBSTERh {
     dir.create(out_dirname_mobsterh, recursive = TRUE)
     dir.create(out_dirname_ctree, recursive = TRUE)
 
-    saveRDS(object=fit, file=paste0(out_dirname_mobsterh, "mobsterh.rds"))
+    saveRDS(object=fit, file=paste0(out_dirname_mobsterh, "mobsterh_fit.rds"))
+    saveRDS(object=plot_fit, file=paste0(out_dirname_mobsterh, "mobsterh_plot.rds"))
     
     pdf(paste0(out_dirname_mobsterh, "mobsterh.pdf"))
     print(plot_fit)
     dev.off()
 
-    write.csv(x=ctree_input, file=paste0(out_dirname_ctree, "ctree_input.csv"), row.names=F)
+    write.csv(x=ctree_input, file=paste0(out_dirname_ctree, "ctree_input_mobsterh.csv"), row.names=F)
     """
 }

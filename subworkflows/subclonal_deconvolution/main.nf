@@ -19,7 +19,7 @@ workflow SUBCLONAL_DECONVOLUTION {
         ctree_plot
     }
     if (params.tools && params.tools.split(',').contains('mobsterh')) {
-        MOBSTERh(joint_table) // run pyclone-vi
+        MOBSTERh(joint_table) // run mobsterh
         CTREE(MOBSTERh.out.ctree_input)
         ctree_plot = CTREE.out.ctree_plot
         emit:
