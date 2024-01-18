@@ -72,6 +72,7 @@ process VCF_PROCESSING {
             fits
             })
         names(calls) = samples_list
+        
         } else if (annotation == "ANNOVAR"){
 
             vcf = read.table("$vcfFile", 
@@ -79,58 +80,49 @@ process VCF_PROCESSING {
                   sep = "\\t", 
                   header = T)
 
-            fields = unique(vcf\$Otherinfo12)
-
-            df = dplyr::tibble()
-            for  (f in fields){
-                f = strsplit(f, ':')[[1]] 
-                T_F = paste0('T_', f)
-                N_F = paste0('N_', f)
-                
-                tmp = vcf %>% 
-                    dplyr::filter(Otherinfo12 == type) %>% 
-                    tidyr::separate(Otherinfo13, sep = ':', into = T_F) %>% 
-                    tidyr::separate(Otherinfo14, sep = ':', into = N_F) %>% 
-                    dplyr::select(-Otherinfo12)
-                
-                df = bind_rows(df, tmp)
-            }
-
-            N_data = df %>% 
-                        dplyr::select(c(colnames(df)[1:21], N_F)) %>% 
-                        dplyr::rename(
-                            chr = Chr,
-                            from = Start,
-                            to = End,
-                            ref = Ref,
-                            alt = Alt, 
-                            DP = N_DP,
-                            VAF = N_AF) %>% 
-                        tidyr::separate(N_AD, sep = ',', into = c('NR', 'NV'))
-
-            T_data = df %>% 
-                        dplyr::select(c(colnames(df)[1:21], T_F)) %>% 
-                        dplyr::rename(
-                            chr = Chr,
-                            from = Start,
-                            to = End,
-                            ref = Ref,
-                            alt = Alt,
-                            DP = T_DP,
-                            VAF = T_AF) %>%  
-                        tidyr::separate(T_AD, sep = ',', into =  c('NR', 'NV'))
-
+            vcf <- vcf %>% 
+                    dplyr::rename(chr = Chr,
+                                  from = Start,
+                                  to = End,
+                                  ref = Ref,
+                                  alt = Alt) %>% 
+                    dplyr::select(-Otherinfo1, -Otherinfo2, -Otherinfo3, -Otherinfo4, -Otherinfo5, -Otherinfo6, -Otherinfo7, -Otherinfo8, -Otherinfo9) %>% 
+                    dplyr::rename(filter = Otherinfo10)
+    
+            T_res <- apply(vcf, 1,  FUN = function(x){
+              values <- strsplit(x['Otherinfo13'][[1]], split = ':') %>% unlist()
+              names <- strsplit(x['Otherinfo12'][[1]], split = ':') %>% unlist()
+              tidyr::as_tibble(matrix(values, nrow = 1)) %>% 
+                `colnames<-`(names) %>% 
+                tidyr::separate(AD, sep = ',', into = c('NR', 'NV')) %>% 
+                dplyr::rename(VAF = AF)
+              }) %>% do.call("bind_rows", .)
+            
+            N_res <- apply(vcf, 1,  FUN = function(x){
+              values <- strsplit(x['Otherinfo14'][[1]], split = ':') %>% unlist()
+              names <- strsplit(x['Otherinfo12'][[1]], split = ':') %>% unlist()
+              tidyr::as_tibble(matrix(values, nrow = 1)) %>% 
+                `colnames<-`(names) %>% 
+                tidyr::separate(AD, sep = ',', into = c('NR', 'NV')) %>% 
+                dplyr::rename(VAF = AF)
+            }) %>% do.call("bind_rows", .)
+            
+            vcf <- vcf %>% dplyr::select(-Otherinfo12, -Otherinfo13, -Otherinfo14)
+            T_res <- bind_cols(vcf, T_res)
+            N_res <- bind_cols(vcf, T_res)
+            
             tumor <- list()
-            tumor\$sample <- 'Tumor'
-            tumor\$caller <- 'ANNOVAR-Mutect'
-            tumor\$mutations <- T_data
-
+            tumor$sample <- 'Tumor'
+            tumor$caller <- 'ANNOVAR-Mutect'
+            tumor$mutations <- T_res
+            
             normal <- list()
-            normal\$sample <- 'Normal'
-            normal\$caller <- 'ANNOVAR-Mutect'
-            normal\$mutations <- N_data
+            normal$sample <- 'Normal'
+            normal$caller <- 'ANNOVAR-Mutect'
+            normal$mutations <- N_res
+            
             calls <- list(tumor, normal)
-        }
+            }
 
     saveRDS(object = calls, file = paste0(res_dir, "VCF.rds"))
     """
