@@ -1,5 +1,9 @@
 process MOBSTERh {
-  publishDir params.publish_dir, mode: "copy"
+  publishDir (
+    params.publish_dir,
+    mode: "copy",
+    pattern: "$patientID/mobster/*"
+  )
 
   input:
     tuple val(patientID), path(joint_table)
@@ -7,7 +11,7 @@ process MOBSTERh {
   output:
     tuple val(patientID), path("$patientID/ctree/ctree_input_mobsterh.csv"), emit: ctree_input  // do not save or save inside mobster
     // tuple val(patientID), path("$patientID/*/mobster/*.rds")  // save also fits for each sample in mobster/sample_id/mobster.rds
-    tuple val(patientID), path("$patientID/mobster/*.rds"), emit: mobster_rds  // save also fits for each sample in mobster/sample_id/mobster.rds
+    tuple val(patientID), path("$patientID/mobster/*.rds"), emit: mobster_rds
     tuple val(patientID), path("$patientID/mobster/*.pdf"), emit: mobster_pdf
 
   script:
@@ -226,7 +230,8 @@ process MOBSTERh {
     # generate output for ctree
     ctree_input = dplyr::full_join(drivers_table, cluster_table, 
                     by=c("patientID", "is.driver", "is.clonal", "cluster")) %>% 
-      tidyr::pivot_longer(cols=sample_names, names_to="sampleID", values_to="CCF")
+      tidyr::pivot_longer(cols=sample_names, names_to="sampleID", values_to="CCF") %>%
+      dplyr::mutate(tool="mobsterh")
 
     ## save rds and plots
     out_dirname_mobsterh = paste0("$patientID", "/mobster/")
