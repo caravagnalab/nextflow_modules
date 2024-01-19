@@ -44,7 +44,8 @@ process PYCLONEVI {
       pyclone-vi write-results-file -i $patientID/pyclonevi/all_fits.h5  \\
       -o $patientID/pyclonevi/best_fit.tsv
 
-      python3 /orfeo/cephfs/scratch/cdslab/ggandolfi/nextflow_modules/modules/pyclonevi/pyclone_ctree.py $joint_table \\
+      #python3 /orfeo/cephfs/scratch/cdslab/ggandolfi/nextflow_modules/modules/pyclonevi/pyclone_ctree.py $joint_table \\
+      python3 ./pyclone_ctree.py $joint_table \\
       $patientID/pyclonevi/best_fit.tsv \\
       $patientID/ctree/ctree_input.csv
       
