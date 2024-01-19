@@ -1,2 +1,0 @@
-patient,timepoint,sample,joint_table
-RM238,1,RM238_S1,/orfeo/cephfs/scratch/cdslab/ebusca00/GitHub/nextflow_modules/test_data/mobster_joint.csv

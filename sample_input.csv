@@ -1,2 +1,2 @@
 patient,joint_table
-CRUK0001,/u/cdslab/ebusca00/scratch/GitHub/nextflow_modules/test_data/pyclone_input.tsv
+CRUK0001,/orfeo/cephfs/scratch/cdslab/ebusca00/scratch/GitHub/nextflow_modules/test_data/joint_table.tsv
