@@ -25,6 +25,8 @@ process CTREE {
     library(dplyr)
 
     ctree_input = read.csv("$ctree_input")
+    idd = ""
+    if ("tool" %in% colnames(ctree_input)) idd = paste0("_", unique(ctree_input[["tool"]]))
 
     # the CCF table must report CCF values for each cluster and sample
     # cluster | nMuts | is.driver | is.clonal | sample1 | sample2 | ...
@@ -60,9 +62,9 @@ process CTREE {
     # save rds and plots
     dir.create(out_dirname, recursive = TRUE)
     
-    saveRDS(object=trees, file=paste0(out_dirname, "ctree.rds"))
+    saveRDS(object=trees, file=paste0(out_dirname, "ctree_obj", idd, ".rds"))
 
-    pdf(paste0(out_dirname, "plot_tree.pdf"))
+    pdf(paste0(out_dirname, "ctree_plot", idd, ".pdf"))
     print(plot_tree)
     dev.off()
     """
