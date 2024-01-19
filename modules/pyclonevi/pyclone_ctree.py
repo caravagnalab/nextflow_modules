@@ -4,7 +4,6 @@ import sys
 import pandas as pd
 
 ## Read pyclone best fit table
-
 best_fit_file=sys.argv[2]
 df_output = pd.read_csv(best_fit_file, sep='\t')
 
@@ -60,7 +59,8 @@ result_df = pd.concat([true_values_df, non_conflicting_df], ignore_index=True)
 result_df['is.driver'] = result_df['is.driver'].replace({False: 'F', True: 'T'})
 
 result_df = result_df.rename(columns={'sample_id': 'sampleID', 'cellular_prevalence':'CCF','cluster_id': 'cluster'})
-ctree_input = result_df[['patientID','variantID','is.driver','is.clonal','cluster','nMuts','sampleID','CCF']]
+result_df['tool'] = pd.Series(["pyclonevi" for x in range(len(result_df.index))])
+ctree_input = result_df[['patientID','variantID','is.driver','is.clonal','cluster','nMuts','sampleID','CCF','tool']]
 
 
 
