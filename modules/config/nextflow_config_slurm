@@ -3,43 +3,104 @@ cleanup=true
 
 includeConfig "$baseDir/modules/config/params.config"
 
-singularity {
-    enabled = true
-    singularity.cacheDir = "/orfeo/LTS/CDSLab/LT_storage/ebusca00/nf_cache/"
-    singularity.envWhitelist = ["SINGULARITY_TMPDIR=/orfeo/LTS/CDSLab/LT_storage/ebusca00/nf_tmp/"]
-    runOptions = '--bind /orfeo:/orfeo --bind $SINGULARITY_TMPDIR:/tmp'
+
+ singularity {
+     enabled = true
+     singularity.envWhitelist = ["SINGULARITY_TMPDIR"]
+     runOptions = '--bind /orfeo:/orfeo --bind $SINGULARITY_TMPDIR:/tmp'
+ }
+ 
+process {
+   executor='slurm'
+   queue='EPYC'
+   errorStrategy = 'finish'
 }
 
-process {
-  executor='slurm'
-  queue='THIN'
-  errorStrategy = 'finish'
-}
+// process {
+//   executor='slurm'
+//   queue='THIN'
+//   errorStrategy = 'finish'
+// }
 
 process {
   withName: 'VEP_ANNOTATE' {
     time='12h'
     container = 'https://depot.galaxyproject.org/singularity/ensembl-vep:110.1--pl5321h2a3209d_0'
+    memory = '20 GB'
   }
 
   withName: 'VCF2MAF' {
-      container = 'quay.io/biocontainers/mulled-v2-b6fc09bed47d0dc4d8384ce9e04af5806f2cc91b:305092c6f8420acd17377d2cc8b96e1c3ccb7d26-0'
+    container = 'https://depot.galaxyproject.org/singularity/vcf2maf%3A1.6.20--0'
   }
 
+  withName: 'MAFTOOLS' {
+    memory = '5 GB'
+  }
+ }
+
+process {
+
+  withName: 'ANNOVAR_ANNOTATE' {
+    time='12h'
+    container = 'shub://IARCbioinfo/table_annovar-nf:v1.1'
+    memory='10 GB'
+  }
+
+  withName: 'ANNOVAR2MAF' {
+    time='24h'
+    memory='5 GB'
+  }
+}
+
+
+process {
+
+  withName: 'SNPEFF_ANNOTATE' {
+    time='24h'
+    container = 'https://depot.galaxyproject.org/singularity/snpeff:5.1--hdfd78af_2'
+    memory='16 GB'
+  }
+}
+process {
   withName: 'PLATYPUS_CALL_VARIANTS' {
     time='24h'
     container = 'https://depot.galaxyproject.org/singularity/platypus-variant%3A0.8.1.1--htslib1.5_0'
   }
+}
 
-  withName: 'BCFTOOLS_SPLIT_VEP' {
-    container = 'https://depot.galaxyproject.org/singularity/bcftools%3A1.14--hde04aa1_1'
+process {
+   withName: 'BCFTOOLS_SPLIT_VEP' {
+   container = 'https://depot.galaxyproject.org/singularity/bcftools%3A1.14--hde04aa1_1'
   }
+}
 
+process {
   withName: 'SEQUENZA_CNAqc' {
-    memory='128 GB'
-    time='24h'
-    container = 'file:///mnt/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
+    memory = '300 GB'
+    time = '3h'
+    
     errorStrategy = 'finish'
+    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
+
+    ext.args = {[
+      "norm_method": params.seqcna_norm_method,
+      "window": params.seqcna_window,
+      "gamma": params.seqcna_gamma,
+      "kmin": params.seqcna_kmin,
+      "min_reads_baf": params.seqcna_min_reads_baf,
+      "min_reads": params.seqcna_min_reads,
+      "min_reads_normal": params.seqcna_reads_normal,
+      "max_mut_types": params.seqcna_max_mut_types,
+
+      "low_cell": params.seqcna_low_cell,
+      "up_cell": params.seqcna_up_cell,
+      "low_ploidy": params.seqcna_low_ploidy,
+      "up_ploidy": params.seqcna_up_ploidy,
+      "delta_cellularity": params.seqcna_delta_cellularity,
+      "delta_ploidy": params.seqcna_delta_ploidy,
+
+      "matching_strategy": params.seqcna_matching_strategy
+      ]}
   }
 
   withName: 'VARTRIX' {
@@ -73,6 +134,7 @@ process {
       "re_assign" : params.viber_re_assign
     ]}
   }
+
   withName: 'PYCLONEVI' {
     memory='50 GB'
     time='2h'

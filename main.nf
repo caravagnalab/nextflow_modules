@@ -1,24 +1,37 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 
-// include { MOBSTERh } from "${baseDir}/modules/mobsterh/main"
-// include { PYCLONEVI } from "${baseDir}/modules/pyclonevi/main"
-// include { VIBER } from "${baseDir}/modules/viber/main"
-// include { CTREE } from "${baseDir}/modules/ctree/main"
-// include { VARTRIX } from "${baseDir}/modules/vartrix/main"
-include { SUBCLONAL_DECONVOLUTION } from "${baseDir}/subworkflows/subclonal_deconvolution/main"
+include { VEP_ANNOTATE } from "${baseDir}/modules/VEP/main"
+include { VCF2MAF } from "${baseDir}/modules/vcf2maf/main"
+include { MAFTOOLS } from "${baseDir}/modules/maftools/main"
+include { ANNOVAR_ANNOTATE } from "${baseDir}/modules/annovar/main"
+include { SEQUENZA_CNAqc } from "${baseDir}/modules/Sequenza_CNAqc/main"
+//include { BCFTOOLS_SPLIT_VEP } from "${baseDir}/modules/bcftools/main"
+//include { JOIN_TABLES } from "${baseDir}/modules/join_tables/main"
+//include { SEQUENZA_CNAqc } from "${baseDir}/modules/Sequenza_CNAqc/main"
+//include { SUBCLONAL_DECONVOLUTION } from "${baseDir}/subworkflows/subclonal_deconvolution/main"
+
 
 workflow {
 
-  input_subclonal = Channel.fromPath(params.samples).
-       splitCsv(header: true).
-       map{row -> tuple(row.patient.toString(), file(row.joint_table))}
+  input_vcf = Channel.fromPath(params.samples).
+      splitCsv(header: true).
+      map{row ->
+        tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.vcf))}
+  
 
-  SUBCLONAL_DECONVOLUTION(input_subclonal)
+  input_sequenza = Channel.fromPath(params.samples).
+    splitCsv(header: true).
+    map{row ->
+     tuple(row.patient.toString(), row.sample.toString(), row.sex.toString(), file(row.seqz), file(row.vcf))}
 
-  // mobster = MOBSTERh(input_subclonal)
-  // CTREE(mobster)
-  // vartrix = VARTRIX(input_vartrix)
-  // pyclonevi = PYCLONEVI(input_pyclonevi)
-
-  }
+vep_output = VEP_ANNOTATE(input_vcf) 
+annovar_output = ANNOVAR_ANNOTATE(input_vcf)
+vcf2maf_output = VCF2MAF(vep_output)
+maf_output = MAFTOOLS(vcf2maf_output.groupTuple(by: 0))
+//BCFTOOLS_SPLIT_VEP(vep_output)
+//PLATYPUS_CALL_VARIANTS(input_multisample.groupTuple(by: [0,3,4]))
+//JOINT_TABLE()
+SEQUENZA_CNAqc(input_sequenza)
+//SUBCLONAL_DECONVOLUTION(joint_table)
+}
