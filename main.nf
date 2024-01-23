@@ -9,6 +9,8 @@ include { SEQUENZA_CNAqc } from "${baseDir}/modules/Sequenza_CNAqc/main"
 //include { BCFTOOLS_SPLIT_VEP } from "${baseDir}/modules/bcftools/main"
 //include { JOIN_TABLES } from "${baseDir}/modules/join_tables/main"
 //include { SEQUENZA_CNAqc } from "${baseDir}/modules/Sequenza_CNAqc/main"
+//include { SUBCLONAL_DECONVOLUTION } from "${baseDir}/subworkflows/subclonal_deconvolution/main"
+
 
 workflow {
 
@@ -31,4 +33,5 @@ maf_output = MAFTOOLS(vcf2maf_output.groupTuple(by: 0))
 //PLATYPUS_CALL_VARIANTS(input_multisample.groupTuple(by: [0,3,4]))
 //JOINT_TABLE()
 SEQUENZA_CNAqc(input_sequenza)
+//SUBCLONAL_DECONVOLUTION(joint_table)
 }
