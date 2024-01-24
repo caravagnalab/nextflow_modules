@@ -8,6 +8,8 @@ process VCF_PROCESSING {
      tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/$sampleID/vcf2CNAqc/*.rds"), emit: rds 
 
     script:
+          def args                  = task.ext.args                             ?: ''
+          def vcf_annotation        = args!='' && args.vcf_annotation           ? "$args.vcf_annotation" : "VEP"
 
     """
     #!/usr/bin/env Rscript 
@@ -18,8 +20,7 @@ process VCF_PROCESSING {
     res_dir = paste0("$datasetID", "/", "$patientID", "/", "$sampleID", "/vcf2CNAqc/")
     dir.create(res_dir, recursive = TRUE)
 
-    annotation = "VEP"  
-    if (annotation == "VEP"){
+    if ("$vcf_annotation" == "VEP"){
         vcf = vcfR::read.vcfR("$vcfFile")
         tb = vcfR::vcfR2tidy(vcf)
 
@@ -68,61 +69,60 @@ process VCF_PROCESSING {
             fits\$sample = s
             fits\$caller = "VEP-Mutect"
             fits\$mutations = dplyr::bind_cols(fix_field, gt_field_s) %>%
-                            dplyr::select(chr, from, to, ref, alt, NV, DP, VAF, dplyr::everything())
+                              dplyr::select(chr, from, to, ref, alt, NV, DP, VAF, dplyr::everything())
             fits
             })
         names(calls) = samples_list
         
-        } else if (annotation == "ANNOVAR"){
+        } else if ("$vcf_annotation" == "ANNOVAR"){
 
             vcf = read.table("$vcfFile", 
-                  fill = TRUE, 
-                  sep = "\\t", 
-                  header = T)
+                            fill = TRUE, 
+                            sep = "\\t", 
+                            header = T)
 
-            vcf <- vcf %>% 
-                    dplyr::rename(chr = Chr,
-                                  from = Start,
-                                  to = End,
-                                  ref = Ref,
-                                  alt = Alt) %>% 
-                    dplyr::select(-Otherinfo1, -Otherinfo2, -Otherinfo3, -Otherinfo4, -Otherinfo5, -Otherinfo6, -Otherinfo7, -Otherinfo8, -Otherinfo9) %>% 
-                    dplyr::rename(filter = Otherinfo10)
+            vcf = vcf %>% dplyr::rename(chr = Chr,
+                                        from = Start,
+                                        to = End,
+                                        ref = Ref,
+                                        alt = Alt) %>% 
+                        dplyr::select(-Otherinfo1, -Otherinfo2, -Otherinfo3, -Otherinfo4, -Otherinfo5, -Otherinfo6, -Otherinfo7, -Otherinfo8, -Otherinfo9) %>% 
+                        dplyr::rename(filter = Otherinfo10)
     
-            T_res <- apply(vcf, 1,  FUN = function(x){
-              values <- strsplit(x['Otherinfo13'][[1]], split = ':') %>% unlist()
-              names <- strsplit(x['Otherinfo12'][[1]], split = ':') %>% unlist()
+            T_res = apply(vcf, 1,  FUN = function(x){
+              values = strsplit(x['Otherinfo13'][[1]], split = ':') %>% unlist()
+              names = strsplit(x['Otherinfo12'][[1]], split = ':') %>% unlist()
               tidyr::as_tibble(matrix(values, nrow = 1)) %>% 
                 `colnames<-`(names) %>% 
                 tidyr::separate(AD, sep = ',', into = c('NR', 'NV')) %>% 
                 dplyr::rename(VAF = AF)
               }) %>% do.call("bind_rows", .)
             
-            N_res <- apply(vcf, 1,  FUN = function(x){
-              values <- strsplit(x['Otherinfo14'][[1]], split = ':') %>% unlist()
-              names <- strsplit(x['Otherinfo12'][[1]], split = ':') %>% unlist()
+            N_res = apply(vcf, 1,  FUN = function(x){
+              values = strsplit(x['Otherinfo14'][[1]], split = ':') %>% unlist()
+              names = strsplit(x['Otherinfo12'][[1]], split = ':') %>% unlist()
               tidyr::as_tibble(matrix(values, nrow = 1)) %>% 
                 `colnames<-`(names) %>% 
                 tidyr::separate(AD, sep = ',', into = c('NR', 'NV')) %>% 
                 dplyr::rename(VAF = AF)
             }) %>% do.call("bind_rows", .)
             
-            vcf <- vcf %>% dplyr::select(-Otherinfo12, -Otherinfo13, -Otherinfo14)
-            T_res <- bind_cols(vcf, T_res)
-            N_res <- bind_cols(vcf, T_res)
+            vcf = vcf %>% dplyr::select(-Otherinfo12, -Otherinfo13, -Otherinfo14)
+            T_res = bind_cols(vcf, T_res)
+            N_res = bind_cols(vcf, T_res)
             
-            tumor <- list()
-            tumor$sample <- 'Tumor'
-            tumor$caller <- 'ANNOVAR-Mutect'
-            tumor$mutations <- T_res
+            tumor = list()
+            tumor\$sample = 'Tumor'
+            tumor\$caller = 'ANNOVAR-Mutect'
+            tumor\$mutations = T_res
             
-            normal <- list()
-            normal$sample <- 'Normal'
-            normal$caller <- 'ANNOVAR-Mutect'
-            normal$mutations <- N_res
+            normal = list()
+            normal\$sample = 'Normal'
+            normal\$caller = 'ANNOVAR-Mutect'
+            normal\$mutations = N_res
             
-            calls <- list(tumor, normal)
-            }
+            calls = list(tumor, normal)
+        } else { stop("Not valid CNA caller!") }
 
     saveRDS(object = calls, file = paste0(res_dir, "VCF.rds"))
     """

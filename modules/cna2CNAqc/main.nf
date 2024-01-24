@@ -27,14 +27,13 @@ process CNA_PROCESSING {
               purity_file = paste0(run, '/', sample, '_confints_CP.txt')
 
               segments = readr::read_tsv(segments_file, col_types = readr::cols()) %>%
-                dplyr::rename(
-                  chr = chromosome,
-                  from = start.pos,
-                  to = end.pos,
-                  Major = A,
-                  minor = B
-                ) %>%
-                dplyr::select(chr, from, to, Major, minor, dplyr::everything())
+                          dplyr::rename(
+                            chr = chromosome,
+                            from = start.pos,
+                            to = end.pos,
+                            Major = A,
+                            minor = B) %>%
+                          dplyr::select(chr, from, to, Major, minor, dplyr::everything())
 
               solutions = readr::read_tsv(purity_file, col_types = readr::cols())
 
@@ -50,7 +49,19 @@ process CNA_PROCESSING {
             }
 
         CNA = load_SQ_output("$patientID", "$cnaDir")
-    
+     
+    } else if ("$cna_caller" == "ASCAT"){ 
+      res = readRDS("$cna_caller")
+      seg = res\$segments %>% 
+              dplyr::select(-sample) %>% 
+              dplyr::rename(from = startpos,
+                            to = endpos,
+                            Major = nMajor,
+                            minor = nMinot)
+      CNA = list(segments = seg,
+                 purity = res\$purity[[1]],
+                 ploidy = res\$ploidy[[1]])
+      
     } else { stop("Not valid CNA caller!") }
 
     saveRDS(object = CNA, file = paste0(res_dir, "CNA.rds"))
