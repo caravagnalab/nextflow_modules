@@ -33,6 +33,6 @@ process ANNOVAR_ANNOTATE {
     -remove \\
     -thread 4
 
-
+    awk '{print (NR>1?"$patientID/$sampleID":"Tumor_Sample_Barcode") "\t" \$0}' $datasetID/$patientID/$sampleID/ANNOVAR/annovar.hg38_multianno.txt > $datasetID/$patientID/$sampleID/ANNOVAR/annovar.txt
     """
 }
