@@ -20,7 +20,6 @@ RESULTS_PATH=$evoverse/results
 
 
 /orfeo/LTS/CDSLab/LT_storage/ncalonaci/nextflow run $evoverse/main.nf \
- -resume \
  -c $evoverse/modules/config/nextflow_config_slurm \
  --samples $evoverse/input.csv \
  --publish_dir $RESULTS_PATH
