@@ -2,14 +2,14 @@
 #### Cluster specific arguments ####
 
 #SBATCH --job-name=NF_MUM
-##SBATCH --output=logs
+#SBATCH --output=logs
 #SBATCH --error=err
 #SBATCH --partition=EPYC
 #SBATCH --nodes=1
 #SBATCH --ntasks=23
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=64G
-#SBATCH --time=12:00:00
+#SBATCH --time=24:00:00
 
 
 module load singularity/3.10.4
