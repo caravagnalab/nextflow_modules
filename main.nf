@@ -11,6 +11,8 @@ include { SEQUENZA_CNAqc } from "${baseDir}/modules/Sequenza_CNAqc/main"
 //include { JOIN_TABLES } from "${baseDir}/modules/join_tables/main"
 //include { SEQUENZA_CNAqc } from "${baseDir}/modules/Sequenza_CNAqc/main"
 //include { SUBCLONAL_DECONVOLUTION } from "${baseDir}/subworkflows/subclonal_deconvolution/main"
+//include { SIG_PROFILER } from "${baseDir}/modules/SigProfiler/main"
+//include { SPARSE_SIGNATURES } from "${baseDir}/modules/SparseSignatures/main"
 
 
 workflow {
@@ -26,14 +28,21 @@ workflow {
     map{row ->
      tuple(row.patient.toString(), row.sample.toString(), row.sex.toString(), file(row.seqz), file(row.vcf))}
 
-vep_out = VEP_ANNOTATE(input_vcf) 
-annovar_out = ANNOVAR_ANNOTATE(input_vcf)
-vcf2maf_out = VCF2MAF(vep_out)
-maf_out = MAFTOOLS(vcf2maf_out.groupTuple(by: 0))
-annovar2maf_out = ANNOVAR2MAF(annovar_out)
+  input_vcf_joint = Channel.fromPath(params.samples).
+      splitCsv(header: true).
+      map{row ->
+        tuple(row.dataset.toString(), file(row.vcf))}
+
+//vep_out = VEP_ANNOTATE(input_vcf) 
+//annovar_out = ANNOVAR_ANNOTATE(input_vcf)
+//vcf2maf_out = VCF2MAF(vep_out)
+//maf_out = MAFTOOLS(vcf2maf_out.groupTuple(by: 0))
+//annovar2maf_out = ANNOVAR2MAF(annovar_out)
 //BCFTOOLS_SPLIT_VEP(vep_output)
 //PLATYPUS_CALL_VARIANTS(input_multisample.groupTuple(by: [0,3,4]))
 //JOINT_TABLE()
-SEQUENZA_CNAqc(input_sequenza)
+//SEQUENZA_CNAqc(input_sequenza)
 //SUBCLONAL_DECONVOLUTION(joint_table)
+//SIG_PROFILER(vcf_joint)
+//SPARSE_SIGNATURES(matrix_joint)
 }

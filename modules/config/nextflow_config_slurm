@@ -54,14 +54,6 @@ process {
 
 
 process {
-
-  withName: 'SNPEFF_ANNOTATE' {
-    time='24h'
-    container = 'https://depot.galaxyproject.org/singularity/snpeff:5.1--hdfd78af_2'
-    memory='16 GB'
-  }
-}
-process {
   withName: 'PLATYPUS_CALL_VARIANTS' {
     time='24h'
     container = 'https://depot.galaxyproject.org/singularity/platypus-variant%3A0.8.1.1--htslib1.5_0'
@@ -182,3 +174,16 @@ process {
   }
 }
 
+process {
+
+  withName: 'SIG_PROFILER' {
+    time='2h'
+    memory='100 GB'
+  }
+
+  withName: 'SPARSE_SIGNATURES' {
+    time='75h'
+    memory='100 GB'
+    container = 'https://depot.galaxyproject.org/singularity/bioconductor-sparsesignatures%3A2.8.0--r42hdfd78af_0'
+  }
+}
