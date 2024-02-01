@@ -15,12 +15,7 @@ workflow {
   input_sequenza = Channel.fromPath(params.samples).
     splitCsv(header: true).
     map{row ->
-     tuple(row.patient.toString(), row.sample.toString(), row.sex.toString(), file(row.seqz), file(row.vcf))}
-
-  input_vcf_joint = Channel.fromPath(params.samples).
-      splitCsv(header: true).
-      map{row ->
-        tuple(row.dataset.toString(), file(row.vcf))}
+     tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), row.sex.toString(), file(row.seqz), file(row.vcf))}
 
 annotated_vcf = VARIANT_ANNOTATION(input_vcf)
 //SUBCLONAL_DECONVOLUTION(joint_table)
