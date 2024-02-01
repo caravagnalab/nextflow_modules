@@ -7,7 +7,7 @@ includeConfig "$baseDir/modules/config/params.config"
  singularity {
      enabled = true
      singularity.envWhitelist = ["SINGULARITY_TMPDIR"]
-     runOptions = '--bind /orfeo:/orfeo --bind $SINGULARITY_TMPDIR:/tmp'
+     runOptions = '--bind /orfeo:/orfeo --bind $SINGULARITY_TMPDIR:/tmp/ncalonaci'
  }
  
 process {
@@ -35,6 +35,7 @@ process {
 
   withName: 'MAFTOOLS' {
     memory = '5 GB'
+    container = 'https://depot.galaxyproject.org/singularity/bioconductor-maftools%3A2.8.0--r41hd029910_0'
   }
  }
 

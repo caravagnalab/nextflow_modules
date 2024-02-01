@@ -1,6 +1,8 @@
 **/.nextflow*
-*.log*
+*log*
+*err*
 *work*
+*results*
 .Rhistory
-out_files
 **.DS_Store
+*.swp*
