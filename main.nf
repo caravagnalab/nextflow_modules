@@ -51,7 +51,7 @@ workflow {
   //JOINT_TABLE()
   //SEQUENZA_EXTRACT(input_sequenza)
 
-  CNAQC(annot_output, input_CNA)
+  CNAQC(vep_output, input_CNA)
 
   //SEQUENZA_CNAqc(input_CNAqc_sequenza)
 }
