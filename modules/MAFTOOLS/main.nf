@@ -28,7 +28,7 @@ process MAFTOOLS {
     dev.off()
 
     pdf(file = paste0("$datasetID","/MAFTOOLS/oncoplot.pdf"))
-    oncoplot(maf = laml, top = 10, removeNonMutated = TRUE)
+    oncoplot(maf = maf_merged, top = 10, removeNonMutated = TRUE)
     dev.off()
 
     saveRDS(object = maf_merged, file = paste0("$datasetID","/MAFTOOLS/maf_merged.rds"))

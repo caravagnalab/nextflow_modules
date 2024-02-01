@@ -7,7 +7,7 @@ includeConfig "$baseDir/modules/config/params.config"
  singularity {
      enabled = true
      singularity.envWhitelist = ["SINGULARITY_TMPDIR"]
-     runOptions = '--bind /orfeo:/orfeo --bind $SINGULARITY_TMPDIR:/tmp'
+     runOptions = '--bind /orfeo:/orfeo --bind $SINGULARITY_TMPDIR:/tmp/ncalonaci'
  }
  
 process {
@@ -35,6 +35,7 @@ process {
 
   withName: 'MAFTOOLS' {
     memory = '5 GB'
+    container = 'https://depot.galaxyproject.org/singularity/bioconductor-maftools%3A2.8.0--r41hd029910_0'
   }
  }
 
@@ -53,14 +54,6 @@ process {
 }
 
 
-process {
-
-  withName: 'SNPEFF_ANNOTATE' {
-    time='24h'
-    container = 'https://depot.galaxyproject.org/singularity/snpeff:5.1--hdfd78af_2'
-    memory='16 GB'
-  }
-}
 process {
   withName: 'PLATYPUS_CALL_VARIANTS' {
     time='24h'
@@ -182,3 +175,16 @@ process {
   }
 }
 
+process {
+
+  withName: 'SIG_PROFILER' {
+    time='2h'
+    memory='100 GB'
+  }
+
+  withName: 'SPARSE_SIGNATURES' {
+    time='75h'
+    memory='100 GB'
+    container = 'https://depot.galaxyproject.org/singularity/bioconductor-sparsesignatures%3A2.8.0--r42hdfd78af_0'
+  }
+}
