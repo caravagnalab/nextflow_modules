@@ -12,7 +12,7 @@ workflow CNAQC {
     input_CNA
 
     main:
-    
+
     CNA_PROCESSING(input_CNA) 
     VCF_PROCESSING(vep_output)
     CNAQC_ANALYSIS(CNA_PROCESSING.out.rds, VCF_PROCESSING.out.rds)

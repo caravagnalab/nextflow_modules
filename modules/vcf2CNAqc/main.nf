@@ -8,8 +8,6 @@ process VCF_PROCESSING {
      tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/$sampleID/vcf2CNAqc/*.rds"), emit: rds 
 
     script:
-          def args                  = task.ext.args                             ?: ''
-          def vcf_annotation        = args!='' && args.vcf_annotation           ? "$args.vcf_annotation" : "VEP"
 
     """
     #!/usr/bin/env Rscript 
@@ -20,7 +18,8 @@ process VCF_PROCESSING {
     res_dir = paste0("$datasetID", "/", "$patientID", "/", "$sampleID", "/vcf2CNAqc/")
     dir.create(res_dir, recursive = TRUE)
 
-    if ("$vcf_annotation" == "VEP"){
+    if ($params.tools && $params.tools.split(",").contains("VEP")){
+
         vcf = vcfR::read.vcfR("$vcfFile")
         tb = vcfR::vcfR2tidy(vcf)
 
@@ -73,8 +72,9 @@ process VCF_PROCESSING {
             fits
             })
         names(calls) = samples_list
+    }  
         
-        } else if ("$vcf_annotation" == "ANNOVAR"){
+    if ($params.tools && $params.tools.split(",").contains("ANNOVAR")){
 
             vcf = read.table("$vcfFile", 
                             fill = TRUE, 
@@ -122,7 +122,8 @@ process VCF_PROCESSING {
             normal\$mutations = N_res
             
             calls = list(tumor, normal)
-        } else { stop("Not valid CNA caller!") }
+    }
+    
 
     saveRDS(object = calls, file = paste0(res_dir, "VCF.rds"))
     """

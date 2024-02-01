@@ -3,7 +3,7 @@ nextflow.enable.dsl=2
 
 //include { SEQUENZA_EXTRACT } from "${baseDir}/modules/sequenza/main"
 include { VEP_ANNOTATE } from "${baseDir}/modules/VEP/main"
-include { ANNOVAR_ANNOTATE } from "${baseDir}/modules/annovar/main"
+//include { ANNOVAR_ANNOTATE } from "${baseDir}/modules/annovar/main"
 include { CNAQC } from "${baseDir}/subworkflows/CNAqc/main"
 
 //include { VCF2MAF } from "${baseDir}/modules/vcf2maf/main"
@@ -51,7 +51,7 @@ workflow {
   //JOINT_TABLE()
   //SEQUENZA_EXTRACT(input_sequenza)
 
-  CNAQC(vep_output, input_CNA)
+  CNAQC(annot_output, input_CNA)
 
   //SEQUENZA_CNAqc(input_CNAqc_sequenza)
 }

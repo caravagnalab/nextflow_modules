@@ -9,9 +9,6 @@ process CNA_PROCESSING {
 
     script:
     
-      def args              = task.ext.args                         ?: ''
-      def cna_caller        = args!='' && args.cna_caller           ? "$args.cna_caller" : "sequenza"
-
     """
     #!/usr/bin/env Rscript 
     
@@ -20,13 +17,11 @@ process CNA_PROCESSING {
     res_dir = paste0("$datasetID", "/", "$patientID", "/", "$sampleID", "/cna2CNAqc/")
     dir.create(res_dir, recursive = TRUE)
 
-    if ("$cna_caller" == "sequenza"){
-        load_SQ_output = function(sample, run){
-              
-              segments_file = paste0(run, '/', sample, '_segments.txt')
-              purity_file = paste0(run, '/', sample, '_confints_CP.txt')
+    load_SQ_output = function(sample, run){
+      segments_file = paste0(run, '/', sample, '_segments.txt')
+      purity_file = paste0(run, '/', sample, '_confints_CP.txt')
 
-              segments = readr::read_tsv(segments_file, col_types = readr::cols()) %>%
+      segments = readr::read_tsv(segments_file, col_types = readr::cols()) %>%
                           dplyr::rename(
                             chr = chromosome,
                             from = start.pos,
@@ -35,34 +30,19 @@ process CNA_PROCESSING {
                             minor = B) %>%
                           dplyr::select(chr, from, to, Major, minor, dplyr::everything())
 
-              solutions = readr::read_tsv(purity_file, col_types = readr::cols())
+      solutions = readr::read_tsv(purity_file, col_types = readr::cols())
 
-              purity = solutions\$cellularity[2]
-              ploidy = solutions\$ploidy.estimate[2]
+      purity = solutions\$cellularity[2]
+      ploidy = solutions\$ploidy.estimate[2]
               
-              return(list(
-                  segments = segments,
-                  purity = purity,
-                  ploidy = ploidy
-                )
-              )
-            }
+      return(list(
+              segments = segments,
+              purity = purity,
+              ploidy = ploidy))
+      }
 
-        CNA = load_SQ_output("$patientID", "$cnaDir")
+    CNA = load_SQ_output("$patientID", "$cnaDir")
      
-    } else if ("$cna_caller" == "ASCAT"){ 
-      res = readRDS("$cna_caller")
-      seg = res\$segments %>% 
-              dplyr::select(-sample) %>% 
-              dplyr::rename(from = startpos,
-                            to = endpos,
-                            Major = nMajor,
-                            minor = nMinot)
-      CNA = list(segments = seg,
-                 purity = res\$purity[[1]],
-                 ploidy = res\$ploidy[[1]])
-      
-    } else { stop("Not valid CNA caller!") }
 
     saveRDS(object = CNA, file = paste0(res_dir, "CNA.rds"))
     """
