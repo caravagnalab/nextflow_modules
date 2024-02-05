@@ -1,15 +1,13 @@
 process VCF2MAF {
     publishDir params.publish_dir, mode: 'copy'
 
-
-
     input:
 
-      tuple val(datasetID), val(patientID), val(sampleID), path(vcf_File)
+      tuple val(datasetID), val(patientID), val(sampleID), path(vep_output)
 
     output:
 
-      tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/$sampleID/VCF2MAF/*.maf")
+      tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/$sampleID/VCF2MAF/*.maf"), emit: vcf2maf_out
 
     script:
 
@@ -17,7 +15,7 @@ process VCF2MAF {
 
     mkdir -p $datasetID/$patientID/$sampleID/VCF2MAF
 
-    gunzip -c $vcf_File > data_vep.vcf
+    gunzip -c $vep_output > data_vep.vcf
 
 
     vcf2maf.pl \\

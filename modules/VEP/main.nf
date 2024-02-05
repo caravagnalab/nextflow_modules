@@ -7,7 +7,7 @@ process VEP_ANNOTATE {
 
     output:
 
-      tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/$sampleID/VEP/*.vcf.gz")
+      tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/$sampleID/VEP/*.vcf.gz"), emit: vep_output 
 
     script:
 
