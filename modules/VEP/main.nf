@@ -16,11 +16,11 @@ process VEP_ANNOTATE {
     script:
 
     """
-    // Create output directory
+ // Create output directory
 
     mkdir -p $datasetID/$patientID/$sampleID/VEP
 
-    // Run VEP
+ // Run VEP
 
     vep --input_file $vcf_File \\
     --output_file $datasetID/$patientID/$sampleID/VEP/vep.vcf.gz \\

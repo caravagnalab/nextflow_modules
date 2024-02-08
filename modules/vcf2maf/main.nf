@@ -16,15 +16,15 @@ process VCF2MAF {
     script:
 
     """
-    // Create results output directory
+// Create results output directory
 
     mkdir -p $datasetID/$patientID/$sampleID/VCF2MAF
 
-    // Unzip vcf file
+// Unzip vcf file
 
     gunzip -c $vep_output > data_vep.vcf
 
-    // Run vcf2maf tool    
+// Run vcf2maf tool    
 
     vcf2maf.pl \\
     --input-vcf data_vep.vcf \\
