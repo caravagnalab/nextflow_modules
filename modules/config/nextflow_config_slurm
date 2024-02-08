@@ -7,7 +7,7 @@ includeConfig "$baseDir/modules/config/params.config"
  singularity {
      enabled = true
      singularity.envWhitelist = ["SINGULARITY_TMPDIR"]
-     runOptions = '--bind /orfeo:/orfeo --bind $SINGULARITY_TMPDIR:/tmp/ncalonaci'
+     runOptions = '--bind /orfeo:/orfeo --bind $SINGULARITY_TMPDIR:/tmp'
  }
  
 process {

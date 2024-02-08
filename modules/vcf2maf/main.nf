@@ -11,7 +11,7 @@ process VCF2MAF {
 
     output:
 
-      tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/$sampleID/VCF2MAF/*.maf")
+      tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/$sampleID/VCF2MAF/*.maf"), emit: vcf2maf_out
 
     script:
 
