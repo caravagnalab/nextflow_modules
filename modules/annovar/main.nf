@@ -5,11 +5,9 @@
 process ANNOVAR_ANNOTATE {
     publishDir params.publish_dir, mode: 'copy'
 
-
     input:
 
       tuple val(datasetID), val(patientID), val(sampleID), path(vcf_File)
-
 
     output:
 
@@ -19,7 +17,7 @@ process ANNOVAR_ANNOTATE {
 
     """
 
-    //Creating results output directory
+    // Creating results output directory
 
     mkdir -p $datasetID/$patientID/$sampleID/ANNOVAR
     

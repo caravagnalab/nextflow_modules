@@ -5,8 +5,6 @@
 process VCF2MAF {
     publishDir params.publish_dir, mode: 'copy'
 
-
-
     input:
 
       tuple val(datasetID), val(patientID), val(sampleID), path(vcf_File)

@@ -38,5 +38,6 @@ process VEP_ANNOTATE {
     --use_given_ref \\
     --fasta  $params.ref_genome \\
     --fork 23
+
     """
 }
