@@ -1,0 +1,8 @@
+**/.nextflow*
+*log*
+*err*
+**/work*
+*results*
+.Rhistory
+**.DS_Store
+*.swp*

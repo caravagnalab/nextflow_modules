@@ -3,6 +3,7 @@ cleanup=true
 
 includeConfig "$baseDir/modules/config/params.config"
 
+
  singularity {
      enabled = true
      singularity.envWhitelist = ["SINGULARITY_TMPDIR"]
@@ -11,7 +12,7 @@ includeConfig "$baseDir/modules/config/params.config"
  
  process {
    executor='slurm'
-   queue='THIN'
+   queue='EPYC'
    errorStrategy = 'finish'
 }
 
@@ -29,7 +30,7 @@ process {
   }
   
   withName: 'VCF2MAF' {
-      container = 'quay.io/biocontainers/mulled-v2-b6fc09bed47d0dc4d8384ce9e04af5806f2cc91b:305092c6f8420acd17377d2cc8b96e1c3ccb7d26-0'
+    container = 'https://depot.galaxyproject.org/singularity/vcf2maf%3A1.6.20--0'
   }
 
   withName: 'MAFTOOLS' {
@@ -93,7 +94,6 @@ process {
       "matching_strategy": params.seqcna_matching_strategy
       ]}
   }
-
 
   withName: 'VARTRIX' {
     memory='50 GB'
@@ -187,6 +187,7 @@ process {
     container = 'https://depot.galaxyproject.org/singularity/bioconductor-sparsesignatures%3A2.8.0--r42hdfd78af_0'
   }
 }
+
 
 process {
   withName: 'CNA_PROCESSING' {

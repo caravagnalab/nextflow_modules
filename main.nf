@@ -19,6 +19,6 @@ workflow {
 
   annotated_vcf = VARIANT_ANNOTATION(input_vcf)
   join_CNAqc = CNAQC(annotated_vcf, input_CNA)
-  //SUBCLONAL_DECONVOLUTION(join_CNAqc)
+  SUBCLONAL_DECONVOLUTION(join_CNAqc)
 
 }
