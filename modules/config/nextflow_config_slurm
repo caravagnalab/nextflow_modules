@@ -10,7 +10,7 @@ includeConfig "$baseDir/modules/config/params.config"
      runOptions = '--bind /orfeo:/orfeo --bind $SINGULARITY_TMPDIR:/tmp'
  }
  
-process {
+ process {
    executor='slurm'
    queue='EPYC'
    errorStrategy = 'finish'
@@ -28,7 +28,7 @@ process {
     container = 'https://depot.galaxyproject.org/singularity/ensembl-vep:110.1--pl5321h2a3209d_0'
     memory = '20 GB'
   }
-
+  
   withName: 'VCF2MAF' {
     container = 'https://depot.galaxyproject.org/singularity/vcf2maf%3A1.6.20--0'
   }
@@ -52,7 +52,6 @@ process {
     memory='5 GB'
   }
 }
-
 
 process {
   withName: 'PLATYPUS_CALL_VARIANTS' {
@@ -187,4 +186,43 @@ process {
     memory='100 GB'
     container = 'https://depot.galaxyproject.org/singularity/bioconductor-sparsesignatures%3A2.8.0--r42hdfd78af_0'
   }
+}
+
+
+process {
+  withName: 'CNA_PROCESSING' {
+    memory = '50 GB'
+    time = '1h'
+    errorStrategy = 'finish'
+
+    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
+}
+
+  withName: 'JOIN_CNAQC' {
+    memory = '50 GB'
+    time = '2h'
+    errorStrategy = 'finish'
+
+    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
+}
+
+  withName: 'VCF_PROCESSING' {
+    memory = '100 GB'
+    time = '1h'
+    errorStrategy = 'finish'
+
+    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
+}
+
+  withName: 'CNAQC_ANALYSIS' {
+    memory = '100 GB'
+    time = '2h'
+    errorStrategy = 'finish'
+
+    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
+
+    ext.args = {[
+      "matching_strategy": params.cna_matching_strategy
+    ]}
+}
 }
