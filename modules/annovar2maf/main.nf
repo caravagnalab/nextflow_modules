@@ -4,7 +4,6 @@
 
 process ANNOVAR2MAF {
     publishDir params.publish_dir, mode: 'copy'
-
     
     input:
 
@@ -18,7 +17,6 @@ process ANNOVAR2MAF {
 
     """
     #!/usr/bin/env Rscript
-
     
     library(maftools)
     
