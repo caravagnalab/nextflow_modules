@@ -5,10 +5,11 @@ includeConfig "$baseDir/modules/config/params.config"
 
  singularity {
      enabled = true
-     runOptions = '--bind /orfeo:/orfeo'
+     singularity.envWhitelist = ["SINGULARITY_TMPDIR"]
+     runOptions = '--bind /orfeo:/orfeo --bind $SINGULARITY_TMPDIR:/tmp'
  }
  
-process {
+ process {
    executor='slurm'
    queue='THIN'
    errorStrategy = 'finish'
@@ -41,17 +42,16 @@ process {
       container = 'https://depot.galaxyproject.org/singularity/bcftools%3A1.14--hde04aa1_1'
   }
 
-  withName: 'SEQUENZA_EXTRACT' {
-      cpus = '20' 
-      time='24h'
-      memory = '200 GB'
-      errorStrategy = 'finish' 
-      container = 'https://depot.galaxyproject.org/singularity/sequenza-utils%3A3.0.0--py39he10ea66_6'  
-}
-
-
   withName: 'CNA_PROCESSING' {
     memory = '100 GB'
+    time = '1h'
+    errorStrategy = 'finish'
+
+    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
+}
+
+  withName: 'JOIN_CNAQC' {
+    memory = '50 GB'
     time = '1h'
     errorStrategy = 'finish'
 
@@ -75,8 +75,6 @@ process {
     container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
 
     ext.args = {[
-      "cna_caller": params.cna_caller,
-      "variant_caller": params.cna_variant_caller,
       "matching_strategy": params.cna_matching_strategy
     ]}
 }
@@ -87,26 +85,5 @@ process {
     errorStrategy = 'finish'
 
     container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
-    //scratch = '/orfeo/LTS/LADE/LT_storage/lvaleriani/tmp'
-
-    ext.args = {[
-      "norm_method": params.seqcna_norm_method,
-      "window": params.seqcna_window,
-      "gamma": params.seqcna_gamma,
-      "kmin": params.seqcna_kmin,
-      "min_reads_baf": params.seqcna_min_reads_baf,
-      "min_reads": params.seqcna_min_reads,
-      "min_reads_normal": params.seqcna_reads_normal,
-      "max_mut_types": params.seqcna_max_mut_types,
-
-      "low_cell": params.seqcna_low_cell,
-      "up_cell": params.seqcna_up_cell,
-      "low_ploidy": params.seqcna_low_ploidy,
-      "up_ploidy": params.seqcna_up_ploidy,
-      "delta_cellularity": params.seqcna_delta_cellularity,
-      "delta_ploidy": params.seqcna_delta_ploidy,
-
-      "matching_strategy": params.seqcna_matching_strategy
-      ]}
   }
 }

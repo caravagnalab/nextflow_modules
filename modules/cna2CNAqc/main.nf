@@ -21,6 +21,7 @@ process CNA_PROCESSING {
       segments_file = paste0(run, '/', sample, '_segments.txt')
       purity_file = paste0(run, '/', sample, '_confints_CP.txt')
 
+      # Extract the segments information 
       segments = readr::read_tsv(segments_file, col_types = readr::cols()) %>%
                           dplyr::rename(
                             chr = chromosome,
@@ -31,7 +32,6 @@ process CNA_PROCESSING {
                           dplyr::select(chr, from, to, Major, minor, dplyr::everything())
 
       solutions = readr::read_tsv(purity_file, col_types = readr::cols())
-
       purity = solutions\$cellularity[2]
       ploidy = solutions\$ploidy.estimate[2]
               
@@ -42,8 +42,6 @@ process CNA_PROCESSING {
       }
 
     CNA = load_SQ_output("$patientID", "$cnaDir")
-     
-
     saveRDS(object = CNA, file = paste0(res_dir, "CNA.rds"))
     """
 }

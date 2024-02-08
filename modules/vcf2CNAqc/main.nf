@@ -18,45 +18,77 @@ process VCF_PROCESSING {
     res_dir = paste0("$datasetID", "/", "$patientID", "/", "$sampleID", "/vcf2CNAqc/")
     dir.create(res_dir, recursive = TRUE)
 
-    if ($params.tools && $params.tools.split(",").contains("VEP")){
+    # Read vcf file
+    vcf = vcfR::read.vcfR("$vcfFile")
+    
+    # Transform vcf to tidy 
+    tb = vcfR::vcfR2tidy(vcf)
 
-        vcf = vcfR::read.vcfR("$vcfFile")
-        tb = vcfR::vcfR2tidy(vcf)
-
-        gt_field = tb\$gt %>% 
+    # Extract gt field and obtain coverage (DP) and variant allele frequency (VAF) fields
+    gt_field = tb\$gt %>% 
             tidyr::separate(gt_AD, sep = ',', into = c("NR", "NV")) %>%
             dplyr::mutate(
-                NR = as.numeric(NR),
-                NV = as.numeric(NV),
-                DP = NV + NR,
-                VAF = NV/DP) %>% 
+            NR = as.numeric(NR),
+            NV = as.numeric(NV),
+            DP = NV + NR,
+            VAF = NV/DP) %>%  
             dplyr::rename(sample = Indiv)
+    
+    # Extract sample names
+    samples_list = gt_field\$sample %>% unique
 
-        samples_list = gt_field\$sample %>% unique
-
+    # VEP specific field extraction
+    if (stringr::str_detect("$params.tools", "vep") == TRUE){
+        annotation = 'VEP'
+ 
+        # Take CSQ field names and split by |
         vep_field = tb\$meta %>% 
-                        dplyr::filter(ID == 'CSQ') %>% 
-                        dplyr::select(Description) %>% 
-                        pull()
+                    dplyr::filter(ID == 'CSQ') %>% 
+                    dplyr::select(Description) %>% 
+                    pull()
+
         vep_field = strsplit(vep_field, split="|", fixed=TRUE)[[1]]
         vep_field = vep_field[2:length(vep_field)-1]
-        
+            
+        # Tranform the fix field by splittig the CSQ and select the columns needed
         fix_field = tb\$fix %>%
-                    dplyr::rename(
-                        chr = CHROM,
-                        from = POS,
-                        ref = REF,
-                        alt = ALT) %>%
-                    dplyr::rowwise() %>%
-                    dplyr::mutate(
-                        from = as.numeric(from),
-                        to = from + nchar(alt)) %>%
-                    dplyr::ungroup() %>%
-                    dplyr::select(chr, from, to, ref, alt, CSQ, ChromKey, ID, FILTER, DP, NCount) %>% 
-                    tidyr::separate(CSQ, vep_field, sep = "\\\\|") %>% 
-                    dplyr::select(chr, from, to, ref, alt, FILTER, IMPACT, SYMBOL, Gene) #can add other thing, CSQ, HGSP
+                        dplyr::rename(
+                            chr = CHROM,
+                            from = POS,
+                            ref = REF,
+                            alt = ALT) %>%
+                        dplyr::rowwise() %>%
+                        dplyr::mutate(
+                            from = as.numeric(from),
+                            to = from + nchar(alt)) %>%
+                        dplyr::ungroup() %>%
+                        dplyr::select(chr, from, to, ref, alt, CSQ) %>% 
+                        tidyr::separate(CSQ, vep_field, sep = "\\\\|") %>% 
+                        dplyr::select(chr, from, to, ref, alt, FILTER, IMPACT, SYMBOL, Gene) #can add other thing, CSQ, HGSP
+    
+    # If vcf is not annotated 
+    } else {
+        annotation = NULL
 
-        calls = lapply(
+        # Take from fix field some columns
+        fix_field = tb\$fix %>%
+            dplyr::rename(
+            chr = CHROM,
+            from = POS,
+            ref = REF,
+            alt = ALT
+            ) %>%
+            dplyr::rowwise() %>%
+            dplyr::mutate(
+            from = as.numeric(from),
+            to = from + nchar(alt)
+            ) %>%
+            dplyr::ungroup() %>%
+            dplyr::select(chr, from, to, ref, alt, dplyr::everything(), -ChromKey, -DP)
+    }
+    
+    # For each sample create the table of mutations 
+    calls = lapply(
             samples_list,
             function(s){
             gt_field_s = gt_field %>% dplyr::filter(sample == s)
@@ -66,65 +98,13 @@ process VCF_PROCESSING {
 
             fits = list()
             fits\$sample = s
-            fits\$caller = "VEP-Mutect"
+            fits\$annotation = annotation
             fits\$mutations = dplyr::bind_cols(fix_field, gt_field_s) %>%
-                              dplyr::select(chr, from, to, ref, alt, NV, DP, VAF, dplyr::everything())
-            fits
-            })
-        names(calls) = samples_list
-    }  
-        
-    if ($params.tools && $params.tools.split(",").contains("ANNOVAR")){
+                dplyr::select(chr, from, to, ref, alt, NV, DP, VAF, dplyr::everything())
 
-            vcf = read.table("$vcfFile", 
-                            fill = TRUE, 
-                            sep = "\\t", 
-                            header = T)
-
-            vcf = vcf %>% dplyr::rename(chr = Chr,
-                                        from = Start,
-                                        to = End,
-                                        ref = Ref,
-                                        alt = Alt) %>% 
-                        dplyr::select(-Otherinfo1, -Otherinfo2, -Otherinfo3, -Otherinfo4, -Otherinfo5, -Otherinfo6, -Otherinfo7, -Otherinfo8, -Otherinfo9) %>% 
-                        dplyr::rename(filter = Otherinfo10)
+            fits})
+    names(calls) = samples_list
     
-            T_res = apply(vcf, 1,  FUN = function(x){
-              values = strsplit(x['Otherinfo13'][[1]], split = ':') %>% unlist()
-              names = strsplit(x['Otherinfo12'][[1]], split = ':') %>% unlist()
-              tidyr::as_tibble(matrix(values, nrow = 1)) %>% 
-                `colnames<-`(names) %>% 
-                tidyr::separate(AD, sep = ',', into = c('NR', 'NV')) %>% 
-                dplyr::rename(VAF = AF)
-              }) %>% do.call("bind_rows", .)
-            
-            N_res = apply(vcf, 1,  FUN = function(x){
-              values = strsplit(x['Otherinfo14'][[1]], split = ':') %>% unlist()
-              names = strsplit(x['Otherinfo12'][[1]], split = ':') %>% unlist()
-              tidyr::as_tibble(matrix(values, nrow = 1)) %>% 
-                `colnames<-`(names) %>% 
-                tidyr::separate(AD, sep = ',', into = c('NR', 'NV')) %>% 
-                dplyr::rename(VAF = AF)
-            }) %>% do.call("bind_rows", .)
-            
-            vcf = vcf %>% dplyr::select(-Otherinfo12, -Otherinfo13, -Otherinfo14)
-            T_res = bind_cols(vcf, T_res)
-            N_res = bind_cols(vcf, T_res)
-            
-            tumor = list()
-            tumor\$sample = 'Tumor'
-            tumor\$caller = 'ANNOVAR-Mutect'
-            tumor\$mutations = T_res
-            
-            normal = list()
-            normal\$sample = 'Normal'
-            normal\$caller = 'ANNOVAR-Mutect'
-            normal\$mutations = N_res
-            
-            calls = list(tumor, normal)
-    }
-    
-
     saveRDS(object = calls, file = paste0(res_dir, "VCF.rds"))
     """
 }

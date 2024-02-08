@@ -1,15 +1,9 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 
-//include { SEQUENZA_EXTRACT } from "${baseDir}/modules/sequenza/main"
-include { VEP_ANNOTATE } from "${baseDir}/modules/VEP/main"
-//include { ANNOVAR_ANNOTATE } from "${baseDir}/modules/annovar/main"
+include { VARIANT_ANNOTATION } from "${baseDir}/subworkflows/variant_annotation/main"
+include { SUBCLONAL_DECONVOLUTION } from "${baseDir}/subworkflows/subclonal_deconvolution/main"
 include { CNAQC } from "${baseDir}/subworkflows/CNAqc/main"
-
-//include { VCF2MAF } from "${baseDir}/modules/vcf2maf/main"
-//include { BCFTOOLS_SPLIT_VEP } from "${baseDir}/modules/bcftools/main"
-//include { SEQUENZA_CNAqc } from "${baseDir}/modules/Sequenza_CNAqc/main"
-//include { JOIN_TABLES } from "${baseDir}/modules/join_tables/main"
 
 workflow {
 
@@ -18,40 +12,13 @@ workflow {
       map{row ->
         tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.vcf))}
 
-  //input_CNAqc_sequenza = Channel.fromPath(params.samples).
-  //  splitCsv(header: true).
-  //  map{row ->
-  //   tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), row.sex.toString(), f  //ile(row.seqz), file(row.vcf))}
-
   input_CNA = Channel.fromPath(params.samples).
     splitCsv(header: true).
     map{row ->
      tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.cna_calling))}
 
-  //input_CNAqc = Channel.fromPath(params.samples).
-  //  splitCsv(header: true).
-  //  map{row ->
-  //   tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.cna_calling), file(row.vcf))}
+  annotated_vcf = VARIANT_ANNOTATION(input_vcf)
+  join_CNAqc = CNAQC(annotated_vcf, input_CNA)
+  //SUBCLONAL_DECONVOLUTION(join_CNAqc)
 
-  //input_sequenza = Channel.fromPath(params.samples).
-  //  splitCsv(header: true).
-  //  map{row ->
-  //   tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.tumour_bam), file(row.tumour_bai), file(row.normal_bam), file(row.normal_bai))}
-
-  //input_multisample = Channel.fromPath(params.samples).
-  //    splitCsv(header: true).
-  //    map{row ->
-  //      tuple(row.patient.toString(), file(row.tumour_bam), file(row.tumour_bai), file(row.normal_bam), file(row.normal_bai), file(row.vcf), file(row.vcf_tbi))}
-
-  vep_output = VEP_ANNOTATE(input_vcf)
-  //annovar_output = ANNOVAR_ANNOTATE(input_vcf)
-  //VCF2MAF(input_vcf)
-  //BCFTOOLS_SPLIT_VEP(vep_output)
-  //PLATYPUS_CALL_VARIANTS(input_multisample.groupTuple(by: [0,3,4]))
-  //JOINT_TABLE()
-  //SEQUENZA_EXTRACT(input_sequenza)
-
-  CNAQC(vep_output, input_CNA)
-
-  //SEQUENZA_CNAqc(input_CNAqc_sequenza)
 }

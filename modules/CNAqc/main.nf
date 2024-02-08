@@ -8,8 +8,8 @@ process CNAQC_ANALYSIS {
   
   output:
 
-    tuple val(patientID), path("$datasetID/$patientID/$sampleID/CNAqc/*.rds"), emit: rds
-    tuple val(patientID), path("$datasetID/$patientID/$sampleID/CNAqc/*.pdf"), emit: pdf
+    tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/$sampleID/CNAqc/*.rds"), emit: rds
+    tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/$sampleID/CNAqc/*.pdf"), emit: pdf
     
   script:
 
@@ -36,8 +36,7 @@ process CNAQC_ANALYSIS {
         purity = CNA\$purity ,
         ref = "$params.assembly")
     
-    # require packages not include in the singularity image
-    # x = CNAqc::annotate_variants(x, drivers = CNAqc::intogen_drivers)
+    #x = CNAqc::annotate_variants(x, drivers = CNAqc::intogen_drivers)
 
     x = CNAqc::analyze_peaks(x, 
       matching_strategy = "$matching_strategy")
