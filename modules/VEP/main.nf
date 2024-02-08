@@ -1,3 +1,7 @@
+//
+// Variant Annotation using VEP
+//
+
 process VEP_ANNOTATE {
     publishDir params.publish_dir, mode: 'copy'
 
@@ -12,8 +16,11 @@ process VEP_ANNOTATE {
     script:
 
     """
+    // Create output directory
 
     mkdir -p $datasetID/$patientID/$sampleID/VEP
+
+    // Run VEP
 
     vep --input_file $vcf_File \\
     --output_file $datasetID/$patientID/$sampleID/VEP/vep.vcf.gz \\

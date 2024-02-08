@@ -1,3 +1,7 @@
+//
+// Convert VCF annotated file to MAF
+//
+
 process VCF2MAF {
     publishDir params.publish_dir, mode: 'copy'
 
@@ -14,11 +18,15 @@ process VCF2MAF {
     script:
 
     """
+    // Create results output directory
 
     mkdir -p $datasetID/$patientID/$sampleID/VCF2MAF
 
+    // Unzip vcf file
+
     gunzip -c $vcf_File > data_vep.vcf
 
+    // Run vcf2maf tool    
 
     vcf2maf.pl \\
     --input-vcf data_vep.vcf \\
