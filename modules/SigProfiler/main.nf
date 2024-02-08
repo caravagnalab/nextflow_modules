@@ -14,6 +14,7 @@ process SIG_PROFILER {
       tuple val(datasetID), path("$datasetID/SIGPROFILER/results/SBS96/SBS96_selection_plot.pdf"),
       path("$datasetID/SIGPROFILER/results/SBS96/Suggested_Solution/COSMIC_SBS96_Decomposed_Solution/SBS96_Decomposition_Plots.pdf"), 
       path("$datasetID/SIGPROFILER/results/SBS96/Samples.txt")
+    
     script:
 
     """
@@ -42,5 +43,6 @@ process SIG_PROFILER {
     source_dir = "/orfeo/scratch/cdslab/kdavydzenka/results"
     dest_dir = "/orfeo/scratch/cdslab/kdavydzenka/SIGPROFILER/results"
     shutil.copytree(source_dir, dest_dir)
+
     """
 }
