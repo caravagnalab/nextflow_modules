@@ -15,35 +15,182 @@ includeConfig "$baseDir/modules/config/params.config"
    errorStrategy = 'finish'
 }
 
-process {
+// process {
+//   executor='slurm'
+//   queue='THIN'
+//   errorStrategy = 'finish'
+// }
 
+process {
   withName: 'VEP_ANNOTATE' {
     time='12h'
     container = 'https://depot.galaxyproject.org/singularity/ensembl-vep:110.1--pl5321h2a3209d_0'
-    memory='20 GB'
- }
-
-  withName: 'ANNOVAR_ANNOTATE' {
-    time='12h'
-    container = 'shub://IARCbioinfo/table_annovar-nf:v1.1'
-    memory='10 GB'
+    memory = '20 GB'
   }
   
   withName: 'VCF2MAF' {
       container = 'quay.io/biocontainers/mulled-v2-b6fc09bed47d0dc4d8384ce9e04af5806f2cc91b:305092c6f8420acd17377d2cc8b96e1c3ccb7d26-0'
   }
 
+  withName: 'MAFTOOLS' {
+    memory = '5 GB'
+    container = 'https://depot.galaxyproject.org/singularity/bioconductor-maftools%3A2.8.0--r41hd029910_0'
+  }
+ }
+
+process {
+
+  withName: 'ANNOVAR_ANNOTATE' {
+    time='12h'
+    container = 'shub://IARCbioinfo/table_annovar-nf:v1.1'
+    memory='10 GB'
+  }
+
+  withName: 'ANNOVAR2MAF' {
+    time='24h'
+    memory='5 GB'
+  }
+}
+
+process {
   withName: 'PLATYPUS_CALL_VARIANTS' {
     time='24h'
     container = 'https://depot.galaxyproject.org/singularity/platypus-variant%3A0.8.1.1--htslib1.5_0'
   }
+}
 
-  withName: 'BCFTOOLS_SPLIT_VEP' {
-      container = 'https://depot.galaxyproject.org/singularity/bcftools%3A1.14--hde04aa1_1'
+process {
+   withName: 'BCFTOOLS_SPLIT_VEP' {
+   container = 'https://depot.galaxyproject.org/singularity/bcftools%3A1.14--hde04aa1_1'
+  }
+}
+
+process {
+  withName: 'SEQUENZA_CNAqc' {
+    memory = '300 GB'
+    time = '3h'
+    
+    errorStrategy = 'finish'
+    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
+
+    ext.args = {[
+      "norm_method": params.seqcna_norm_method,
+      "window": params.seqcna_window,
+      "gamma": params.seqcna_gamma,
+      "kmin": params.seqcna_kmin,
+      "min_reads_baf": params.seqcna_min_reads_baf,
+      "min_reads": params.seqcna_min_reads,
+      "min_reads_normal": params.seqcna_reads_normal,
+      "max_mut_types": params.seqcna_max_mut_types,
+
+      "low_cell": params.seqcna_low_cell,
+      "up_cell": params.seqcna_up_cell,
+      "low_ploidy": params.seqcna_low_ploidy,
+      "up_ploidy": params.seqcna_up_ploidy,
+      "delta_cellularity": params.seqcna_delta_cellularity,
+      "delta_ploidy": params.seqcna_delta_ploidy,
+
+      "matching_strategy": params.seqcna_matching_strategy
+      ]}
   }
 
+
+  withName: 'VARTRIX' {
+    memory='50 GB'
+    time='2h'
+    container = 'https://depot.galaxyproject.org/singularity/vartrix%3A1.1.22--h27d5293_3'
+    ext.args   = {[
+        "scoring": params.vartrix_scoring_method,
+        "padding": params.vartrix_padding,
+        "umi": params.vartrix_umi
+    ]}
+  }
+
+  withName: 'VIBER' {
+    memory='128 GB'
+    time='2h'
+    container='file:///fast/cdslab/ebusca00/singularity/cdslab.sif'
+    ext.args = {[
+      "K" : params.viber_K,
+      "samples" : params.viber_samples,
+      "alpha_0" : params.viber_alpha_0,
+      "a_0" : params.viber_a_0,
+      "b_0" : params.viber_b_0,
+      "maxIter" : params.viber_maxIter,
+      "epsilon_conv" : params.viber_epsilon_conv,
+      "q_init" : params.viber_q_init,
+      "trace" : params.viber_trace,
+      "binomial_cutoff" : params.viber_binomial_cutoff,
+      "dimensions_cutoff" : params.viber_dimensions_cutoff,
+      "pi_cutoff" : params.viber_pi_cutoff,
+      "re_assign" : params.viber_re_assign
+    ]}
+  }
+
+  withName: 'PYCLONEVI' {
+    memory='50 GB'
+    time='2h'
+    container = 'https://depot.galaxyproject.org/singularity/pyclone-vi%3A0.1.3--pyhca03a8a_0'
+    ext.args   = { [
+      "n_cluster": params.pyclonevi_n_cluster,
+      "density": params.pyclonevi_density,
+      "n_grid_point": params.pyclonevi_n_grid_point,
+      "n_restarts": params.pyclonevi_n_restarts
+    ]}
+  }
+
+  withName: "MOBSTERh" {
+    memory='50 GB'
+    time='2h'
+    container='file:///fast/cdslab/ebusca00/singularity/cdslab.sif'
+    ext.args = {[
+      "K" : params.mobster_K,
+      "samples" : params.mobster_samples,
+      "init" : params.mobster_init,
+      "tail" : params.mobster_tail,
+      "epsilon" : params.mobster_epsilon,
+      "maxIter" : params.mobster_maxIter,
+      "fit_type" : params.mobster_fit_type,
+      "seed" : params.mobster_seed,
+      "model_selection" : params.mobster_model_selection,
+      "trace" : params.mobster_trace,
+      "parallel" : params.mobster_parallel,
+      "pi_cutoff" : params.mobster_pi_cutoff,
+      "n_cutoff" : params.mobster_n_cutoff,
+      "auto_setup" : params.mobster_auto_setup,
+      "silent" : params.mobster_silent
+    ]}
+  }
+
+  withName: "CTREE" {
+    memory='50 GB'
+    time='2h'
+    container='file:///fast/cdslab/ebusca00/singularity/cdslab.sif'
+    ext.args = {[
+      "sspace_cutoff" : params.ctree_sspace_cutoff,
+      "n_sampling" : params.ctree_n_sampling,
+      "store_max" : params.ctree_store_max
+    ]}
+  }
+}
+
+process {
+
+  withName: 'SIG_PROFILER' {
+    time='2h'
+    memory='100 GB'
+  }
+
+  withName: 'SPARSE_SIGNATURES' {
+    time='75h'
+    memory='100 GB'
+    container = 'https://depot.galaxyproject.org/singularity/bioconductor-sparsesignatures%3A2.8.0--r42hdfd78af_0'
+  }
+}
+
+process {
   withName: 'CNA_PROCESSING' {
-    memory = '100 GB'
+    memory = '50 GB'
     time = '1h'
     errorStrategy = 'finish'
 
@@ -52,7 +199,7 @@ process {
 
   withName: 'JOIN_CNAQC' {
     memory = '50 GB'
-    time = '1h'
+    time = '2h'
     errorStrategy = 'finish'
 
     container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
@@ -66,10 +213,9 @@ process {
     container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
 }
 
-
   withName: 'CNAQC_ANALYSIS' {
     memory = '100 GB'
-    time = '3h'
+    time = '2h'
     errorStrategy = 'finish'
 
     container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
@@ -78,12 +224,4 @@ process {
       "matching_strategy": params.cna_matching_strategy
     ]}
 }
-
-  withName: 'SEQUENZA_CNAqc' {
-    memory = '300 GB'
-    time = '3h'
-    errorStrategy = 'finish'
-
-    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
-  }
 }
