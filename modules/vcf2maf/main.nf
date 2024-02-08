@@ -7,7 +7,7 @@ process VCF2MAF {
 
     input:
 
-      tuple val(datasetID), val(patientID), val(sampleID), path(vcf_File)
+      tuple val(datasetID), val(patientID), val(sampleID), path(vep_output)
 
     output:
 
@@ -22,7 +22,7 @@ process VCF2MAF {
 
     // Unzip vcf file
 
-    gunzip -c $vcf_File > data_vep.vcf
+    gunzip -c $vep_output > data_vep.vcf
 
     // Run vcf2maf tool    
 
