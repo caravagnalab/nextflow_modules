@@ -16,7 +16,7 @@ process VCF2MAF {
     script:
 
     """
-// Create results output directory
+# Create results output directory
 
     mkdir -p $datasetID/$patientID/$sampleID/VCF2MAF
 
