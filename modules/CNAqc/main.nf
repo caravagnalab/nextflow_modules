@@ -36,7 +36,7 @@ process CNAQC_ANALYSIS {
         purity = CNA\$purity ,
         ref = "$params.assembly")
     
-    #x = CNAqc::annotate_variants(x, drivers = CNAqc::intogen_drivers)
+    x = CNAqc::annotate_variants(x, drivers = CNAqc::intogen_drivers)
 
     x = CNAqc::analyze_peaks(x, 
       matching_strategy = "$matching_strategy")

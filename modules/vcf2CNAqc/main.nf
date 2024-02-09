@@ -64,7 +64,7 @@ process VCF_PROCESSING {
                         dplyr::ungroup() %>%
                         dplyr::select(chr, from, to, ref, alt, CSQ) %>% 
                         tidyr::separate(CSQ, vep_field, sep = "\\\\|") %>% 
-                        dplyr::select(chr, from, to, ref, alt, FILTER, IMPACT, SYMBOL, Gene) #can add other thing, CSQ, HGSP
+                        dplyr::select(chr, from, to, ref, alt, IMPACT, SYMBOL, Gene) #can add other thing, CSQ, HGSP
     
     # If vcf is not annotated 
     } else {

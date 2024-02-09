@@ -195,7 +195,7 @@ process {
     time = '1h'
     errorStrategy = 'finish'
 
-    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
+    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cnaqc.sif'
 }
 
   withName: 'JOIN_CNAQC' {
@@ -203,7 +203,7 @@ process {
     time = '2h'
     errorStrategy = 'finish'
 
-    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
+    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cnaqc.sif'
 }
 
   withName: 'VCF_PROCESSING' {
@@ -211,7 +211,7 @@ process {
     time = '1h'
     errorStrategy = 'finish'
 
-    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
+    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cnaqc.sif'
 }
 
   withName: 'CNAQC_ANALYSIS' {
@@ -219,7 +219,7 @@ process {
     time = '2h'
     errorStrategy = 'finish'
 
-    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
+    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cnaqc.sif'
 
     ext.args = {[
       "matching_strategy": params.cna_matching_strategy
