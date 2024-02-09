@@ -17,8 +17,8 @@ workflow {
     map{row ->
      tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.cna_calling))}
 
-  annotated_vcf = VARIANT_ANNOTATION(input_vcf)
-  join_CNAqc = CNAQC(annotated_vcf, input_CNA)
-  SUBCLONAL_DECONVOLUTION(join_CNAqc)
+  VARIANT_ANNOTATION(input_vcf)
+  join_CNAqc = CNAQC(VARIANT_ANNOTATION.out.vep_out, input_CNA)
+  //SUBCLONAL_DECONVOLUTION(join_CNAqc)
 
 }

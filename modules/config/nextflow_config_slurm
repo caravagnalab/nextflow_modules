@@ -26,8 +26,8 @@ process {
   withName: 'VEP_ANNOTATE' {
     time='12h'
     container = 'https://depot.galaxyproject.org/singularity/ensembl-vep:110.1--pl5321h2a3209d_0'
-    memory = '20 GB'
-  }
+    memory = '20 GB' 
+ }
   
   withName: 'VCF2MAF' {
     container = 'https://depot.galaxyproject.org/singularity/vcf2maf%3A1.6.20--0'
