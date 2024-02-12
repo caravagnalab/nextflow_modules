@@ -7,9 +7,8 @@ process JOIN_CNAQC {
   
   output:
 
-    tuple val(datasetID), val(patientID), path("$datasetID/$patientID/join_CNAqc/*.rds"), emit: rds
+    tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/join_CNAqc/*.rds"), emit: rds
     
-    tuple val(datasetID), val(patientID), path("$datasetID/$patientID/join_CNAqc/*.csv"), emit: csv
 
   script:
 
@@ -24,7 +23,7 @@ process JOIN_CNAQC {
     dir.create(res_dir, recursive = TRUE)
     
     samples = substr("$sampleID", 2, nchar("$sampleID")-1)
-    samples = strsplit(samples, " ")[[1]]
+    samples = strsplit(samples, ", ")[[1]]
 
     multisample_init <- function(cnaqc_objs) {
     
@@ -53,7 +52,7 @@ process JOIN_CNAQC {
         cnaqc_objs[[x]]\$cna\$sample = x
         return(cnaqc_objs[[x]]\$cna)
     }) %>%
-        do.call(rbind, .) %>%
+        do.call(bind_rows, .) %>%
         dplyr::select(sample, dplyr::everything())
     
     out = lapply(x\$chr %>% unique(), function(chr) {
@@ -102,9 +101,9 @@ process JOIN_CNAQC {
             #covRatio = ifelse(length(covRatio) == 0, NA, covRatio) #  Replace missing values with NA
             ) %>%
             mutate(segment_id = paste(chr, from, to, sep = ":"))
-        }) %>% do.call(rbind, .)
-        }) %>% do.call(rbind, .)
-    })  %>% do.call(rbind, .)
+        }) %>% do.call(bind_rows, .)
+        }) %>% do.call(bind_rows, .)
+    })  %>% do.call(bind_rows, .)
     
     return(out)
     }
@@ -116,7 +115,7 @@ process JOIN_CNAQC {
         cnaqc_objs[[x]]\$mutations\$sample = x
         return(cnaqc_objs[[x]]\$mutations)
     }) %>%
-        do.call(rbind, .) %>%
+        do.call(bind_rows, .) %>%
         dplyr::select(sample, dplyr::everything()) 
     
     # map the mutations on the new joint segments
@@ -143,8 +142,8 @@ process JOIN_CNAQC {
         which_mutations\$segment_id[mappable] = which_segments\$segment_id[i]
         
         return(which_mutations)
-        }) %>% do.call(rbind, .)
-    }) %>% do.call(rbind, .) %>%
+        }) %>% do.call(bind_rows, .)
+    }) %>% do.call(bind_rows, .) %>%
         dplyr::mutate(karyotype = ifelse(karyotype == "NA:NA", NA, karyotype)) 
     
     return(out)
@@ -156,12 +155,6 @@ process JOIN_CNAQC {
     names(result) = samples
     out = multisample_init(result)
 
-    df = tibble(datasetID = rep("$datasetID", length(samples)),
-		patientID = rep("$patientID", length(samples)),
-		sampleID = samples,
-		join_CNA = rep(paste0(res_dir, "join_cnaqc.rds"), length(samples)))
-
-    write.csv(df, paste0(res_dir, "join_cnaqc.csv"), row.names = F, quote = F)
     saveRDS(object = out, file = paste0(res_dir, "join_cnaqc.rds"))
     """
 }
