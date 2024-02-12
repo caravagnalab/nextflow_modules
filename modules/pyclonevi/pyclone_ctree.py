@@ -2,15 +2,25 @@
 
 import sys
 import pandas as pd
+import argparse
+## Read command line args
+
+parser = argparse.ArgumentParser(description='Process input and output files.')
+parser.add_argument('--joint', help='Joint table path')
+parser.add_argument('--best_fit', help='Pyclone-vi best fit path')
+parser.add_argument('--ctree_input', help='Table for ctree path')
+args = parser.parse_args()
+
 
 ## Read pyclone best fit table
-best_fit_file=sys.argv[2]
+##best_fit_file=sys.argv[2]
+best_fit_file = args.best_fit
 df_output = pd.read_csv(best_fit_file, sep='\t')
 
 ## Read pyclone input table
-
-df_input = pd.read_csv(sys.argv[1], sep = '\t')
-
+joint_table = args.joint
+#df_input = pd.read_csv(sys.argv[1], sep = '\t')
+df_input = pd.read_csv(joint_table, sep = '\t')
 ## Caluclate number of mutations per cluster and add to the subset orginal df_output dataframe
 
 df_output_small = df_output[['mutation_id','sample_id','cluster_id','cellular_prevalence']]
@@ -64,7 +74,8 @@ ctree_input = result_df[['patientID','variantID','is.driver','is.clonal','cluste
 
 
 
-final_jt_file = sys.argv[3]
+#final_jt_file = sys.argv[3]
+final_jt_file = args.ctree_input
 ctree_input.to_csv(final_jt_file, sep=",",index=False, header=True)
 
 
