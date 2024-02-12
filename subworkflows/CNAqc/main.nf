@@ -26,6 +26,4 @@ workflow CNAQC {
     CNAQC_ANALYSIS.out.pdf
 
     JOIN_CNAQC.out.rds
-    JOIN_CNAQC.out.csv
-    
 }
