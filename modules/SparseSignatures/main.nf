@@ -47,7 +47,6 @@ process SPARSE_SIGNATURES {
 
    #Define a set of parameters on which to perform the estimation
    data(patients)
-
    
    #estimate the initial values of beta
    starting_betas = startingBetaEstimation(x=patients,K=3:10, background_signature=background)
@@ -89,7 +88,8 @@ process SPARSE_SIGNATURES {
   #signature visualization
   signatures = nmf_Lasso_out$beta
   pl2_signatures <- signatures.plot(beta=signatures, xlabels=FALSE)
-
+  
+  #saving results 
   ggplot2::ggsave(plot = plot_signatures, filename = paste0(res_SparseSig, "discovered_signatures.pdf"), width = 12, height = 18, units = 'in', dpi = 200)
 
     """

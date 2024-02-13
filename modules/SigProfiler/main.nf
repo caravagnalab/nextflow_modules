@@ -33,10 +33,9 @@ process SIG_PROFILER {
     data = sig.importdata("vcf") 
 
 
-    #extract the signatures (use reference_genome parameter only in the input is "vcf"
+    #extract the signatures (use reference_genome parameter only in the input is "vcf")
 
-    sig.sigProfilerExtractor("vcf", "results", "/orfeo/scratch/cdslab/kdavydzenka/BRCA/BRCA_vcf", reference_genome="GRCh37", 
-    minimum_signatures=1, maximum_signatures=10, nmf_replicates=100)
+    sig.sigProfilerExtractor("vcf", "results", "/orfeo/scratch/cdslab/kdavydzenka/BRCA/BRCA_vcf", reference_genome="GRCh37", minimum_signatures=1, maximum_signatures=10, nmf_replicates=100)
 
     #save the output results
 
