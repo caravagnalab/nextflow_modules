@@ -193,7 +193,7 @@ process JOIN_CNAQC {
     }
 
     join_table = join %>%  
-        dplyr::mutate(patientID = rep(patient, nrow(.))) %>% 
+        dplyr::mutate(patientID = rep("$patientID", nrow(.))) %>% 
         dplyr::mutate(normal_cn = rep(2, nrow(.))) %>% 
         tidyr::separate(karyotype, into = c('major_cn', 'minor_cn'), sep = ':') %>% 
         dplyr::select(sample, chr, POS, ref, alt, DP, VAF, NR, NV,normal_cn, major_cn, minor_cn, purity, patientID, SYMBOL, is_driver, segment_id)
