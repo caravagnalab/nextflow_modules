@@ -182,10 +182,13 @@ process {
     memory='100 GB'
     ext.args   = {[
       "input_type": params.sigprofilerextractor_input_type,
+      "out_put": params.sigprofilerextractor_out_put,
+      "input_data": params.sigprofilerextractor_input_data,
       "reference_genome": params.sigprofilerextractor_reference_genome,
       "minimum_signatures": params.sigprofilerextractor_minimum_signatures,
       "maximum_signatures": params.sigprofilerextractor_maximum_signatures,
-      "nmf_replicates": params.sigprofilerextractor_nmf_replicates
+      "nmf_replicates": params.sigprofilerextractor_nmf_replicates,
+      "cpu": params.sigprofilerextractor_cpu
     ]}
   }
 
