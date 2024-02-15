@@ -84,11 +84,11 @@ cat("Minimum MSE at:", min_Lambda, "and", min_K, "\n")
 
 nmf_Lasso_out = SparseSignatures::nmfLasso(x = patients, 
 					   K = min_K, 
-					   beta = NULL,
-					   background_signature = background, 
+					   beta = NULL, #initial value of the signature matrix β
+					   background_signature = background, #provided by the user, is ignored if beta is given instead
 					   lambda_rate_alpha = 0,  
 					   lambda_rate_beta = min_Lambda, 
-					   iterations = 30) #umber of iterations in a single NMF LASSO algorithm run
+					   iterations = 30) #number of iterations in a single NMF LASSO algorithm run
 
 saveRDS(object = nmf_Lasso_out, file = "signatures_bestConfig.rds")
 
