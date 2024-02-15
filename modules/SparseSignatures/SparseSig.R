@@ -13,9 +13,22 @@ dir.create(res_SparseSig, recursive = TRUE)
 #Input dataset : vcf / tsv / csv joint-table multisample
 # sample | chrom | start | end | ref | alt
 
+#Extract input data information
+multisample_table <- read.delim(file = 'mut_join_table.tsv', sep = '\t', header = TRUE)
+input_data <- multisample_table %>%
+  mutate(sample = paste(multisample_data$patient_id, "_", multisample_data$sample_id)) %>%
+  dplyr::rename(
+    sample = sample,
+    chrom = chr,
+    start = from,
+    end = to,
+    ref = ref,
+    alt = alt) %>%
+  dplyr::select(sample, chrom, start, end, ref, alt) %>%
+  as.data.frame()
 
 #Import the constructed data file
-data(ssm560_reduced)
+data(ssm560_reduced) #example
 
 #Generate the patient vs mutation count matrix from mutation data
 bsg = BSgenome.Hsapiens.1000genomes.hs37d5::hs37d5
