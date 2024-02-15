@@ -60,7 +60,7 @@ cv_out = nmfLassoCV(x = patients,
 		 cross_validation_repetitions = 10,
 		 num_processes = Inf) #number of requested NMF worker subprocesses (adaptive maximum number is automatically chosen)
 
-saveRDS(object = cv_out, file = "cv_out.rds")
+#saveRDS(object = cv_out, file = "cv_out.rds")
 
 #Analyze the mean squared error results averaging over cross-validation repetitions
 cv_mses <- cv_out$grid_search_mse[1, , ]
@@ -72,9 +72,10 @@ dimnames(cv_means_mse) <- dimnames(cv_mses)
 
 #Compute the combination with the lowest MSE
 min_ii <- which(cv_means_mse == min(cv_means_mse), arr.ind = TRUE)
-min_Lambda <- rownames(cv_means_mse)[min_ii[1]]
+min_Lambda <- rownames(cv_means_mse)[min_ii[1]] 
+min_Lambda <- substring(min_Lambda,1,4) %>% as.numeric()
 min_K <- colnames(cv_means_mse)[min_ii[2]]
-
+min_K <- substring(min_K,1,1) %>% as.numeric(min_K)
 cat("Minimum MSE at:", min_Lambda, "and", min_K, "\n")
 
 
@@ -83,16 +84,17 @@ cat("Minimum MSE at:", min_Lambda, "and", min_K, "\n")
 
 nmf_Lasso_out = SparseSignatures::nmfLasso(x = patients, 
 					   K = min_K, 
-					   beta = starting_betas, 
+					   beta = NULL,
+					   background_signature = background, 
 					   lambda_rate_alpha = 0,  
 					   lambda_rate_beta = min_Lambda, 
 					   iterations = 30) #umber of iterations in a single NMF LASSO algorithm run
 
-saveRDS(object = nmf_Lasso_out, file = "sign_bestConfig.rds")
+saveRDS(object = nmf_Lasso_out, file = "signatures_bestConfig.rds")
 
 #signature visualization
 signatures = nmf_Lasso_out$beta
-pl2_signatures <- signatures.plot(beta=signatures, xlabels=FALSE)
+plot_signatures <- signatures.plot(beta=signatures, xlabels=FALSE)
 
 ggplot2::ggsave(plot = plot_signatures, filename = paste0(res_SparseSig, "disc_signatures.pdf"), width = 12, height = 18, units = 'in', dpi = 200)
                                                                                                                                       
