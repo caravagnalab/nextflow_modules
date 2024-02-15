@@ -189,40 +189,41 @@ process {
 }
 
 
+
 process {
+  withLabel:cnaqc_analysis {
+      container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cnaqc.sif'
+  }
+
   withName: 'CNA_PROCESSING' {
+    label = "cnaqc_analysis"
     memory = '50 GB'
     time = '1h'
     errorStrategy = 'finish'
-
-    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cnaqc.sif'
-}
+  }
 
   withName: 'JOIN_CNAQC' {
+    label = "cnaqc_analysis"
     memory = '50 GB'
     time = '2h'
     errorStrategy = 'finish'
-
-    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cnaqc.sif'
-}
+  }
 
   withName: 'VCF_PROCESSING' {
+    label = "cnaqc_analysis"
     memory = '100 GB'
     time = '1h'
     errorStrategy = 'finish'
-
-    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cnaqc.sif'
-}
+  }
 
   withName: 'CNAQC_ANALYSIS' {
+    label = "cnaqc_analysis"
     memory = '100 GB'
     time = '2h'
     errorStrategy = 'finish'
-
-    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cnaqc.sif'
 
     ext.args = {[
       "matching_strategy": params.cna_matching_strategy
     ]}
-}
+  }
 }

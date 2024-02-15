@@ -26,5 +26,6 @@ workflow CNAQC {
     CNAQC_ANALYSIS.out.pdf
 
     JOIN_CNAQC.out.rds
-    JOIN_CNAQC.out.tsv
+    JOIN_CNAQC.out.mut_tsv
+    JOIN_CNAQC.out.cna_tsv
 }
