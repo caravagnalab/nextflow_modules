@@ -20,6 +20,7 @@ def input_processing(data):
     df = df.rename(columns={'sample_id': 'Sample', 'patient_id': 'ID', 'chr': 'chrom', 'from': 'pos_start', 'from': 'pos_start',
                        'to': 'pos_end'})
     df = df.loc[:, ['Project', 'Sample', 'ID', 'Genome', 'mut_type', 'chrom', 'pos_start', 'pos_end', 'ref', 'alt', 'Type']]
+    df = df.style.hide(axis='index')
 
     return df
 
