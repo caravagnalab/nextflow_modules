@@ -27,6 +27,9 @@ input_data <- multisample_table %>%
   dplyr::select(sample, chrom, start, end, ref, alt) %>%
   as.data.frame()
 
+input_data$chrom=str_sub(input_data$chrom,4,5)
+
+
 #Import the constructed data file
 data(ssm560_reduced) #example
 
