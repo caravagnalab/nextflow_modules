@@ -21,17 +21,20 @@ def input_processing(data):
     df = df.rename(columns={'sample_id': 'Sample', 'patient_id': 'ID', 'chr': 'chrom', 'from': 'pos_start', 'from': 'pos_start',
                        'to': 'pos_end'})
     df = df.loc[:, ['Project', 'Sample', 'ID', 'Genome', 'mut_type', 'chrom', 'pos_start', 'pos_end', 'ref', 'alt', 'Type']]
-    df = df.style.hide(axis='index')
+    #df = df.style.hide(axis='index') #row merge
 
     return df
 
 input_data = input_processing(input_data)
 
-#matrix generation
+#saving input matrix to txt
+input_data.to_csv('CLL/input_data.txt', sep='\t', index=False, header=True)
+
+#mutations matrix generation
 input_matrix = matGen.SigProfilerMatrixGeneratorFunc(
         project = "CLL", 
         reference_genome = "GRCh37", 
-        path_to_input_file = "mut_joint_table.txt")
+        path_to_input_file = "/orfeo/scratch/cdslab/kdavydzenka/CLL/input")
 
 #chose the data type that you would like to import: "vcf" or "matrix"
 #data = sig.importdata("matrix")
