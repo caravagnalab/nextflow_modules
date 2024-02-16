@@ -7,7 +7,7 @@ process SPARSE_SIGNATURES {
 
     input:
 
-      tuple val(datasetID), path()
+      tuple val(datasetID), path(jont_table)
 
     output:
 
@@ -22,75 +22,97 @@ process SPARSE_SIGNATURES {
     library("BSgenome.Hsapiens.1000genomes.hs37d5")
     library("tidyverse")
     library("ggplot2")
-
-
+    
     res_SparseSig = paste0("SparseSig/")
     dir.create(res_SparseSig, recursive = TRUE)
+
 
     #Input dataset : vcf / tsv / csv joint-table multisample
     # sample | chrom | start | end | ref | alt
 
-   #Import the constructed data file
-   #data(ssm560_reduced)
-   #vcf <- read.delim("vcf_multisample.tsv", sep = "\t")
+    #Extract input data information
+    multisample_table <- read.delim(file = 'mut_join_table.tsv', sep = '\t', header = TRUE)
+    input_data <- multisample_table %>% 
+      mutate(sample = paste(multisample_data$patient_id, "_", multisample_data$sample_id)) %>% 
+      dplyr::rename(
+       sample = sample,
+       chrom = chr,
+       start = from,
+       end = to,
+       ref = ref,
+       alt = alt) %>%
+    dplyr::select(sample, chrom, start, end, ref, alt) %>%
+    as.data.frame()
 
-   #Generate the patient vs mutation matrix from mutation data
-   bsg = BSgenome.Hsapiens.1000genomes.hs37d5
-   data(mutation_categories)
-   imported_data = import.trinucleotides.counts(data=ssm560_reduced,reference=bsg)
-
-   #pl1_signatures <- patients.plot(trinucleotides_counts=imported_data,samples="PD10010a")
-   #ggplot2::ggsave(plot = pl1_signatures, filename = paste0(res_SparseSig, "data_signatures.pdf"), width = 12, height = 18, units = 'in', dpi = 200)
-
-   #load background signature from COSMIC
-   data(background)
-
-   #Define a set of parameters on which to perform the estimation
-   data(patients)
-   
-   #estimate the initial values of beta
-   starting_betas = startingBetaEstimation(x=patients,K=3:10, background_signature=background)
-
-   #explore the search space of values for the LASSO penalty in order to make a good choice
-   #test different values to sparsify beta
-   lambda_range = lambdaRangeBetaEvaluation(x=patients,K=10,beta=starting_betas[[8,1]],
-                                         lambda_values=c(0.05,0.10))
+   input_data$chrom=str_sub(input_data$chrom,4,5)
 
 
-   #Find the optimal number of signatures and sparsity level: rely on cross-validation
+  #Import the constructed data file
+  #Generate the patient vs mutation count matrix from mutation data
+  
+  bsg = BSgenome.Hsapiens.1000genomes.hs37d5::hs37d5
+  mut_counts = import.trinucleotides.counts(data=input_data,
+                                          reference=bsg)
 
-   cv_out = nmfLassoCV(x=patients, 
-                 K=3:10,
-                 background_signature=background,
-                 nmf_runs=1,
-                 lambda_values_alpha=c(0.01, 0.05, 0.1),
-                 lambda_values_beta=c(0.01, 0.05, 0.1),
-                 cross_validation_repetitions=20,
-                 cross_validation_iterations = 10,
-                 num_processes=8,
-                 iterations = 10)
+  #load a reference background signature from COSMIC
+  data(background)
 
-  saveRDS(object = cv_out, file = "cv_out.rds")
+  #Define a set of parameters on which to perform the estimation
+  #data(patients)
 
-  #Use the resulting matrix to find the combination of parameters that yields the lowest MSE
-  min_ii = which(cv_out == min(cv_out), arr.ind = TRUE)
-  min_Lambda = rownames(cv_out)[min_ii[1]]
-  min_K = colnames(cv_out)[min_ii[2]]
+  #estimate the initial values of beta
+  starting_betas = startingBetaEstimation(x = mut_counts,
+                                        K= 3:10,
+                                        background_signature  = background)
+
+  
+
+  #Find the optimal number of signatures and sparsity level: rely on cross-validation
+  # 1 h per repetition
+  cv_out = nmfLassoCV(x = patients,
+                 K = 3:10,  #user supplied
+                 starting_beta = starting_betas,
+                 lambda_values_alpha = 0, #disabling regularization for the exposures α
+                 lambda_values_beta = c(0.01, 0.05, 0.1),
+                 cross_validation_repetitions = 10,
+                 num_processes = Inf) #number of requested NMF worker subprocesses (adaptive maximum number is automatically chosen)
+
+  #saveRDS(object = cv_out, file = "cv_out.rds")
+
+  #Analyze the mean squared error results averaging over cross-validation repetitions
+  cv_mses <- cv_out$grid_search_mse[1, , ]
+  cv_means_mse <- matrix(sapply(cv_mses, FUN = mean),
+                       nrow = dim(cv_mses)[1])
+  dimnames(cv_means_mse) <- dimnames(cv_mses)
+
+  #Compute the combination with the lowest MSE
+  min_ii <- which(cv_means_mse == min(cv_means_mse), arr.ind = TRUE)
+  min_Lambda <- rownames(cv_means_mse)[min_ii[1]]
+  min_Lambda <- substring(min_Lambda,1,4) %>% as.numeric()
+  min_K <- colnames(cv_means_mse)[min_ii[2]]
+  min_K <- substring(min_K,1,1) %>% as.numeric(min_K)
   cat("Minimum MSE at:", min_Lambda, "and", min_K, "\n")
 
-  #Discovering the signatures within the dataset: NMF Lasso
-  #compute the signatures for the best configuration, i.e., K = 4.
-  beta = starting_betas_example[["5_signatures","Value"]]
-  nmf_Lasso_out = SparseSignatures::nmfLasso(x = patients, K = min_K, background_signature = background, beta = beta)
 
-  saveRDS(object = nmf_Lasso_out, file = "sign_bestConfig.rds")
+  #Discovering the signatures within the dataset: NMF Lasso
+  #compute the signatures for the best configuration.
+
+  nmf_Lasso_out = SparseSignatures::nmfLasso(x = patients,
+                                           K = min_K,
+                                           beta = NULL, #initial value of the signature matrix β
+                                           background_signature = background, #provided by the user, is ignored if beta is given instead
+                                           lambda_rate_alpha = 0,
+                                           lambda_rate_beta = min_Lambda,
+                                           iterations = 30) #number of iterations in a single NMF LASSO algorithm run
+
+  saveRDS(object = nmf_Lasso_out, file = "signatures_bestConfig.rds")
 
   #signature visualization
   signatures = nmf_Lasso_out$beta
-  pl2_signatures <- signatures.plot(beta=signatures, xlabels=FALSE)
-  
-  #saving results 
-  ggplot2::ggsave(plot = plot_signatures, filename = paste0(res_SparseSig, "discovered_signatures.pdf"), width = 12, height = 18, units = 'in', dpi = 200)
+  plot_signatures <- signatures.plot(beta=signatures, xlabels=FALSE)
+
+  ggplot2::ggsave(plot = plot_signatures, filename = paste0(res_SparseSig, "disc_signatures.pdf"), width = 12, height = 18, units = 'in', dpi = 200)
+ 
 
     """
 }
