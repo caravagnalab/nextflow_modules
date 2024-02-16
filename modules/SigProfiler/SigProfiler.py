@@ -30,7 +30,7 @@ input_data = input_processing(input_data)
 #saving input matrix to txt
 input_data.to_csv('CLL/input_multisample/input_data.txt', sep='\t', index=False, header=True)
 
-#mutations matrix generation
+#mutation's counts matrix generation
 input_matrix = matGen.SigProfilerMatrixGeneratorFunc(
         project = "CLL", 
         reference_genome = "GRCh37", 
