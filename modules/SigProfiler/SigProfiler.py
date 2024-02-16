@@ -17,6 +17,7 @@ input_data = pd.read_csv("mut_joint_table.txt", sep = '\t')
 def input_processing(data):
     new_columns = {'Project': "CLL", 'Genome': 'GRCh37', 'Type': "SOMATIC", 'mut_type': "SNP"}
     df = data.assign(**new_columns)
+    df['chr'] = df['chr'].astype(str).str[3:]
     df = df.rename(columns={'sample_id': 'Sample', 'patient_id': 'ID', 'chr': 'chrom', 'from': 'pos_start', 'from': 'pos_start',
                        'to': 'pos_end'})
     df = df.loc[:, ['Project', 'Sample', 'ID', 'Genome', 'mut_type', 'chrom', 'pos_start', 'pos_end', 'ref', 'alt', 'Type']]
