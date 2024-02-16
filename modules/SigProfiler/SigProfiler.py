@@ -11,7 +11,8 @@ from SigProfilerMatrixGenerator.scripts import SigProfilerMatrixGeneratorFunc as
 #os.mkdir(path)
 
 #import input data
-input_data = pd.read_csv("mut_joint_table.txt", sep = '\t')
+joint_table = "/orfeo/scratch/cdslab/kdavydzenka/CLL/input_joint_table/mut_joint_table.txt"
+input_data = pd.read_csv(joint_table, sep = '\t')
 
 #input data preprocessing
 def input_processing(data):
@@ -21,30 +22,46 @@ def input_processing(data):
     df = df.rename(columns={'sample_id': 'Sample', 'patient_id': 'ID', 'chr': 'chrom', 'from': 'pos_start', 'from': 'pos_start',
                        'to': 'pos_end'})
     df = df.loc[:, ['Project', 'Sample', 'ID', 'Genome', 'mut_type', 'chrom', 'pos_start', 'pos_end', 'ref', 'alt', 'Type']]
-    #df = df.style.hide(axis='index') #row merge
-
+    #df = df.style.hide(axis='index') #omit row indexes
     return df
 
 input_data = input_processing(input_data)
 
 #saving input matrix to txt
-input_data.to_csv('CLL/input_data.txt', sep='\t', index=False, header=True)
+input_data.to_csv('CLL/input_multisample/input_data.txt', sep='\t', index=False, header=True)
 
 #mutations matrix generation
 input_matrix = matGen.SigProfilerMatrixGeneratorFunc(
         project = "CLL", 
         reference_genome = "GRCh37", 
-        path_to_input_file = "/orfeo/scratch/cdslab/kdavydzenka/CLL/input")
+        path_to_input_file = "/orfeo/scratch/cdslab/kdavydzenka/CLL/input_multisample/")
 
 #chose the data type that you would like to import: "vcf" or "matrix"
 #data = sig.importdata("matrix")
 
-
 # Perform model fitting
-sig.sigProfilerExtractor("matrix", "results", input_data, 
-                         minimum_signatures = 1, 
-                         maximum_signatures = 10, 
-                         nmf_replicates = 100)
+sig.sigProfilerExtractor(input_type = "matrix", 
+                         output = "results", 
+                         input_data = "",  #path to the file
+                         exome = False,
+                         minimum_signatures = 1,  #default value
+                         maximum_signatures = 10, #default value 25
+                         nmf_replicates = 100, #the number of iteration to be performed to extract each number signature
+                         resample = True,
+                         matrix_normalization = "gmm", #default
+                         seeds= "random",
+                         nmf_init = "random", #he initialization algorithm for W and H matrix of NMF
+                         min_nmf_iterations = 10000, #minimum number of iterations to be completed before NMF converges (default 10000)
+                         max_nmf_iterations = 1000000, #default
+                         nmf_test_conv = 10000, #defines the number of iterations to done between checking next convergence
+                         nmf_tolerance = 1e-15, #tolerance to achieve to converge
+                         cpu = -1,
+                         gpu = False,
+                         cosmic_version = 3.4,
+                         make_decomposition_plots = True, #denovo to Cosmic sigantures decompostion plots will be created as a part the results
+                         collapse_to_SBS96 = True, #SBS288 and SBS1536 Denovo signatures will be mapped to SBS96 reference signatures
+                         get_all_signature_matrices = True,
+                         export_probabilities = True)
 
 
 #save the output results
