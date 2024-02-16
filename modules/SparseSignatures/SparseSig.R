@@ -31,21 +31,23 @@ input_data$chrom=str_sub(input_data$chrom,4,5)
 
 
 #Import the constructed data file
-data(ssm560_reduced) #example
+#data(ssm560_reduced) #example
 
 #Generate the patient vs mutation count matrix from mutation data
 bsg = BSgenome.Hsapiens.1000genomes.hs37d5::hs37d5
-data(mutation_categories)
-imported_data = import.trinucleotides.counts(data=ssm560_reduced, reference=bsg)
+mut_counts = import.trinucleotides.counts(data=input_data, 
+					  reference=bsg)
 
 #load a reference background signature from COSMIC
 data(background)
 
 #Define a set of parameters on which to perform the estimation
-data(patients)
+#data(patients)
 
 #estimate the initial values of beta
-starting_betas = startingBetaEstimation(x = patients, K= 3:10, background_signature  = background)
+starting_betas = startingBetaEstimation(x = mut_counts, 
+					K= 3:10, 
+					background_signature  = background)
 
 #Determining a valid range for the sparsity parameter 
 #Choice of K is context dependent, choosen by user
