@@ -23,6 +23,7 @@ process SIG_PROFILER {
     import os
     import shutil
     from SigProfilerExtractor import sigpro as sig
+    from SigProfilerMatrixGenerator.scripts import SigProfilerMatrixGeneratorFunc as matGen
 
     #create directory
     path = '/orfeo/scratch/cdslab/kdavydzenka/SIGPROFILER/'
@@ -30,12 +31,9 @@ process SIG_PROFILER {
 
     #chose the data type that you would like to import: "vcf" or "matrix"
 
-    data = sig.importdata("vcf") 
-
 
     #extract the signatures (use reference_genome parameter only in the input is "vcf")
 
-    sig.sigProfilerExtractor("vcf", "results", "/orfeo/scratch/cdslab/kdavydzenka/BRCA/BRCA_vcf", reference_genome="GRCh37", minimum_signatures=1, maximum_signatures=10, nmf_replicates=100)
 
     #save the output results
 
