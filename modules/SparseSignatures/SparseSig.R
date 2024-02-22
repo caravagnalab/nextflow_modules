@@ -18,9 +18,9 @@ input_data <- multisample_table %>%
     sample = sample,
     chrom = chr,
     start = from,
-    end = to,
     ref = ref,
     alt = alt) %>%
+  mutate(end = start) %>%
   dplyr::select(sample, chrom, start, end, ref, alt) %>%
   as.data.frame()
 
