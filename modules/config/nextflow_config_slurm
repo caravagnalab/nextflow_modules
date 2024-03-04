@@ -3,7 +3,6 @@ cleanup=true
 
 includeConfig "$baseDir/modules/config/params.config"
 
-
  singularity {
      enabled = true
      singularity.envWhitelist = ["SINGULARITY_TMPDIR"]
@@ -12,7 +11,7 @@ includeConfig "$baseDir/modules/config/params.config"
  
  process {
    executor='slurm'
-   queue='EPYC'
+   queue='THIN'
    errorStrategy = 'finish'
 }
 
@@ -191,33 +190,37 @@ process {
 
 
 process {
-  withLabel:cnaqc_analysis {
-      container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cnaqc.sif'
-  }
+  //withLabel:cnaqc_analysis {
+  //    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cnaqc.sif'
+  //}
 
   withName: 'CNA_PROCESSING' {
-    label = "cnaqc_analysis"
+    //label = "cnaqc_analysis"
+    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cnaqc.sif'
     memory = '50 GB'
     time = '1h'
     errorStrategy = 'finish'
   }
 
   withName: 'JOIN_CNAQC' {
-    label = "cnaqc_analysis"
+    //label = "cnaqc_analysis"
+    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cnaqc.sif'
     memory = '50 GB'
     time = '2h'
     errorStrategy = 'finish'
   }
 
   withName: 'VCF_PROCESSING' {
-    label = "cnaqc_analysis"
+    //label = "cnaqc_analysis"
+    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cnaqc.sif'
     memory = '100 GB'
     time = '1h'
     errorStrategy = 'finish'
   }
 
   withName: 'CNAQC_ANALYSIS' {
-    label = "cnaqc_analysis"
+    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cnaqc.sif'
+    //label = "cnaqc_analysis"
     memory = '100 GB'
     time = '2h'
     errorStrategy = 'finish'
