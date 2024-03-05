@@ -4,16 +4,16 @@ library("SparseSignatures")
 library("tidyverse")
 library("ggplot2")
 
-res_SparseSig = paste0("SparseSig/")
+res_SparseSig = paste0("SparseSig_2/")
 dir.create(res_SparseSig, recursive = TRUE)
 
 #Input dataset : vcf / tsv / csv joint-table multisample
 # sample | chrom | start | end | ref | alt
-multisample_table <- read.delim(file = 'mut_join_table.tsv', sep = '\t', header = TRUE)
+multisample_table <- read.delim(file = '/orfeo/LTS/CDSLab/LT_storage/kdavydzenka/nextflow_modules/modules/SparseSignatures/mut_joint_table.tsv', sep = '\t', header = TRUE)
 
 #Extract input data information
 input_data <- multisample_table %>%
-  mutate(sample = paste(multisample_data$patient_id, "_", multisample_data$sample_id)) %>%
+  mutate(sample = paste(multisample_table$patient_id, "_", multisample_table$sample_id)) %>%
   dplyr::rename(
     sample = sample,
     chrom = chr,
@@ -29,13 +29,6 @@ input_data$chrom=str_sub(input_data$chrom,4,5)
 #Generate the patient vs mutation count matrix from mutation data
 #Install a reference human-genome specification. 
 #The user must select, among the available choices, the reference genome consistent with the mutation dataset.
-if (!require("BSgenome.Hsapiens.1000genomes.hs37d5", quietly = TRUE)) {
-	BiocManager::install("BSgenome.Hsapiens.1000genomes.hs37d5")
-}
-
-if (!require("BSgenome.Hsapiens.UCSC.hg38", quietly = TRUE)) {
-	BiocManager::install("BSgenome.Hsapiens.UCSC.hg38")
-}
 
 library("BSgenome.Hsapiens.1000genomes.hs37d5")
 bsg = BSgenome.Hsapiens.1000genomes.hs37d5::hs37d5
@@ -61,7 +54,6 @@ lambda_range = lambdaRangeBetaEvaluation(x=mut_counts,
 					 K=3:10, #number of signatures (min=2) 
 					 lambda_values = lambda_test_values, # range of values of the signature sparsity parameter 
 					 beta = starting_betas, #initial value of signature matrix
-					 background_signature = background #provided by user, ignored if beta is given
 					 normalize_counts = TRUE, #useful for algorithm stability
 					 nmf_runs = 10, #number of iterations to estimate the length(K) matrices beta (if beta is NULL). Ignored if beta is given
 					 iterations = 30, #number of iterations of every single run of NMF LASSO
@@ -70,8 +62,7 @@ lambda_range = lambdaRangeBetaEvaluation(x=mut_counts,
 					 num_processes = Inf, #number of requested NMF worker subprocesses to spawn. If Inf (an adaptive maximum number is automatically chosen; if NA or NULL (the function is run as a single process)
 					 seed = NULL, #random number generation; to be set for reproducibility
 					 verbose = TRUE,
-					 log_file = ""
-)
+					 log_file = "")
 #test how the λβ values change in relation to a number of signatures
 #values of λβ should guarantees convergence for all K
 #Inspect the results manually to verify whether there is a “cutoff” λβ value. If the loglik_progression entries appear to progressively decrease in absolute value, the combination of K and the corresponding lambda-value is feasible.
@@ -101,6 +92,7 @@ cv_out = nmfLassoCV(x = mut_counts,
 		 seed = NULL, verbose = TRUE, log_file = "")
 
 saveRDS(object = cv_out, file = "cv_out.rds")
+saveRDS(object = lambda_range, file = "lambda_range.rds")
 
 #Analyze the mean squared error results averaging over cross-validation repetitions
 cv_mses <- cv_out$grid_search_mse[1, , ]
