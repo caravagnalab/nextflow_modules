@@ -51,9 +51,10 @@ starting_betas = startingBetaEstimation(x = mut_counts,
 #Decide on a range for K (should be large enough, decided by user, context dependent)
 lambda_test_values <- c(0.01, 0.05, 0.1) 
 lambda_range = lambdaRangeBetaEvaluation(x=mut_counts,
-					 K=3:10, #number of signatures (min=2) 
+					 K=5, #number of signatures (min=2) 
 					 lambda_values = lambda_test_values, # range of values of the signature sparsity parameter 
-					 beta = starting_betas, #initial value of signature matrix
+					 beta = NULL, #initial value of signature matrix
+					 background_signature = background,
 					 normalize_counts = TRUE, #useful for algorithm stability
 					 nmf_runs = 10, #number of iterations to estimate the length(K) matrices beta (if beta is NULL). Ignored if beta is given
 					 iterations = 30, #number of iterations of every single run of NMF LASSO
