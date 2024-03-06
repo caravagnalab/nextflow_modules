@@ -74,7 +74,7 @@ for (i in 1:length(lambda_test_beta)) {
 }
 
 lambda_test_alpha <- c(0.01, 0.05, 0.1, 0.2)
-lambda_range_alpha >- lambdaRangeAlphaEvaluation(x=mut_counts,
+lambda_range_alpha <- lambdaRangeAlphaEvaluation(x=mut_counts,
 						 K = 5,
 						 beta = NULL,
 						 background_signature = background,
@@ -126,11 +126,12 @@ dimnames(cv_means_mse) <- dimnames(cv_mses)
 
 #Find the combination of parameters that yields the lowest MSE
 min_ii <- which(cv_means_mse == min(cv_means_mse), arr.ind = TRUE)
-min_Lambda <- rownames(cv_means_mse)[min_ii[1]] 
-min_Lambda <- substring(min_Lambda,1,4) %>% as.numeric()
+min_Lambda_beta <- rownames(cv_means_mse)[min_ii[1]] 
+min_Lambda_beta <- substring(min_Lambda,1,3) %>% as.numeric()
+min_Lambda_alpha <- min_Lambda_beta
 min_K <- colnames(cv_means_mse)[min_ii[2]]
 min_K <- substring(min_K,1,1) %>% as.numeric(min_K)
-cat("Minimum MSE at:", min_Lambda, "and", min_K, "\n")
+cat("Minimum MSE at:", min_Lambda_beta, "and", min_K, "\n")
 
 
 #Discovering the signatures within the dataset: NMF Lasso
@@ -141,8 +142,8 @@ nmf_Lasso_out = SparseSignatures::nmfLasso(x = mut_counts,
 					   beta = NULL, #initial value of the signature matrix β. If NULL, it is estimated with a few runs of NMF.
 					   background_signature = background, #provided by the user, is ignored if beta is given instead.If NULL, it is estimated through NMF
 					   normalize_counts = TRUE,
-					   lambda_rate_alpha = 0, #sparsity parameter for the exposure values alpha
-					   lambda_rate_beta = min_Lambda, 
+					   lambda_rate_alpha = min_Lambda_alpha, #sparsity parameter for the exposure values alpha
+					   lambda_rate_beta = min_Lambda_beta, 
 					   iterations = 30, #number of iterations in a single NMF LASSO algorithm run
 					   max_iterations_lasso = 10000, #number of sub-iterations involved in the sparsification phase, within a full NMF LASSO iteration
 					   seed = NULL, verbose = TRUE)
