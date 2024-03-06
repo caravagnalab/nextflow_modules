@@ -4,7 +4,7 @@ library("SparseSignatures")
 library("tidyverse")
 library("ggplot2")
 
-res_SparseSig = paste0("SparseSig_2/")
+res_SparseSig = paste0("SparseSig_3/")
 dir.create(res_SparseSig, recursive = TRUE)
 
 #Input dataset : vcf / tsv / csv joint-table multisample
@@ -49,10 +49,10 @@ starting_betas = startingBetaEstimation(x = mut_counts,
 #Determining a valid range for the sparsity parameter 
 #range of values of the signature sparsity parameter, whose stability for the chosen value of K is to be tested (ensure the convergence of the iterative procedure)
 #Decide on a range for K (should be large enough, decided by user, context dependent)
-lambda_test_values <- c(0.01, 0.05, 0.1) 
-lambda_range = lambdaRangeBetaEvaluation(x=mut_counts,
+lambda_test_beta <- c(0.01, 0.05, 0.1, 0.2) 
+lambda_range_beta <- lambdaRangeBetaEvaluation(x=mut_counts,
 					 K=5, #number of signatures (min=2) 
-					 lambda_values = lambda_test_values, # range of values of the signature sparsity parameter 
+					 lambda_values = lambda_test_beta, # range of values of the signature sparsity parameter 
 					 beta = NULL, #initial value of signature matrix
 					 background_signature = background,
 					 normalize_counts = TRUE, #useful for algorithm stability
@@ -68,9 +68,28 @@ lambda_range = lambdaRangeBetaEvaluation(x=mut_counts,
 #values of λβ should guarantees convergence for all K
 #Inspect the results manually to verify whether there is a “cutoff” λβ value. If the loglik_progression entries appear to progressively decrease in absolute value, the combination of K and the corresponding lambda-value is feasible.
 
-for (i in 1:length(lambda_test_values)) {
-	print(colnames(lambda_range)[[i]])
-	print(lambda_range[[i]]$loglik_progression)
+for (i in 1:length(lambda_test_beta)) {
+	print(colnames(lambda_range_beta)[[i]])
+	print(lambda_range_beta[[i]]$loglik_progression)
+}
+
+lambda_test_alpha <- c(0.01, 0.05, 0.1, 0.2)
+lambda_range_alpha >- lambdaRangeAlphaEvaluation(x=mut_counts,
+						 K = 5,
+						 beta = NULL,
+						 background_signature = background,
+						 normalize_counts = TRUE,
+						 nmf_runs = 10,
+						 lambda_values = lambda_test_alpha,
+						 iterations = 30,
+						 max_iterations_lasso = 10000,
+						 num_processes = Inf,
+						 seed = NULL,
+						 verbose = TRUE,
+						 log_file = "")
+for (i in 1:length(lambda_test_alpha)) {
+        print(colnames(lambda_range_alpha)[[i]])
+        print(lambda_range_alpha[[i]]$loglik_progression)
 }
 
 #Find the optimal number of signatures and sparsity level: rely on cross-validation
@@ -82,8 +101,8 @@ cv_out = nmfLassoCV(x = mut_counts,
 		 background_signature = background, #provided by user; ignored if beta is given
 		 normalize_counts = TRUE, #for algorithm stability
 		 nmf_runs = 10, #number of iterations to estimate the length(K) matrices beta in case beta is NULL; ignored if beta is given
-		 lambda_values_alpha = 0, #disabling regularization for the exposures α
-		 lambda_values_beta = c(0.01, 0.05, 0.1),
+		 lambda_values_alpha = lambda_test_alpha, #disabling regularization for the exposures α
+		 lambda_values_beta = lambda_test_beta,
 		 cross_validation_entries = 0.01, #cross-validation test size, i.e., the percentage of entries set to zero during NMF and used for validation
 		 cross_validation_iterations = 5, #number of randomized restarts of a single cross-validation repetition, in case of poor fits
 		 cross_validation_repetitions = 10, #number of repetitions of the cross-validation procedure
@@ -92,8 +111,10 @@ cv_out = nmfLassoCV(x = mut_counts,
 		 num_processes = Inf, #number of requested NMF worker subprocesses to spawn. If Inf (an adaptive maximum number is automatically chosen); if NA or NULL, the function is run as a single process
 		 seed = NULL, verbose = TRUE, log_file = "")
 
-saveRDS(object = cv_out, file = "cv_out.rds")
-saveRDS(object = lambda_range, file = "lambda_range.rds")
+
+saveRDS(object = cv_out, file = "SparseSig_3/cv_out.rds")
+saveRDS(object = lambda_range_beta, file = "SparseSig_3/lambda_range_beta.rds")
+saveRDS(object = lambda_range_alpha, file = "SparseSig_3/lambda_range_alpha.rds")
 
 #Analyze the mean squared error results averaging over cross-validation repetitions
 cv_mses <- cv_out$grid_search_mse[1, , ]
@@ -126,7 +147,7 @@ nmf_Lasso_out = SparseSignatures::nmfLasso(x = mut_counts,
 					   max_iterations_lasso = 10000, #number of sub-iterations involved in the sparsification phase, within a full NMF LASSO iteration
 					   seed = NULL, verbose = TRUE)
 
-saveRDS(object = nmf_Lasso_out, file = "signatures_bestConfig.rds")
+saveRDS(object = nmf_Lasso_out, file = "SparseSig_3/signatures_bestConfig.rds")
 
 #signature visualization
 signatures = nmf_Lasso_out$beta
