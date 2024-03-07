@@ -127,7 +127,7 @@ dimnames(cv_means_mse) <- dimnames(cv_mses)
 #Find the combination of parameters that yields the lowest MSE
 min_ii <- which(cv_means_mse == min(cv_means_mse), arr.ind = TRUE)
 min_Lambda_beta <- rownames(cv_means_mse)[min_ii[1]] 
-min_Lambda_beta <- substring(min_Lambda,1,3) %>% as.numeric()
+min_Lambda_beta <- substring(min_Lambda_beta,1,3) %>% as.numeric()
 min_Lambda_alpha <- min_Lambda_beta
 min_K <- colnames(cv_means_mse)[min_ii[2]]
 min_K <- substring(min_K,1,1) %>% as.numeric(min_K)
