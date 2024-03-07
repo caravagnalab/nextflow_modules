@@ -10,7 +10,7 @@ includeConfig "$baseDir/modules/config/params.config"
      runOptions = '--bind /orfeo:/orfeo --bind $SINGULARITY_TMPDIR:/tmp'
  }
  
- process {
+process {
    executor='slurm'
    queue='EPYC'
    errorStrategy = 'finish'
@@ -26,9 +26,9 @@ process {
   withName: 'VEP_ANNOTATE' {
     time='12h'
     container = 'https://depot.galaxyproject.org/singularity/ensembl-vep:110.1--pl5321h2a3209d_0'
-    memory = '20 GB' 
- }
-  
+    memory = '20 GB'
+  }
+
   withName: 'VCF2MAF' {
     container = 'https://depot.galaxyproject.org/singularity/vcf2maf%3A1.6.20--0'
   }
@@ -52,6 +52,7 @@ process {
     memory='5 GB'
   }
 }
+
 
 process {
   withName: 'PLATYPUS_CALL_VARIANTS' {
@@ -177,52 +178,43 @@ process {
 process {
 
   withName: 'SIG_PROFILER' {
-    time='2h'
+    time='5h'
     memory='100 GB'
+    container = "docker://fauzul/sigprofiler:1.0"
+    ext.args   = {[
+      "input_type": params.sigprofilerextractor_input_type,
+      "out_put": params.sigprofilerextractor_out_put,
+      "input_data": params.sigprofilerextractor_input_data,
+      "reference_genome": params.sigprofilerextractor_reference_genome,
+      "minimum_signatures": params.sigprofilerextractor_minimum_signatures,
+      "maximum_signatures": params.sigprofilerextractor_maximum_signatures,
+      "nmf_replicates": params.sigprofilerextractor_nmf_replicates,
+      "cpu": params.sigprofilerextractor_cpu
+    ]}
   }
+
+}
+
+process {
 
   withName: 'SPARSE_SIGNATURES' {
     time='75h'
-    memory='100 GB'
+    memory='200 GB'
     container = 'https://depot.galaxyproject.org/singularity/bioconductor-sparsesignatures%3A2.8.0--r42hdfd78af_0'
-  }
-}
-
-
-process {
-  withName: 'CNA_PROCESSING' {
-    memory = '50 GB'
-    time = '1h'
-    errorStrategy = 'finish'
-
-    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cnaqc.sif'
-}
-
-  withName: 'JOIN_CNAQC' {
-    memory = '50 GB'
-    time = '2h'
-    errorStrategy = 'finish'
-
-    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cnaqc.sif'
-}
-
-  withName: 'VCF_PROCESSING' {
-    memory = '100 GB'
-    time = '1h'
-    errorStrategy = 'finish'
-
-    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cnaqc.sif'
-}
-
-  withName: 'CNAQC_ANALYSIS' {
-    memory = '100 GB'
-    time = '2h'
-    errorStrategy = 'finish'
-
-    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cnaqc.sif'
-
-    ext.args = {[
-      "matching_strategy": params.cna_matching_strategy
+    ext.args   = {[
+      "background_signature": params.sparsesignatures_background_signature,
+      "K": params.sparsesignatures_K,
+      "nmf_runs": params.sparsesignatures_nmf_runs,
+      "beta": params.sparsesignatures_beta,
+      "lambda_values": params.sparsesignatures_lambda_values,
+      "lambda_values_alpha": params.sparsesignatures_lambda_values_alpha,
+      "lambda_values_beta": params.sparsesignatures_lambda_values_beta,
+      "cross_validation_repetitions": params.sparsesignatures_cross_validation_repetitions,
+      "cross_validation_iterations": params.sparsesignatures_cross_validation_iterations,
+      "num_processes": params.sparsesignatures_num_processes,
+      "iterations": params.sparsesignatures_iterations
+ 
     ]}
-}
+  }
+
 }
