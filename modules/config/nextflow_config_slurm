@@ -180,6 +180,7 @@ process {
   withName: 'SIG_PROFILER' {
     time='5h'
     memory='100 GB'
+    container = "docker://fauzul/sigprofiler:1.0"
     ext.args   = {[
       "input_type": params.sigprofilerextractor_input_type,
       "out_put": params.sigprofilerextractor_out_put,
