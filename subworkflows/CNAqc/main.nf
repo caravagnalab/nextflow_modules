@@ -4,28 +4,26 @@
 
 include { CNA_PROCESSING } from '../../modules/cna2CNAqc/main'
 include { VCF_PROCESSING } from '../../modules/vcf2CNAqc/main'
-include { CNAQC_ANALYSIS } from '../../modules/CNAqc/main'
+include { CNAQC } from '../../modules/CNAqc/main'
 include { JOIN_CNAQC } from '../../modules/join_CNAqc/main'
 
-workflow CNAQC {
+workflow QC {
     take: 
     vcf
-    input_CNA
+    cnv
 
     main:
 
-    CNA_PROCESSING(input_CNA) 
+    CNA_PROCESSING(cnv)
     VCF_PROCESSING(vcf)
-    CNAQC_ANALYSIS(CNA_PROCESSING.out.rds, VCF_PROCESSING.out.rds)
+    CNAQC(CNA_PROCESSING.out.rds, VCF_PROCESSING.out.rds)
 
-    JOIN_CNAQC(CNAQC_ANALYSIS.out.rds.groupTuple(by: [0,1]))
+    JOIN_CNAQC(CNAQC.out.rds.groupTuple(by: [0,1]))
     
     emit:
 
-    CNAQC_ANALYSIS.out.rds
-    CNAQC_ANALYSIS.out.pdf
+    CNAQC.out.rds
+    CNAQC.out.pdf
 
     JOIN_CNAQC.out.rds
-    //JOIN_CNAQC.out.mut_tsv
-    //JOIN_CNAQC.out.cna_tsv
 }

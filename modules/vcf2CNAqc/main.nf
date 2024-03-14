@@ -26,10 +26,10 @@ process VCF_PROCESSING {
 
     # Extract gt field and obtain coverage (DP) and variant allele frequency (VAF) fields
     gt_field = tb\$gt %>% 
-            tidyr::separate(gt_AD, sep = ',', into = c("NR", "NV")) %>%
+            #tidyr::separate(gt_AD, sep = ',', into = c("NR", "NV")) %>%
             dplyr::mutate(
-            NR = as.numeric(NR),
-            NV = as.numeric(NV),
+            NR = as.numeric(gt_NR),
+            NV = as.numeric(gt_NV),
             DP = NV + NR,
             VAF = NV/DP) %>%  
             dplyr::rename(sample = Indiv)
@@ -84,7 +84,7 @@ process VCF_PROCESSING {
             to = from + nchar(alt)
             ) %>%
             dplyr::ungroup() %>%
-            dplyr::select(chr, from, to, ref, alt, dplyr::everything(), -ChromKey, -DP)
+            dplyr::select(chr, from, to, ref, alt, dplyr::everything(), -ChromKey, -NR) #-DP
     }
     
     # For each sample create the table of mutations 
@@ -104,7 +104,10 @@ process VCF_PROCESSING {
 
             fits})
     names(calls) = samples_list
-    
+
+    normal = names(calls)[length(calls)] # last element is always the normal
+    calls = calls[c("$sampleID", normal)]
+
     saveRDS(object = calls, file = paste0(res_dir, "VCF.rds"))
     """
 }

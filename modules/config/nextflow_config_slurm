@@ -54,8 +54,11 @@ process {
 
 process {
   withName: 'PLATYPUS_CALL_VARIANTS' {
-    time='24h'
-    container = 'https://depot.galaxyproject.org/singularity/platypus-variant%3A0.8.1.1--htslib1.5_0'
+    time='12h'
+    memory = '50 GB'
+
+    errorStrategy = 'finish'
+    container = 'https://depot.galaxyproject.org/singularity/bcftools%3A1.18--h8b25389_0'
   }
 }
 
@@ -196,7 +199,8 @@ process {
 
   withName: 'CNA_PROCESSING' {
     //label = "cnaqc_analysis"
-    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cnaqc.sif'
+    //container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cnaqc.sif'
+    container = 'docker://lvaleriani/cnaqc:v5'
     memory = '50 GB'
     time = '1h'
     errorStrategy = 'finish'
@@ -204,7 +208,8 @@ process {
 
   withName: 'JOIN_CNAQC' {
     //label = "cnaqc_analysis"
-    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cnaqc.sif'
+    //container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cnaqc.sif'
+    container = 'docker://lvaleriani/cnaqc:v5'
     memory = '50 GB'
     time = '2h'
     errorStrategy = 'finish'
@@ -212,15 +217,17 @@ process {
 
   withName: 'VCF_PROCESSING' {
     //label = "cnaqc_analysis"
-    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cnaqc.sif'
+    //container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cnaqc.sif'
+    container = 'docker://lvaleriani/cnaqc:v5'
     memory = '100 GB'
     time = '1h'
     errorStrategy = 'finish'
   }
 
-  withName: 'CNAQC_ANALYSIS' {
-    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cnaqc.sif'
+  withName: 'CNAQC' {
+    //container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cnaqc.sif'
     //label = "cnaqc_analysis"
+    container = 'docker://lvaleriani/cnaqc:v5'
     memory = '100 GB'
     time = '2h'
     errorStrategy = 'finish'

@@ -1,4 +1,4 @@
-process CNAQC_ANALYSIS {
+process CNAQC {
   publishDir params.publish_dir, mode: 'copy'
 
   input:
@@ -26,7 +26,7 @@ process CNAQC_ANALYSIS {
     dir.create(res_dir, recursive = TRUE)
 
     SNV = readRDS("$snv_RDS")
-    SNV = SNV[[1]]
+    SNV = SNV[["$sampleID"]]
     SNV = SNV\$mutations
 
     CNA = readRDS("$cna_RDS")
@@ -37,6 +37,9 @@ process CNAQC_ANALYSIS {
         ref = "$params.assembly")
     
     x = CNAqc::annotate_variants(x, drivers = CNAqc::intogen_drivers)
+
+    old_mutations = x\$mutations
+    x\$mutations = x\$mutations %>% filter(VAF > 0)
 
     x = CNAqc::analyze_peaks(x, 
       matching_strategy = "$matching_strategy")
@@ -77,6 +80,9 @@ process CNAQC_ANALYSIS {
       nrow = 5,
       rel_heights = c(.15, .15, .15, .3, .15)
     )
+
+    mutations = inner_join(old_mutations, x\$mutations)
+    x\$mutations = mutations
 
     saveRDS(object = x, file = paste0(res_dir, "qc.rds"))
 
