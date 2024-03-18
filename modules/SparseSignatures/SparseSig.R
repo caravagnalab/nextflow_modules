@@ -95,7 +95,7 @@ for (i in 1:length(K_range)) {
                             seed = NULL, 
                             verbose = TRUE,
                             log_file = "")
-  return(lambda_beta = list(lambda_range_beta))
+  return(lambda_alpha = list(lambda_range_alpha))
 
 }
 
