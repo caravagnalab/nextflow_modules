@@ -50,11 +50,16 @@ dir.create(res_SparseSig, recursive = TRUE)
 
 #Input dataset : vcf / tsv / csv joint-table multisample
 # sample | chrom | start | end | ref | alt
-multisample_table <- read.delim(file = '$joint_table', sep = '\t', header = TRUE)
+#multisample_table <- read.delim(file = '$joint_table', sep = '\t', header = TRUE)
+multi_cnaqc <- readRDS('$joint_table')
 
 #Extract input data information
-input_data <- multisample_table %>%
-  mutate(sample = paste(multisample_table$patient_id, "_", multisample_table$sample_id)) %>%
+private_mutations_join <- lapply(multi_cnaqc, `[[`, 2) %>% purrr::reduce(full_join)
+shared_mutations <- lapply(multi_cnaqc, `[[`, 1) 
+shared_mutations_join <- lapply(shared_mutations, `[[`, 3) %>% purrr::reduce(full_join)
+mutations_multisample <- rbind(private_mutations_join, shared_mutations_join)
+
+input_data <- mutations_multisample %>%
   dplyr::rename(
     sample = sample,
     chrom = chr,
@@ -64,7 +69,6 @@ input_data <- multisample_table %>%
   mutate(end = start) %>%
   dplyr::select(sample, chrom, start, end, ref, alt) %>%
   as.data.frame()
-
 input_data$chrom=str_sub(input_data$chrom,4,5)
 
 #Generate the patient vs mutation count matrix from mutation data
@@ -84,19 +88,20 @@ data(background)
 
 #estimate the initial values of beta
 starting_betas = SparseSignatures::startingBetaEstimation(x = mut_counts,
-                                        K= "$K", #user defined
-                                        background_signature  = "$background")
+                                        K= as.integer("$K"), #user defined
+                                        background_signature  = "$background_signature")
 
 #Determining a valid range for the sparsity parameter
 #range of values of the signature sparsity parameter, whose stability for the chosen value of K is to be tested (ensure the convergence of the iterative procedure)
 #Decide on a range for K (should be large enough, decided by user, context dependent)
 lambda_test_values <- c(0.01, 0.05, 0.1, 0,2)
-K_range <- c(2, 3, 4, 5, 6, 7, 8, 9, 10)
-lambda_range_beta <- SparseSignatures::lambdaRangeBetaEvaluation(x=mut_counts,
-                                         K=K_range, #number of signatures (min=2)
+K_range <- as.integer(c("$K"))
+for (i in 1:length(K_range)) {
+  lambda_range_beta <- SparseSignatures::lambdaRangeBetaEvaluation(x=mut_counts,
+                                         #K=K_range, #number of signatures (min=2)
                                          lambda_values = lambda_test_values, # range of values of the signature sparsity parameter
                                          beta = "$beta", #initial value of signature matrix
-                                         background_signature = "$background",
+                                         background_signature = "$background_signature",
                                          normalize_counts = "$normalize_counts", #useful for algorithm stability
                                          nmf_runs = "$nmf_runs", #number of iterations to estimate the length(K) matrices beta (if beta is NULL). Ignored if beta is given
                                          iterations = "$iterations", #number of iterations of every single run of NMF LASSO
@@ -106,6 +111,9 @@ lambda_range_beta <- SparseSignatures::lambdaRangeBetaEvaluation(x=mut_counts,
                                          seed = "$seed", #random number generation; to be set for reproducibility
                                          verbose = "$verbose",
                                          log_file = "$log_file")
+  return(lambda_beta = list(lambda_range_beta)) 
+}
+
 #test how the λβ values change in relation to a number of signatures
 #values of λβ should guarantees convergence for all K
 #Inspect the results manually to verify whether there is a “cutoff” λβ value. If the loglik_progression entries appear to progressively decrease in absolute value, the combination of K and the corresponding lambda-value is feasible.
@@ -115,10 +123,11 @@ for (i in 1:length(lambda_test_values)) {
         print(lambda_range_beta[[i]]$loglik_progression)
 }
 
-lambda_range_alpha <- SparseSignatures::lambdaRangeAlphaEvaluation(x=mut_counts,
-						 K = K_range,
+for (i in 1:length(K_range)) {
+  lambda_range_alpha <- SparseSignatures::lambdaRangeAlphaEvaluation(x=mut_counts,
+						 #K = K_range,
 						 beta = "$beta",
-						 background_signature = "$background",
+						 background_signature = "$background_signature",
 						 normalize_counts = "$normalize_counts",
 						 nmf_runs = "nmf_runs",
 						 lambda_values = lambda_test_values,
@@ -128,6 +137,9 @@ lambda_range_alpha <- SparseSignatures::lambdaRangeAlphaEvaluation(x=mut_counts,
 						 seed = "$seed",
 						 verbose = "$verbose",
 						 log_file = "$log_file")
+   return(lambda_alpha = list(lambda_range_alpha))
+}
+
 for (i in 1:length(lambda_test_values)) {
         print(colnames(lambda_range_alpha)[[i]])
         print(lambda_range_alpha[[i]]$loglik_progression)
@@ -137,9 +149,9 @@ for (i in 1:length(lambda_test_values)) {
 # 1 h per repetition
 #higher number of CV repetitions corresponds to more accurate parameter estimates
 cv_out = nmfLassoCV(x = mut_counts,
-                 K = "$K",  #user defined
+                 K = as.integer("$K"),  #user defined
                  starting_beta = "$starting_beta",
-                 background_signature = "$background", #provided by user; ignored if beta is given
+                 background_signature = "$background_signature", #provided by user; ignored if beta is given
                  normalize_counts = "$normalize_counts", #for algorithm stability
                  nmf_runs = "nmf_runs", #number of iterations to estimate the length(K) matrices beta in case beta is NULL; ignored if beta is given
                  lambda_values_alpha = lambda_test_values, #regularization for the exposures α
