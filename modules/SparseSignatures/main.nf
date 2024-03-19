@@ -13,8 +13,8 @@ process SPARSE_SIGNATURES {
 
       tuple val(datasetID), path("$datasetID/SparseSig/signatures_bestConfig.rds"),
                             path("$datasetID/SparseSig/discovered_signatures.pdf"),
-                            path("$datasetID/SparseSig/lambda_range_beta_list.rds")
-                            path("$datasetID/SparseSig/lambda_range_alpha_list.rds")
+                            path("$datasetID/SparseSig/lambda_range_beta.rds")
+                            path("$datasetID/SparseSig/lambda_range_alpha.rds")
                             path("$datasetID/SparseSig/cv_out.rds")
     script:
 
@@ -77,8 +77,7 @@ input_data$chrom=str_sub(input_data$chrom,4,5)
 
 library("BSgenome.Hsapiens.1000genomes.hs37d5")
 bsg = BSgenome.Hsapiens.1000genomes.hs37d5::hs37d5
-mut_counts = import.trinucleotides.counts(data=input_data,
-                                          reference=bsg)
+mut_counts = import.trinucleotides.counts(data=input_data, reference=bsg)
 
 #load a reference SBS5 background signature from COSMIC
 data(background)
@@ -147,8 +146,8 @@ for (i in 1:length(K_range)) {
         #print(colnames(lambda_range_alpha)[[i]])
         #print(lambda_range_alpha[[i]]$loglik_progression)
 #}
-saveRDS(object = lambda_range_beta, file = paste0(res_SparseSig, "lambda_range_beta.rds")
-saveRDS(object = lambda_range_alpha, file = paste0(res_SparseSig,"lambda_range_alpha.rds")
+saveRDS(object = lambda_range_beta_list, file = paste0(res_SparseSig, "lambda_range_beta.rds")
+saveRDS(object = lambda_range_alpha_list, file = paste0(res_SparseSig,"lambda_range_alpha.rds")
 
 #Find the optimal number of signatures and sparsity level: rely on cross-validation
 # 1 h per repetition
