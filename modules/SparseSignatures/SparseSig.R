@@ -104,8 +104,8 @@ for (i in 1:length(K_range)) {
         #print(lambda_range_alpha[[i]]$loglik_progression)
 #}
 
-saveRDS(object = lambda_range_beta, file = "SparseSig_3/lambda_range_beta_list.rds")
-saveRDS(object = lambda_range_alpha, file = "SparseSig_3/lambda_range_alpha_list.rds")
+saveRDS(object = lambda_range_beta_list, file = "SparseSig_3/lambda_range_beta_list.rds")
+saveRDS(object = lambda_range_alpha_list, file = "SparseSig_3/lambda_range_alpha_list.rds")
 
 #Find the optimal number of signatures and sparsity level: rely on cross-validation
 # 1 h per repetition
