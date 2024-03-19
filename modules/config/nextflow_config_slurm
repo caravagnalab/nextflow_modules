@@ -202,17 +202,24 @@ process {
     memory='200 GB'
     container = 'https://depot.galaxyproject.org/singularity/bioconductor-sparsesignatures%3A2.8.0--r42hdfd78af_0'
     ext.args   = {[
-      "background_signature": params.sparsesignatures_background_signature,
       "K": params.sparsesignatures_K,
-      "nmf_runs": params.sparsesignatures_nmf_runs,
+      "background_signature": params.sparsesignatures_background_signature,
       "beta": params.sparsesignatures_beta,
-      "lambda_values": params.sparsesignatures_lambda_values,
-      "lambda_values_alpha": params.sparsesignatures_lambda_values_alpha,
-      "lambda_values_beta": params.sparsesignatures_lambda_values_beta,
+      "normalize_counts": params.sparsesignatures_normalize_counts
+      "nmf_runs": params.sparsesignatures_nmf_runs,
+      "iterations": params.sparsesignatures_iterations,
+      "max_iterations_lasso": params.sparsesignatures_max_iterations_lasso,
+      "num_processes": params.sparsesignatures_num_processes,
+      "starting_beta": params.sparsesignatures_starting_beta,
+      "cross_validation_entries": params.sparsesignatures_cross_validation_entries,
       "cross_validation_repetitions": params.sparsesignatures_cross_validation_repetitions,
       "cross_validation_iterations": params.sparsesignatures_cross_validation_iterations,
-      "num_processes": params.sparsesignatures_num_processes,
-      "iterations": params.sparsesignatures_iterations
+      "lambda_rate_alpha": params.sparsesignatures_lambda_rate_alpha,
+      "lambda_rate_beta": params.sparsesignatures_lambda_rate_beta,
+      "seed": params.sparsesignatures_seed,
+      "verbose": params.sparsesignatures_verbose,
+      "log_file": params.sparsesignatures_log_file,
+      
  
     ]}
   }
