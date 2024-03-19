@@ -55,9 +55,11 @@ starting_betas = startingBetaEstimation(x = mut_counts,
 #Decide on a range for K (should be large enough, decided by user, context dependent)
 lambda_test_values <- c(0.01, 0.05, 0.1, 0.2)
 K_range <- as.integer(c(2:10))
+lambda_range_beta_list <- list()
 for (i in 1:length(K_range)) {
-  lambda_range_beta = lambdaRangeBetaEvaluation(x=mut_counts,
-                            #K=K_range, #number of signatures (min=2) 
+  lambda_range_beta_list[[i]] = lambdaRangeBetaEvaluation(
+			    x=mut_counts,
+                            #K=5, #number of signatures (min=2) 
                             lambda_values = lambda_test_values, # range of values of the signature sparsity parameter 
                             beta = NULL, #initial value of signature matrix
                             background_signature = background,
@@ -69,22 +71,21 @@ for (i in 1:length(K_range)) {
                             seed = NULL, #random number generation; to be set for reproducibility
                             verbose = TRUE,
                             log_file = "")
-  return(lambda_beta = list(lambda_range_beta))
   
 }
 #test how the λβ values change in relation to a number of signatures
 #values of λβ should guarantees convergence for all K
 #Inspect the results manually to verify whether there is a “cutoff” λβ value. If the loglik_progression entries appear to progressively decrease in absolute value, the combination of K and the corresponding lambda-value is feasible.
 
-for (i in 1:length(lambda_test_values)) {
-	print(colnames(lambda_range_beta)[[i]])
-	print(lambda_range_beta[[i]]$loglik_progression)
-}
+#for (i in 1:length(lambda_test_values)) {
+	#print(colnames(lambda_range_beta)[[i]])
+	#print(lambda_range_beta[[i]]$loglik_progression)
+#}
 
-
+lambda_range_alpha_list <- list()
 for (i in 1:length(K_range)) {
-  lambda_range_alpha = lambdaRangeAlphaEvaluation(x=mut_counts,
-                            #K=K_range, #number of signatures (min=2)
+  lambda_range_alpha_list[[i]] = lambdaRangeAlphaEvaluation(x=mut_counts,
+                            #K=5, #number of signatures (min=2)
                             lambda_values = lambda_test_values, 
                             beta = NULL, 
                             background_signature = background,
@@ -95,14 +96,16 @@ for (i in 1:length(K_range)) {
                             seed = NULL, 
                             verbose = TRUE,
                             log_file = "")
-  return(lambda_alpha = list(lambda_range_alpha))
 
 }
 
-for (i in 1:length(lambda_test_values)) {
-        print(colnames(lambda_range_alpha)[[i]])
-        print(lambda_range_alpha[[i]]$loglik_progression)
-}
+#for (i in 1:length(lambda_test_values)) {
+        #print(colnames(lambda_range_alpha)[[i]])
+        #print(lambda_range_alpha[[i]]$loglik_progression)
+#}
+
+saveRDS(object = lambda_range_beta, file = "SparseSig_3/lambda_range_beta_list.rds")
+saveRDS(object = lambda_range_alpha, file = "SparseSig_3/lambda_range_alpha_list.rds")
 
 #Find the optimal number of signatures and sparsity level: rely on cross-validation
 # 1 h per repetition
@@ -117,7 +120,7 @@ cv_out = nmfLassoCV(x = mut_counts,
 		 lambda_values_beta = lambda_test_values,
 		 cross_validation_entries = 0.01, #cross-validation test size, i.e., the percentage of entries set to zero during NMF and used for validation
 		 cross_validation_iterations = 5, #number of randomized restarts of a single cross-validation repetition, in case of poor fits
-		 cross_validation_repetitions = 10, #number of repetitions of the cross-validation procedure
+		 cross_validation_repetitions = 20, #number of repetitions of the cross-validation procedure
 		 iterations = 30, #number of iterations of every single run of NMF LASSO
 		 max_iterations_lasso = 10000, #number of sub-iterations involved in the sparsification phase, within a full NMF LASSO iteration
 		 num_processes = Inf, #number of requested NMF worker subprocesses to spawn. If Inf (an adaptive maximum number is automatically chosen); if NA or NULL, the function is run as a single process
@@ -125,8 +128,7 @@ cv_out = nmfLassoCV(x = mut_counts,
 
 
 saveRDS(object = cv_out, file = "SparseSig_3/cv_out.rds")
-saveRDS(object = lambda_range_beta, file = "SparseSig_3/lambda_range_beta.rds")
-saveRDS(object = lambda_range_alpha, file = "SparseSig_3/lambda_range_alpha.rds")
+
 
 #Analyze the mean squared error results averaging over cross-validation repetitions
 cv_mses <- cv_out$grid_search_mse[1, , ]

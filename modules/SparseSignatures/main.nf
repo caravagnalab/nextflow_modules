@@ -13,8 +13,8 @@ process SPARSE_SIGNATURES {
 
       tuple val(datasetID), path("$datasetID/SparseSig/signatures_bestConfig.rds"),
                             path("$datasetID/SparseSig/discovered_signatures.pdf"),
-                            path("$datasetID/SparseSig/lambda_range_beta.rds")
-                            path("$datasetID/SparseSig/lambda_range_alpha.rds")
+                            path("$datasetID/SparseSig/lambda_range_beta_list.rds")
+                            path("$datasetID/SparseSig/lambda_range_alpha_list.rds")
                             path("$datasetID/SparseSig/cv_out.rds")
     script:
 
@@ -96,9 +96,12 @@ starting_betas = SparseSignatures::startingBetaEstimation(x = mut_counts,
 #Decide on a range for K (should be large enough, decided by user, context dependent)
 lambda_test_values <- c(0.01, 0.05, 0.1, 0,2)
 K_range <- as.integer(c("$K"))
+lambda_range_beta_list <- list()
+
 for (i in 1:length(K_range)) {
-  lambda_range_beta <- SparseSignatures::lambdaRangeBetaEvaluation(x=mut_counts,
-                                         #K=K_range, #number of signatures (min=2)
+  lambda_range_beta_list[[1]] <- SparseSignatures::lambdaRangeBetaEvaluation(
+                                         x=mut_counts,
+                                         #K=5, #number of signatures (min=2)
                                          lambda_values = lambda_test_values, # range of values of the signature sparsity parameter
                                          beta = "$beta", #initial value of signature matrix
                                          background_signature = "$background_signature",
@@ -110,26 +113,27 @@ for (i in 1:length(K_range)) {
                                          num_processes = "$num_processes", #number of requested NMF worker subprocesses to spawn. If Inf (an adaptive maximum number is automatically chosen; if NA or NULL (the function is run as a single process)
                                          seed = "$seed", #random number generation; to be set for reproducibility
                                          verbose = "$verbose",
-                                         log_file = "$log_file")
-  return(lambda_beta = list(lambda_range_beta)) 
+                                         log_file = "$log_file") 
 }
 
 #test how the λβ values change in relation to a number of signatures
 #values of λβ should guarantees convergence for all K
 #Inspect the results manually to verify whether there is a “cutoff” λβ value. If the loglik_progression entries appear to progressively decrease in absolute value, the combination of K and the corresponding lambda-value is feasible.
 
-for (i in 1:length(lambda_test_values)) {
-        print(colnames(lambda_range_beta)[[i]])
-        print(lambda_range_beta[[i]]$loglik_progression)
-}
+#for (i in 1:length(lambda_test_values)) {
+        #print(colnames(lambda_range_beta)[[i]])
+        #print(lambda_range_beta[[i]]$loglik_progression)
+#}
 
+lambda_range_alpha_list <- list()
 for (i in 1:length(K_range)) {
-  lambda_range_alpha <- SparseSignatures::lambdaRangeAlphaEvaluation(x=mut_counts,
-						 #K = K_range,
+  lambda_range_alpha_list[[1]] <- SparseSignatures::lambdaRangeAlphaEvaluation(
+                                                 x=mut_counts,
+						 #K = 5,
 						 beta = "$beta",
 						 background_signature = "$background_signature",
 						 normalize_counts = "$normalize_counts",
-						 nmf_runs = "nmf_runs",
+						 nmf_runs = "$nmf_runs",
 						 lambda_values = lambda_test_values,
 						 iterations = "$iterations",
 						 max_iterations_lasso = "$max_iterations_lasso",
@@ -137,23 +141,25 @@ for (i in 1:length(K_range)) {
 						 seed = "$seed",
 						 verbose = "$verbose",
 						 log_file = "$log_file")
-   return(lambda_alpha = list(lambda_range_alpha))
 }
 
-for (i in 1:length(lambda_test_values)) {
-        print(colnames(lambda_range_alpha)[[i]])
-        print(lambda_range_alpha[[i]]$loglik_progression)
-}
+#for (i in 1:length(lambda_test_values)) {
+        #print(colnames(lambda_range_alpha)[[i]])
+        #print(lambda_range_alpha[[i]]$loglik_progression)
+#}
+saveRDS(object = lambda_range_beta, file = paste0(res_SparseSig, "lambda_range_beta.rds")
+saveRDS(object = lambda_range_alpha, file = paste0(res_SparseSig,"lambda_range_alpha.rds")
 
 #Find the optimal number of signatures and sparsity level: rely on cross-validation
 # 1 h per repetition
 #higher number of CV repetitions corresponds to more accurate parameter estimates
-cv_out = nmfLassoCV(x = mut_counts,
+cv_out = nmfLassoCV(
+                 x = mut_counts,
                  K = as.integer("$K"),  #user defined
                  starting_beta = "$starting_beta",
                  background_signature = "$background_signature", #provided by user; ignored if beta is given
                  normalize_counts = "$normalize_counts", #for algorithm stability
-                 nmf_runs = "nmf_runs", #number of iterations to estimate the length(K) matrices beta in case beta is NULL; ignored if beta is given
+                 nmf_runs = "$nmf_runs", #number of iterations to estimate the length(K) matrices beta in case beta is NULL; ignored if beta is given
                  lambda_values_alpha = lambda_test_values, #regularization for the exposures α
                  lambda_values_beta = lambda_test_values,
                  cross_validation_entries = "$cross_validation_entries", #cross-validation test size, i.e., the percentage of entries set to zero during NMF and used for validation
@@ -165,8 +171,6 @@ cv_out = nmfLassoCV(x = mut_counts,
                  seed = "$seed", verbose = "$verbose", log_file = "$log_file)
 
 saveRDS(object = cv_out, file = paste0(res_SparseSig, "cv_out.rds")
-saveRDS(object = lambda_range_beta, file = paste0(res_SparseSig, "lambda_range_beta.rds")
-saveRDS(object = lambda_range_alpha, file = paste0(res_SparseSig,"lambda_range_alpha.rds")
 
 #Analyze the mean squared error results averaging over cross-validation repetitions
 cv_mses <- cv_out$grid_search_mse[1, , ]
@@ -189,7 +193,8 @@ cat("Minimum MSE at:", min_Lambda, "and", min_K, "\n")
 #Discovering the signatures within the dataset: NMF Lasso
 #compute the signatures for the best configuration.
 
-nmf_Lasso_out = SparseSignatures::nmfLasso(x = mut_counts,
+nmf_Lasso_out = SparseSignatures::nmfLasso(
+                                           x = mut_counts,
                                            K = min_K,
                                            beta = "$beta", #initial value of the signature matrix β. If NULL, it is estimated with a few runs of NMF.
                                            background_signature = "$background_signature", #provided by the user, is ignored if beta is given instead.If NULL, it is estimated through NMF
