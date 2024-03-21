@@ -176,7 +176,6 @@ process {
 }
 
 process {
-
   withName: 'SIG_PROFILER' {
     time='5h'
     memory='100 GB'
@@ -192,11 +191,9 @@ process {
       "cpu": params.sigprofilerextractor_cpu
     ]}
   }
-
 }
 
 process {
-
   withName: 'SPARSE_SIGNATURES' {
     time='75h'
     memory='200 GB'
@@ -218,10 +215,7 @@ process {
       "lambda_rate_beta": params.sparsesignatures_lambda_rate_beta,
       "seed": params.sparsesignatures_seed,
       "verbose": params.sparsesignatures_verbose,
-      "log_file": params.sparsesignatures_log_file,
-      
- 
+      "log_file": params.sparsesignatures_log_file      
     ]}
   }
-
 }
