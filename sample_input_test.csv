@@ -1,4 +1,0 @@
-patient,sample,joint_table
-CRUK0001,R1,/orfeo/cephfs/scratch/cdslab/ebusca00/GitHub/nextflow_modules/test_data/joint_table.tsv
-CRUK0001,R2,/orfeo/cephfs/scratch/cdslab/ebusca00/GitHub/nextflow_modules/test_data/joint_table.tsv
-CRUK0001,R3,/orfeo/cephfs/scratch/cdslab/ebusca00/GitHub/nextflow_modules/test_data/joint_table.tsv
