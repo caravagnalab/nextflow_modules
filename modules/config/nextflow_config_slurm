@@ -1,5 +1,5 @@
 nextflow.enable.dsl=2
-cleanup=true
+cleanup=false
 
 includeConfig "$baseDir/modules/config/params.config"
 
@@ -152,7 +152,7 @@ process {
   withName: "MOBSTERh" {
     memory='50 GB'
     time='2h'
-    container='file:///fast/cdslab/ebusca00/singularity/cdslab.sif'
+    container='file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
     ext.args = {[
       "K" : params.mobster_K,
       "samples" : params.mobster_samples,
@@ -181,6 +181,12 @@ process {
       "n_sampling" : params.ctree_n_sampling,
       "store_max" : params.ctree_store_max
     ]}
+  }
+
+  withName: "JOINT_FIT" {
+    memory='50 GB'
+    time='2h'
+    container='file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
   }
 }
 

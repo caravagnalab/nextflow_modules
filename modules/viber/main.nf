@@ -59,7 +59,6 @@ process VIBER {
     print("$sampleID") 
     patientID="$patientID"
     
-    ## Extract col names from joint
     dir.create("$outDir", recursive = TRUE)
     samples <-strsplit(x = "$sampleID", " ")%>% unlist()
     print(samples) 
@@ -69,18 +68,22 @@ process VIBER {
     print("Subset joint done")
     ## Read input joint table
     input_tab = read.csv("$outDir/joint_table.tsv", sep="\t") %>%
-      dplyr::filter(patientID==patientID) %>% 
-      dplyr::mutate(DP=ref_counts+alt_counts, 
-                    VAF=alt_counts/DP) %>%
+      dplyr::rename(variantID = gene) %>%
+      #dplyr::rename(is.driver = is_driver) %>%
+      #dplyr::rename(tumour_content = purity) %>%
+      dplyr::filter(patientID==patientID) %>%
+      #dplyr::mutate(DP=ref_counts+alt_counts, 
+      #              VAF=alt_counts/DP) %>%
       # dplyr::filter(VAF <= 1) %>% 
-      dplyr::mutate(VAF=replace(VAF, VAF==0, 1e-7)) %>% 
-      dplyr::rename(is_driver=is.driver, driver_label=variantID)
+      dplyr::mutate(VAF=replace(VAF, VAF==0, 1e-7))
+      #dplyr::rename(is_driver=is.driver) 
+      #dplyr::rename(is_driver=is.driver, driver_label=variantID)
 
     ## Convert the input table into longer format
     reads_data = input_tab %>% 
       tidyr::pivot_wider(names_from="sample_id",
-                         values_from=c("ref_counts","alt_counts","normal_cn",
-                                       "major_cn","minor_cn","tumour_content",
+                         values_from=c("NR","NV","normal_cn",
+                                       "major_cn","minor_cn","purity",
                                        "DP","VAF"), names_sep=".")
 
     ## Extract DP (depth)
@@ -94,10 +97,10 @@ process VIBER {
     ## Extract NV (alt_counts)
     nv = reads_data %>% 
       # dplyr::filter(mutation_id %in% non_tail) %>% ## this step should be managed before by other module
-      dplyr::select(dplyr::starts_with("alt_counts")) %>% 
+      dplyr::select(dplyr::starts_with("NV")) %>% 
       dplyr::mutate(dplyr::across(.cols=dplyr::everything(), 
                                   .fns=function(x) replace(x, is.na(x), 0))) %>% 
-      dplyr::rename_all(function(x) stringr::str_remove_all(x,"alt_counts."))
+      dplyr::rename_all(function(x) stringr::str_remove_all(x,"NV."))
 
     # Standard fit
     viber_K = eval(parse(text="$K")) 
