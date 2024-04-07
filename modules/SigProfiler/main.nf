@@ -18,7 +18,7 @@ process SIG_PROFILER {
     script:
     
       def args                              = task.ext.args                                 ?: ''
-      def reference_genome                  = args!='' && args.reference_genome             ? "$args.K" : "{GRCh37, GRCh38}"
+      def reference_genome                  = args!='' && args.reference_genome             ? "$args.reference_genome" : "{GRCh37, GRCh38}"
       def exome                             = args!='' && args.exome                        ? "$args.background_signature" : "False"
       def bed_file                          = args!='' && args.bed_file                     ? "$args.bed_file" : "None"
       def chrom_based                       = args!='' && args.chrom_based                  ? "$args.chrom_based" : "False"
