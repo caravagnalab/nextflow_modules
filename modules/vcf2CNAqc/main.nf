@@ -2,7 +2,7 @@ process VCF_PROCESSING {
     publishDir params.publish_dir, mode: 'copy'
 
     input:
-     tuple val(datasetID), val(patientID), val(sampleID), path(vcfFile)
+     tuple val(datasetID), val(patientID), val(sampleID), path(vcfFile), path(vcfTbi)
 
     output:
      tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/$sampleID/vcf2CNAqc/*.rds"), emit: rds 
@@ -26,10 +26,10 @@ process VCF_PROCESSING {
 
     # Extract gt field and obtain coverage (DP) and variant allele frequency (VAF) fields
     gt_field = tb\$gt %>% 
-            #tidyr::separate(gt_AD, sep = ',', into = c("NR", "NV")) %>%
+            tidyr::separate(gt_AD, sep = ',', into = c("NR", "NV")) %>%
             dplyr::mutate(
-            NR = as.numeric(gt_NR),
-            NV = as.numeric(gt_NV),
+            NR = as.numeric(NR),
+            NV = as.numeric(NV),
             DP = NV + NR,
             VAF = NV/DP) %>%  
             dplyr::rename(sample = Indiv)
@@ -84,7 +84,7 @@ process VCF_PROCESSING {
             to = from + nchar(alt)
             ) %>%
             dplyr::ungroup() %>%
-            dplyr::select(chr, from, to, ref, alt, dplyr::everything(), -ChromKey, -NR) #-DP
+            dplyr::select(chr, from, to, ref, alt, dplyr::everything(), -ChromKey, -DP) #-DP
     }
     
     # For each sample create the table of mutations 

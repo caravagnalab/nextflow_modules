@@ -4,7 +4,6 @@ nextflow.enable.dsl=2
 include { VARIANT_ANNOTATION } from "${baseDir}/subworkflows/variant_annotation/main"
 include { SUBCLONAL_DECONVOLUTION } from "${baseDir}/subworkflows/subclonal_deconvolution/main"
 include { QC } from "${baseDir}/subworkflows/CNAqc/main"
-include { PLATYPUS_CALL_VARIANTS } from "${baseDir}/modules/Platypus/main"
 
 workflow {
 
@@ -30,9 +29,7 @@ workflow {
 
 
   //VARIANT_ANNOTATION(input_vcf)
-  //PLATYPUS_CALL_VARIANTS(input_vcf.groupTuple(by: [0,1]), normal_bam.groupTuple(by: [0,1,2,3,4]), tumor_bam.groupTuple(by: [0,1]))  
-  MPILEUP()
-  join_CNAqc = QC(PLATYPUS_CALL_VARIANTS.out.vcf.transpose(by: [2]), input_CNA)
+  join_CNAqc = QC(input_vcf, input_CNA, tumor_bam)
   //SUBCLONAL_DECONVOLUTION(join_CNAqc)
 
 }
