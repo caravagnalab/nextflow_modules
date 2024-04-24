@@ -7,7 +7,7 @@ process VEP_ANNOTATE {
 
     input:
 
-      tuple val(datasetID), val(patientID), val(sampleID), path(vcf_File)  
+      tuple val(datasetID), val(patientID), val(sampleID), path(vcf_File), path(tbi_File)
 
     output:
 
