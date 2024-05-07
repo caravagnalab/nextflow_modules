@@ -12,9 +12,12 @@ workflow FORMATTER {
     
     main:
 
-        CNA_PROCESSING(input)
-        VCF_PROCESSING(input)
+        VCF_PROCESSING(result.vcf)
+        CNA_PROCESSING(result.cna)
 
     emit:
+    
+        CNA_PROCESSING.out.rds
+        VCF_PROCESSING.out.rds
 
 }
