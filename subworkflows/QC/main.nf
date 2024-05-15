@@ -13,7 +13,7 @@ workflow QC {
 
     main:
 
-        CNAQC(CNA_PROCESSING.out.rds, JOIN_POSITIONS.out.rds)
+        CNAQC(cna, vcf)
         JOIN_CNAQC(CNAQC.out.rds.groupTuple(by: [0,1]))
     
     emit:
