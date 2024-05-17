@@ -18,10 +18,10 @@ process CNA_PROCESSING {
     source(paste0("$moduleDir", '/parser_CNA.R'))
 
     if ("$caller" == 'sequenza'){
-      CNA = parse_Sequenza("$patientID", "$cnaPath")
+      CNA = parse_Sequenza("$sampleID", "$cnaPath")
 
     } else if ("$caller" == 'ASCAT'){
-      CNA = parse_ASCAT("$patientID", "$cnaPath")
+      CNA = parse_ASCAT("$sampleID", "$cnaPath")
       
     }
 

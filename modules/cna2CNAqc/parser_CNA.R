@@ -1,7 +1,7 @@
 library(tidyverse)
 
 parse_Sequenza = function(sample, run){
-    segments_file = paste0(run, '/', sample, '_segments.txt')
+    segments_file = paste0(run, '/', sample, '.smoothedSegs.txt') #_segments.txt')
     purity_file = paste0(run, '/', sample, '_confints_CP.txt')
 
     # Extract the segments information 

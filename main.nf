@@ -20,7 +20,7 @@ workflow {
   input_cna = Channel.fromPath(params.samples).
     splitCsv(header: true).
     map{row ->
-     tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.cnv_res), row.caller.toString())}
+     tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.cnv_res), row.cnv_caller.toString())}
 
   // normal_bam = Channel.fromPath(params.samples).
   //   splitCsv(header: true).
