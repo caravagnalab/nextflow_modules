@@ -2,7 +2,7 @@ process CNA_PROCESSING {
     publishDir params.publish_dir, mode: 'copy'
 
     input:
-     tuple val(datasetID), val(patientID), val(sampleID), path(cnaFile), val(caller)
+     tuple val(datasetID), val(patientID), val(sampleID), path(cnaPath), val(caller)
 
     output:
      tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/$sampleID/cna2CNAqc/CNA.rds"), emit: rds
@@ -18,11 +18,13 @@ process CNA_PROCESSING {
     source(paste0("$moduleDir", '/parser_CNA.R'))
 
     if ("$caller" == 'sequenza'){
-      CNA = parse_Sequenza("$patientID", "$cnaFile")
-    } else if {
-      pass
+      CNA = parse_Sequenza("$patientID", "$cnaPath")
+
+    } else if ("$caller" == 'ASCAT'){
+      CNA = parse_ASCAT("$patientID", "$cnaPath")
+      
     }
 
-    saveRDS(object = CNA, file = paste0(res_dir, "CNA.rds"))
+    saveRDS(object = CNA, file = paste0(res_dir, "CNA", ".rds"))
     """
 }

@@ -29,8 +29,8 @@ process VCF_PROCESSING {
     if (grepl(pattern = 'Mutect', x = source)){
         calls = parse_Mutect(vcf, sample_id = "$sampleID")
         
-    } else if {
-        calls = NA
+    } else if (grepl(pattern = 'Strelka', x = source)){
+        calls = parse_Strelka(vcf, sample_id = "$sampleID")
     }
 
     saveRDS(object = calls, file = paste0(res_dir, "VCF.rds"))

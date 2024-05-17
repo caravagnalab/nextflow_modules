@@ -19,17 +19,19 @@ parse_Mutect = function(vcf, sample_id){
     # Extract sample names
     samples_list = gt_field$sample %>% unique
 
-    # VEP specific field extraction
-    # if (stringr::str_detect("$params.tools", "vep") == TRUE){
-    # Take CSQ field names and split by |
-    vep_field = tb$meta %>% 
+    # check if VCF is annotated with VEP
+    if ("CSQ" %in% tb$meta$ID){
+      # VEP specific field extraction
+      # Take CSQ field names and split by |
+      
+      vep_field = tb$meta %>% 
                 dplyr::filter(ID == "CSQ") %>% 
                 dplyr::select(Description) %>% 
-                dplyr::pull()
+                dplyr::pull() 
 
     vep_field = strsplit(vep_field, split = "|", fixed = TRUE)[[1]]
     vep_field = vep_field[2:length(vep_field)-1]
-            
+
     # Tranform the fix field by splittig the CSQ and select the columns needed
     fix_field = tb$fix %>%
                         dplyr::rename(
@@ -45,27 +47,23 @@ parse_Mutect = function(vcf, sample_id){
                         dplyr::select(chr, from, to, ref, alt, CSQ) %>% 
                         tidyr::separate(CSQ, vep_field, sep = "\\|") %>% 
                         dplyr::select(chr, from, to, ref, alt, IMPACT, SYMBOL, Gene) #can add other thing, CSQ, HGSP
-    
-    # # If vcf is not annotated 
-    # } else {
-    #     annotation = NULL
-
-    #     # Take from fix field some columns
-    #     fix_field = tb\$fix %>%
-    #         dplyr::rename(
-    #         chr = CHROM,
-    #         from = POS,
-    #         ref = REF,
-    #         alt = ALT
-    #         ) %>%
-    #         dplyr::rowwise() %>%
-    #         dplyr::mutate(
-    #         from = as.numeric(from),
-    #         to = from + nchar(alt)
-    #         ) %>%
-    #         dplyr::ungroup() %>%
-    #         dplyr::select(chr, from, to, ref, alt, dplyr::everything(), -ChromKey, -DP) #-DP
-    # }
+    } else {
+        # Take from fix field some columns
+        fix_field = tb\$fix %>%
+            dplyr::rename(
+            chr = CHROM,
+            from = POS,
+            ref = REF,
+            alt = ALT
+            ) %>%
+            dplyr::rowwise() %>%
+            dplyr::mutate(
+            from = as.numeric(from),
+            to = from + nchar(alt)
+            ) %>%
+            dplyr::ungroup() %>%
+            dplyr::select(chr, from, to, ref, alt, dplyr::everything(), -ChromKey, -DP) #-DP
+    }
     
     # For each sample create the table of mutations 
     calls = lapply(
@@ -88,4 +86,10 @@ parse_Mutect = function(vcf, sample_id){
     calls = calls[c(sample_id, normal)]
 
     return(calls)
+}
+
+
+parse_Strelka = function(vcf, sample_id){
+  calls = NA
+  return(calls)
 }
