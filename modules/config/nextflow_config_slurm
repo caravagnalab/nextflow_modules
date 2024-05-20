@@ -3,7 +3,6 @@ cleanup=true
 
 includeConfig "$baseDir/modules/config/params.config"
 
-
  singularity {
      enabled = true
      singularity.envWhitelist = ["SINGULARITY_TMPDIR"]
@@ -12,15 +11,9 @@ includeConfig "$baseDir/modules/config/params.config"
  
 process {
    executor='slurm'
-   queue='EPYC'
+   queue='THIN'
    errorStrategy = 'finish'
 }
-
-// process {
-//   executor='slurm'
-//   queue='THIN'
-//   errorStrategy = 'finish'
-// }
 
 process {
   withName: 'VEP_ANNOTATE' {
@@ -38,63 +31,6 @@ process {
     container = 'https://depot.galaxyproject.org/singularity/bioconductor-maftools%3A2.8.0--r41hd029910_0'
   }
  }
-
-process {
-
-  withName: 'ANNOVAR_ANNOTATE' {
-    time='12h'
-    container = 'shub://IARCbioinfo/table_annovar-nf:v1.1'
-    memory='10 GB'
-  }
-
-  withName: 'ANNOVAR2MAF' {
-    time='24h'
-    memory='5 GB'
-  }
-}
-
-
-process {
-  withName: 'PLATYPUS_CALL_VARIANTS' {
-    time='24h'
-    container = 'https://depot.galaxyproject.org/singularity/platypus-variant%3A0.8.1.1--htslib1.5_0'
-  }
-}
-
-process {
-   withName: 'BCFTOOLS_SPLIT_VEP' {
-   container = 'https://depot.galaxyproject.org/singularity/bcftools%3A1.14--hde04aa1_1'
-  }
-}
-
-process {
-  withName: 'SEQUENZA_CNAqc' {
-    memory = '300 GB'
-    time = '3h'
-    
-    errorStrategy = 'finish'
-    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
-
-    ext.args = {[
-      "norm_method": params.seqcna_norm_method,
-      "window": params.seqcna_window,
-      "gamma": params.seqcna_gamma,
-      "kmin": params.seqcna_kmin,
-      "min_reads_baf": params.seqcna_min_reads_baf,
-      "min_reads": params.seqcna_min_reads,
-      "min_reads_normal": params.seqcna_reads_normal,
-      "max_mut_types": params.seqcna_max_mut_types,
-
-      "low_cell": params.seqcna_low_cell,
-      "up_cell": params.seqcna_up_cell,
-      "low_ploidy": params.seqcna_low_ploidy,
-      "up_ploidy": params.seqcna_up_ploidy,
-      "delta_cellularity": params.seqcna_delta_cellularity,
-      "delta_ploidy": params.seqcna_delta_ploidy,
-
-      "matching_strategy": params.seqcna_matching_strategy
-      ]}
-  }
 
   withName: 'VARTRIX' {
     memory='50 GB'
@@ -228,7 +164,8 @@ process {
     time='75h'
     memory='200 GB'
     container = 'https://depot.galaxyproject.org/singularity/bioconductor-sparsesignatures%3A2.8.0--r42hdfd78af_0'
-    ext.args   = {[
+    
+     ext.args   = {[
       "K": params.sparsesignatures_K,
       "background_signature": params.sparsesignatures_background_signature,
       "beta": params.sparsesignatures_beta,
@@ -245,7 +182,56 @@ process {
       "lambda_rate_beta": params.sparsesignatures_lambda_rate_beta,
       "seed": params.sparsesignatures_seed,
       "verbose": params.sparsesignatures_verbose,
-      "log_file": params.sparsesignatures_log_file      
+      "log_file": params.sparsesignatures_log_file]}
+  }
+}
+
+withName: 'GET_POSITIONS' {
+    container = 'docker://lvaleriani/cnaqc:v5'
+    memory = '50 GB'
+    time = '1h'
+    errorStrategy = 'finish'
+}
+
+withName: 'JOIN_POSITIONS' {
+    container = 'docker://lvaleriani/cnaqc:v5'
+    memory = '50 GB'
+    time = '1h'
+    errorStrategy = 'finish'
+}
+
+
+
+process {
+  withName: 'CNA_PROCESSING' {
+    container = 'docker://lvaleriani/cnaqc:v5'
+    memory = '50 GB'
+    time = '1h'
+    errorStrategy = 'finish'
+  }
+
+  withName: 'JOIN_CNAQC' {
+    container = 'docker://lvaleriani/cnaqc:v5'
+    memory = '50 GB'
+    time = '2h'
+    errorStrategy = 'finish'
+  }
+
+  withName: 'VCF_PROCESSING' {
+    container = 'docker://lvaleriani/cnaqc:v5'
+    memory = '50 GB'
+    time = '1h'
+    errorStrategy = 'finish'
+  }
+
+  withName: 'CNAQC' {
+    container = 'docker://lvaleriani/cnaqc:v5'
+    memory = '100 GB'
+    time = '2h'
+    errorStrategy = 'finish'
+
+    ext.args = {[
+      "matching_strategy": params.cna_matching_strategy
     ]}
   }
 }

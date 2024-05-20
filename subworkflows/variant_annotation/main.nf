@@ -9,16 +9,16 @@ include { MAFTOOLS } from "${baseDir}/modules/MAFTOOLS/main"
 
 workflow VARIANT_ANNOTATION {
     take: 
-    vcf_File
+        vcf
 
     main:
-        vep_out = VEP_ANNOTATE(vcf_File)
+        vep_out = VEP_ANNOTATE(vcf)
         vcf2maf_out = VCF2MAF(VEP_ANNOTATE.out.vep_output)
         maf_out = MAFTOOLS(VCF2MAF.out.vcf2maf_out.groupTuple(by: 0))
 
-        emit:
-        vep_out
-        vcf2maf_out
-        maf_out
+    emit:
+        vep = vep_out 
+        vcf2maf = vcf2maf_out
+        maf = maf_out
 
 }

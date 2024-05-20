@@ -1,31 +1,50 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 
-#include { VARIANT_ANNOTATION } from "${baseDir}/subworkflows/variant_annotation/main"
-#include { SUBCLONAL_DECONVOLUTION } from "${baseDir}/subworkflows/subclonal_deconvolution/main"
-#include { CNAQC } from "${baseDir}/subworkflows/CNAqc/main"
-include { SPARSE_SIGNATURES } from "${baseDir}/nextflow_modules/modules/SparseSignatures/main"
+include { VARIANT_ANNOTATION } from "${baseDir}/subworkflows/variant_annotation/main"
+include { FORMATTER as FORMATTER_CNA } from "${baseDir}/subworkflows/formatter/main"
+include { FORMATTER as FORMATTER_VCF} from "${baseDir}/subworkflows/formatter/main"
+// include { LIFTER } from "${baseDir}/subworkflows/lifter/main"
+// include { DRIVER_ANNOTATION } from "${baseDir}/subworkflows/driver_annotation/main"
+include { QC } from "${baseDir}/subworkflows/QC/main"
+// include { SUBCLONAL_DECONVOLUTION } from "${baseDir}/subworkflows/subclonal_deconvolution/main"
+
 
 workflow {
 
   input_vcf = Channel.fromPath(params.samples).
       splitCsv(header: true).
       map{row ->
-        tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.vcf))}
-
-  input_CNA = Channel.fromPath(params.samples).
+        tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.vcf), file(row.vcf_tbi))}
+ 
+  input_cna = Channel.fromPath(params.samples).
     splitCsv(header: true).
     map{row ->
-     tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.cna_calling))}
+     tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.cnv_res), row.cnv_caller.toString())}
 
-   input_join_CNAqc = Channel.fromPath(params.samples).
-    splitCsv(header: true).
-    map{row ->
-     tuple(row.dataset.toString(), file(row.joint_table))}
+  // normal_bam = Channel.fromPath(params.samples).
+  //   splitCsv(header: true).
+  //   map{row ->
+  //    tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.normal_bam), file(row.normal_bai))}
 
-  //VARIANT_ANNOTATION(input_vcf)
-  //join_CNAqc = CNAQC(VARIANT_ANNOTATION.out.vep_out, input_CNA)
-  //SUBCLONAL_DECONVOLUTION(join_CNAqc)
-    SPARSE_SIGNATURES(input_join_CNAqc)
+  // tumor_bam = Channel.fromPath(params.samples).
+  //   splitCsv(header: true).
+  //   map{row ->
+  //    tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.tumour_bam), file(row.tumour_bai))}  
+
+
+  VARIANT_ANNOTATION(input_vcf) //work
+  FORMATTER_VCF(VARIANT_ANNOTATION.out.vep, "vcf")//VARIANT_ANNOTATION.out.vep
+  FORMATTER_CNA(input_cna, "cna")
+
+// // if multisample 
+//   LIFTER(FORMATTER_VCF.out, tumor_bam) // work
+//   DRIVER_ANNOTATION(LIFTER.out)
+
+// // if singlesample 
+//   DRIVER_ANNOTATION(FORMATTER.out.vcf)
+
+  join_CNAqc = QC(FORMATTER_CNA.out, FORMATTER_VCF.out) // work
+//  SUBCLONAL_DECONVOLUTION(join_CNAqc)
 
 }
