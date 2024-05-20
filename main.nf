@@ -45,7 +45,6 @@ workflow {
 //   DRIVER_ANNOTATION(FORMATTER.out.vcf)
 
   join_CNAqc = QC(FORMATTER_CNA.out, FORMATTER_VCF.out) // work
-
-  //  SUBCLONAL_DECONVOLUTION(join_CNAqc)
+//  SUBCLONAL_DECONVOLUTION(join_CNAqc)
 
 }
