@@ -36,7 +36,7 @@ process CNAQC {
         purity = CNA\$purity ,
         ref = "$params.assembly")
     
-    x = CNAqc::annotate_variants(x, drivers = CNAqc::intogen_drivers)
+    #x = CNAqc::annotate_variants(x, drivers = CNAqc::intogen_drivers)
 
     old_mutations = x\$mutations
     x\$mutations = x\$mutations %>% filter(VAF > 0)

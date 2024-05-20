@@ -2,7 +2,7 @@ process VCF_PROCESSING {
     publishDir params.publish_dir, mode: 'copy'
 
     input:
-     tuple val(datasetID), val(patientID), val(sampleID), path(vcfFile), path(vcfTbi)
+     tuple val(datasetID), val(patientID), val(sampleID), path(vcfFile)
 
     output:
      tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/$sampleID/vcf2CNAqc/*.rds"), emit: rds 
@@ -24,13 +24,19 @@ process VCF_PROCESSING {
     vcf = vcfR::read.vcfR("$vcfFile")
 
     # Check from which caller the .vcf has been produced
-    source = queryMETA(vcf, element = 'source')[[1]]
+    source = vcfR::queryMETA(vcf, element = 'source')[[1]]
 
     if (grepl(pattern = 'Mutect', x = source)){
         calls = parse_Mutect(vcf, sample_id = "$sampleID")
         
     } else if (grepl(pattern = 'Strelka', x = source)){
         calls = parse_Strelka(vcf, sample_id = "$sampleID")
+    
+    } else if (grepl(pattern = 'Platypus', x = source)){
+        calls = parse_Platypus(vcf, sample_id = "$sampleID")
+
+    } else {
+        stop('Variant Caller not supported.')
     }
 
     saveRDS(object = calls, file = paste0(res_dir, "VCF.rds"))

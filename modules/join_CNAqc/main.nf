@@ -7,9 +7,7 @@ process JOIN_CNAQC {
   
   output:
 
-    tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/join_CNAqc/*.rds"), emit: rds
-    //tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/join_CNAqc/mut_join_table.tsv"), emit: mut_tsv
-    //tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/join_CNAqc/cna_join_table.tsv"), emit: cna_tsv
+    tuple val(datasetID), val(patientID), path("$datasetID/$patientID/join_CNAqc/*.rds"), emit: rds
 
   script:
     """

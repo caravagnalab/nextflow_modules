@@ -17,8 +17,8 @@ workflow VARIANT_ANNOTATION {
         maf_out = MAFTOOLS(VCF2MAF.out.vcf2maf_out.groupTuple(by: 0))
 
     emit:
-        vep_out
-        vcf2maf_out
-        maf_out
+        vep = vep_out 
+        vcf2maf = vcf2maf_out
+        maf = maf_out
 
 }

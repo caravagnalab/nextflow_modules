@@ -34,7 +34,7 @@ workflow {
 
 
   VARIANT_ANNOTATION(input_vcf) //work
-  FORMATTER_VCF(VARIANT_ANNOTATION.out.vep_out , "vcf")
+  FORMATTER_VCF(VARIANT_ANNOTATION.out.vep, "vcf")//VARIANT_ANNOTATION.out.vep
   FORMATTER_CNA(input_cna, "cna")
 
 // // if multisample 
@@ -44,7 +44,7 @@ workflow {
 // // if singlesample 
 //   DRIVER_ANNOTATION(FORMATTER.out.vcf)
 
-  join_CNAqc = QC(FORMATTER_VCF.out, FORMATTER_CNA.out) // work
+  join_CNAqc = QC(FORMATTER_CNA.out, FORMATTER_VCF.out) // work
 
   //  SUBCLONAL_DECONVOLUTION(join_CNAqc)
 
