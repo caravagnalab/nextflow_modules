@@ -28,7 +28,7 @@ RESULTS_PATH="/u/cdslab/ggandolfi/scratch/nextflow_modules_fork/results/"
     -c $REPO_PATH/modules/config/nextflow_config_slurm \
     --samples $REPO_PATH/sample_input_test.csv \
     --publish_dir $RESULTS_PATH \
-    --tools "pyclone-vi,viber" \
-    --step "subclonal_multisample" \
+    --tools "mobster" \
+    --step "subclonal_singlesample" \
     -with-trace
 
