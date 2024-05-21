@@ -9,25 +9,19 @@ includeConfig "$baseDir/modules/config/params.config"
      runOptions = '--bind /orfeo:/orfeo --bind $SINGULARITY_TMPDIR:/tmp'
  }
  
- process {
+process {
    executor='slurm'
    queue='THIN'
    errorStrategy = 'finish'
 }
 
-// process {
-//   executor='slurm'
-//   queue='THIN'
-//   errorStrategy = 'finish'
-// }
-
 process {
   withName: 'VEP_ANNOTATE' {
     time='12h'
     container = 'https://depot.galaxyproject.org/singularity/ensembl-vep:110.1--pl5321h2a3209d_0'
-    memory = '20 GB' 
- }
-  
+    memory = '20 GB'
+  }
+
   withName: 'VCF2MAF' {
     container = 'https://depot.galaxyproject.org/singularity/vcf2maf%3A1.6.20--0'
   }
@@ -37,65 +31,6 @@ process {
     container = 'https://depot.galaxyproject.org/singularity/bioconductor-maftools%3A2.8.0--r41hd029910_0'
   }
  }
-
-process {
-
-  withName: 'ANNOVAR_ANNOTATE' {
-    time='12h'
-    container = 'shub://IARCbioinfo/table_annovar-nf:v1.1'
-    memory='10 GB'
-  }
-
-  withName: 'ANNOVAR2MAF' {
-    time='24h'
-    memory='5 GB'
-  }
-}
-
-process {
-  withName: 'PLATYPUS_CALL_VARIANTS' {
-    time='12h'
-    memory = '50 GB'
-
-    errorStrategy = 'finish'
-    container = 'https://depot.galaxyproject.org/singularity/bcftools%3A1.18--h8b25389_0'
-  }
-}
-
-process {
-   withName: 'BCFTOOLS_SPLIT_VEP' {
-   container = 'https://depot.galaxyproject.org/singularity/bcftools%3A1.14--hde04aa1_1'
-  }
-}
-
-process {
-  withName: 'SEQUENZA_CNAqc' {
-    memory = '300 GB'
-    time = '3h'
-    
-    errorStrategy = 'finish'
-    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
-
-    ext.args = {[
-      "norm_method": params.seqcna_norm_method,
-      "window": params.seqcna_window,
-      "gamma": params.seqcna_gamma,
-      "kmin": params.seqcna_kmin,
-      "min_reads_baf": params.seqcna_min_reads_baf,
-      "min_reads": params.seqcna_min_reads,
-      "min_reads_normal": params.seqcna_reads_normal,
-      "max_mut_types": params.seqcna_max_mut_types,
-
-      "low_cell": params.seqcna_low_cell,
-      "up_cell": params.seqcna_up_cell,
-      "low_ploidy": params.seqcna_low_ploidy,
-      "up_ploidy": params.seqcna_up_ploidy,
-      "delta_cellularity": params.seqcna_delta_cellularity,
-      "delta_ploidy": params.seqcna_delta_ploidy,
-
-      "matching_strategy": params.seqcna_matching_strategy
-      ]}
-  }
 
   withName: 'VARTRIX' {
     memory='50 GB'
@@ -177,16 +112,77 @@ process {
 }
 
 process {
-
   withName: 'SIG_PROFILER' {
-    time='2h'
+    time='5h'
     memory='100 GB'
+    container = "docker://fauzul/sigprofiler:1.0"
+    ext.args   = {[
+      "reference_genome": params.sigprofiler_reference_genome,
+      "exome": params.sigprofiler_exome,
+      "bed_file": params.sigprofiler_bed_file,
+      "chrom_based": params.sigprofiler_chrom_based,
+      "plot": params.sigprofiler_plot,
+      "tsb_stat": params.sigprofiler_tsb_stat,
+      "seqInfo": params.sigprofiler_seqInfo,
+      "cushion": params.sigprofiler_cushion,
+      "volume": params.sigprofiler_volume,
+      "input_type": params.sigprofiler_input_type,
+      "context_type": params.sigprofiler_context_type,
+      "minimum_signatures": params.sigprofiler_minimum_signatures,
+      "maximum_signatures": params.sigprofiler_maximum_signatures,
+      "nmf_replicates": params.sigprofiler_nmf_replicates,
+      "resample": params.sigprofiler_resample,
+      "seeds": params.sigprofiler_seeds,
+      "matrix_normalization": params.sigprofiler_matrix_normalization,
+      "nmf_init": params.sigprofiler_nmf_init,
+      "min_nmf_iterations": params.sigprofiler_min_nmf_iterations,
+      "max_nmf_iterations": params.sigprofiler_max_nmf_iterations,
+      "nmf_test_conv": params.sigprofiler_nmf_test_conv,
+      "tolerance": params.sigprofiler_tolerance,
+      "cpu": params.sigprofiler_cpu,
+      "gpu": params.sigprofiler_gpu,
+      "batch_size": params.sigprofiler_batch_size,
+      "stability": params.sigprofiler_stability,
+      "min_stability": params.sigprofiler_min_stability,
+      "combined_stability": params.sigprofiler_combined_stability,
+      "cosmic_version": params.sigprofiler_cosmic_version,
+      "de_novo_fit_penalty": params.sigprofiler_de_novo_fit_penalty,
+      "nnls_add_penalty": params.sigprofiler_nnls_add_penalty,
+      "nnls_remove_penalty": params.sigprofiler_nnls_remove_penalty,
+      "initial_remove_penalty": params.sigprofiler_initial_remove_penalty,
+      "refit_denovo_signatures": params.sigprofiler_refit_denovo_signatures,
+      "make_decomposition_plots": params.sigprofiler_make_decomposition_plots,
+      "collapse_to_SBS96": params.sigprofiler_collapse_to_SBS96,
+      "get_all_signature_matrices": params.sigprofiler_get_all_signature_matrices,
+      "export_probabilities": params.sigprofiler_export_probabilities,
+    ]}
   }
+}
 
+process {
   withName: 'SPARSE_SIGNATURES' {
     time='75h'
-    memory='100 GB'
+    memory='200 GB'
     container = 'https://depot.galaxyproject.org/singularity/bioconductor-sparsesignatures%3A2.8.0--r42hdfd78af_0'
+    
+     ext.args   = {[
+      "K": params.sparsesignatures_K,
+      "background_signature": params.sparsesignatures_background_signature,
+      "beta": params.sparsesignatures_beta,
+      "normalize_counts": params.sparsesignatures_normalize_counts
+      "nmf_runs": params.sparsesignatures_nmf_runs,
+      "iterations": params.sparsesignatures_iterations,
+      "max_iterations_lasso": params.sparsesignatures_max_iterations_lasso,
+      "num_processes": params.sparsesignatures_num_processes,
+      "starting_beta": params.sparsesignatures_starting_beta,
+      "cross_validation_entries": params.sparsesignatures_cross_validation_entries,
+      "cross_validation_repetitions": params.sparsesignatures_cross_validation_repetitions,
+      "cross_validation_iterations": params.sparsesignatures_cross_validation_iterations,
+      "lambda_rate_alpha": params.sparsesignatures_lambda_rate_alpha,
+      "lambda_rate_beta": params.sparsesignatures_lambda_rate_beta,
+      "seed": params.sparsesignatures_seed,
+      "verbose": params.sparsesignatures_verbose,
+      "log_file": params.sparsesignatures_log_file]}
   }
 }
 
@@ -195,25 +191,19 @@ withName: 'GET_POSITIONS' {
     memory = '50 GB'
     time = '1h'
     errorStrategy = 'finish'
-  }
+}
 
 withName: 'JOIN_POSITIONS' {
     container = 'docker://lvaleriani/cnaqc:v5'
     memory = '50 GB'
     time = '1h'
     errorStrategy = 'finish'
-  }
+}
 
 
 
 process {
-  //withLabel:cnaqc_analysis {
-  //    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cnaqc.sif'
-  //}
-
   withName: 'CNA_PROCESSING' {
-    //label = "cnaqc_analysis"
-    //container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cnaqc.sif'
     container = 'docker://lvaleriani/cnaqc:v5'
     memory = '50 GB'
     time = '1h'
@@ -221,8 +211,6 @@ process {
   }
 
   withName: 'JOIN_CNAQC' {
-    //label = "cnaqc_analysis"
-    //container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cnaqc.sif'
     container = 'docker://lvaleriani/cnaqc:v5'
     memory = '50 GB'
     time = '2h'
@@ -230,8 +218,6 @@ process {
   }
 
   withName: 'VCF_PROCESSING' {
-    //label = "cnaqc_analysis"
-    //container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cnaqc.sif'
     container = 'docker://lvaleriani/cnaqc:v5'
     memory = '50 GB'
     time = '1h'
@@ -239,8 +225,6 @@ process {
   }
 
   withName: 'CNAQC' {
-    //container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cnaqc.sif'
-    //label = "cnaqc_analysis"
     container = 'docker://lvaleriani/cnaqc:v5'
     memory = '100 GB'
     time = '2h'
