@@ -6,7 +6,7 @@ process PYCLONEVI {
                
     input:
 
-      tuple val(patientID), val(sampleID), path(joint_table)
+      tuple val(patientID), val(sampleID), path(joint_table) // from the formatter output
 
     output:
       // tuple val(patientID), val(sampleID), path(path_ctree), emit: ctree_input

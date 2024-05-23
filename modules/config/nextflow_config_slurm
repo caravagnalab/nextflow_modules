@@ -114,6 +114,12 @@ process {
     ]}
   }
 
+  withName: 'RDS_PROCESSING' {
+    memory='50 GB'
+    time='1h'
+    container = 'docker://lvaleriani/cnaqc:v5'
+  }
+  
   withName: 'VIBER' {
     memory='128 GB'
     time='2h'
