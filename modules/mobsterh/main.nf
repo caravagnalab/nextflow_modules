@@ -21,7 +21,7 @@ process MOBSTERh {
     def init = args!="" && args.init ? "$args.init" : ""
     def tail = args!="" && args.tail ? "$args.tail" : ""
     def epsilon = args!="" && args.epsilon ? "$args.epsilon" : ""
-    def maxIter = args!="" && args.maxIter ? "$args.maxIter" : ""
+    def maxIter = args!="" && args.maxIter ? "$args.maxIter" : "" 
     def fit_type = args!="" && args.fit_type ? "$args.fit_type" : ""
     def seed = args!="" && args.seed ? "$args.seed" : ""
     def model_selection = args!="" && args.model_selection ? "$args.model_selection" : ""
