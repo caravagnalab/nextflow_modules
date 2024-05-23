@@ -23,7 +23,7 @@ process ANNOTATE_DRIVER {
     SNV = SNV[["$sampleID"]]
     SNV = SNV\$mutations
 
-    drivers_table = read_tsv(file = '~/Downloads/2023-05-31_IntOGen-Drivers/Compendium_Cancer_Genes.tsv') // we should define the default location of this file somehwere, similarly to the VEP cache I guess
+    drivers_table = read_tsv(file = $params.drivers_table) 
 
     x = SNV %>% 
       mutate(CANCER_TYPE = $cancer_type) %>% // we should definite it somewhere, maybe in the input sample sheet, maybe in place of dataset id
@@ -32,7 +32,10 @@ process ANNOTATE_DRIVER {
           dplyr::select(SYMBOL, CANCER_TYPE, CGC_CANCER_GENE) %>% 
           unique(),
         by = c('SYMBOL', 'CANCER_TYPE')) %>% 
-      dplyr::mutate(is_driver = (CGC_CANCER_GENE & IMPACT %in% c('MODERATE', 'HIGH'))) %>% // this is our rule for driver assignment
+      dplyr::mutate(
+          is_driver = (CGC_CANCER_GENE & IMPACT %in% c('MODERATE', 'HIGH')),
+          driverl_label = paste(SYMBOL, HGVSp_Short)) // this is our rule for driver assignment
+
 
     saveRDS(object = x, file = paste0(res_dir, "annotated_drivers.rds"))
 
