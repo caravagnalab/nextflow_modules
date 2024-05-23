@@ -1,9 +1,9 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 
-#include { VARIANT_ANNOTATION } from "${baseDir}/subworkflows/variant_annotation/main"
-#include { SUBCLONAL_DECONVOLUTION } from "${baseDir}/subworkflows/subclonal_deconvolution/main"
-#include { CNAQC } from "${baseDir}/subworkflows/CNAqc/main"
+//include { VARIANT_ANNOTATION } from "${baseDir}/subworkflows/variant_annotation/main"
+//include { SUBCLONAL_DECONVOLUTION } from "${baseDir}/subworkflows/subclonal_deconvolution/main"
+//include { CNAQC } from "${baseDir}/subworkflows/CNAqc/main"
 include { SPARSE_SIGNATURES } from "${baseDir}/nextflow_modules/modules/SparseSignatures/main"
 
 workflow {
