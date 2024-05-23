@@ -84,7 +84,7 @@ process SPARSE_SIGNATURES {
     #Find the optimal number of signatures and sparsity level: rely on cross-validation
     # 1 h per repetition
     #higher number of CV repetitions corresponds to more accurate parameter estimates
-    cv_out = nmfLassoCV(
+    cv_out = SparseSignatures::nmfLassoCV(
                  x = mut_counts,
                  K = as.integer("$K"),  #user defined
                  starting_beta = "$starting_beta",
@@ -101,7 +101,7 @@ process SPARSE_SIGNATURES {
                  num_processes = "$num_processes", #number of requested NMF worker subprocesses to spawn. If Inf (an adaptive maximum number is automatically chosen); if NA or NULL, the function is run as a single process
                  seed = "$seed", verbose = "$verbose", log_file = "$log_file)
 
-    saveRDS(object = cv_out, file = paste0(res_SparseSig, "cv_out.rds")
+    saveRDS(object = cv_out, file = paste0(res_SparseSig/, "cv_out.rds")
 
     #Analyze the mean squared error results averaging over cross-validation repetitions
     cv_mses <- cv_out$grid_search_mse[1, , ]
@@ -137,7 +137,7 @@ process SPARSE_SIGNATURES {
 
     #signature visualization
     signatures = nmf_Lasso_out$beta
-    plot_signatures <- signatures.plot(beta=signatures, xlabels=FALSE)
+    plot_signatures <- SparseSignatures::signatures.plot(beta=signatures, xlabels=FALSE)
 
     ggplot2::ggsave(plot = plot_signatures, filename = paste0(res_SparseSig, "disc_signatures.pdf"), width = 12, height = 18, units = 'in', dpi = 200)
   
