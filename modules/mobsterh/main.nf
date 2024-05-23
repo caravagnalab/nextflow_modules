@@ -42,6 +42,7 @@ process MOBSTERh {
 
     library(mobster)
     library(dplyr)
+    source("$moduleDir/getters.R")
 
     patientID = "$patientID"
     description = patientID
@@ -50,19 +51,20 @@ process MOBSTERh {
     out_dirname_mobsterh = paste0("$patientID","/","$sampleID","/mobster/")
     dir.create(out_dirname_mobsterh, recursive = TRUE)
     samples <-strsplit(x = "$sampleID", " ")%>% unlist()
-    print(samples) 
-    read.csv("$joint_table", sep="\t") %>% filter(sample_id%in%samples) %>% 
-      write.table(append = F,file = paste0(out_dirname_mobsterh,"joint_table.tsv"), quote = F,sep = "\t",row.names = F)
+    print(samples)
+    
+    orginal <- readRDS("$joint_table") %>% get_sample(sample = samples,which_obj = "orginal")
+    joint_table = lapply(names(original), function(sample_name) CNAqc::Mutations(x=original[[sample_name]]) %>% dplyr::mutate(sample_id=sample_name)) %>% 
+      dplyr::bind_rows()
+    #read.csv("$joint_table", sep="\t") %>% filter(sample_id%in%samples) %>% 
+    #  write.table(append = F,file = paste0(out_dirname_mobsterh,"joint_table.tsv"), quote = F,sep = "\t",row.names = F)
 
-
-    input_tab = read.csv("$outDir/joint_table.tsv", sep="\t") %>%
-      dplyr::rename(variantID = gene) %>%
+    
+    # input_tab = read.csv("$outDir/joint_table.tsv", sep="\t") %>%
+    input_tab = joint_table %>%
+      #dplyr::rename(variantID = gene) %>%
       #dplyr::rename(is.driver = is_driver) %>%
       #dplyr::rename(tumour_content = purity) %>%
-      dplyr::filter(patientID==patientID) %>%
-      #dplyr::mutate(DP=ref_counts+alt_counts, 
-      #              VAF=alt_counts/DP) %>%
-      # dplyr::filter(VAF <= 1) %>% 
       dplyr::mutate(VAF=replace(VAF, VAF==0, 1e-7))
       #dplyr::rename(is_driver=is.driver) 
       #dplyr::rename(is_driver=is.driver, driver_label=variantID)
