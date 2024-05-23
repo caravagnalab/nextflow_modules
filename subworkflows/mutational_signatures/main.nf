@@ -13,12 +13,10 @@ workflow MUTATIONAL_SIGNATURES {
 
     main:
     
-    { rds_processing_out = RDS_PROCESSING(join_cnaqc) 
+        rds_processing_out = RDS_PROCESSING(join_cnaqc) 
 
         emit:
         rds_processing_out
-    }
-
     
     
     if (params.tools && params.tools.split(',').contains('SparseSignatures')) {
