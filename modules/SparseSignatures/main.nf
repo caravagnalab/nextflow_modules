@@ -35,9 +35,10 @@ process SPARSE_SIGNATURES {
 
       #!/usr/bin/env Rscript
 
-      library("SparseSignatures")
-      library("tidyverse")
-      library("ggplot2")
+      library(SparseSignatures)
+      library(tidyverse)
+      library(ggplot2)
+      library(stringr)
     
       res_SparseSig = paste0("SparseSig/")
       dir.create(res_SparseSig, recursive = TRUE)
@@ -49,18 +50,18 @@ process SPARSE_SIGNATURES {
    
       #Extract input data information
   
-      input_data <- multisample_table %>%
-       dplyr::rename(
-          sample = sample_id,
+      input_data <- mut %>%
+        dplyr::rename(
+          sample = Indiv,
           chrom = chr,
           start = from,
           ref = ref,
-          alt = alt) %>%
-        mutate(end = start) %>%
+          alt = alt,
+          end = to) %>%
         dplyr::select(sample, chrom, start, end, ref, alt) %>%
         as.data.frame()
     
-      input_data$chrom = str_sub(input_data$chrom,4,5)
+      input_data$chrom = stringr::str_sub(input_data$chrom,4,5)
 
       #Generate the patient vs mutation count matrix from mutation data
       #Install a reference human-genome specification.
