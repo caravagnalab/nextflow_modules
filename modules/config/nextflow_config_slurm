@@ -51,28 +51,6 @@ process {
   }
  }
 
-process {
-
-  withName: 'ANNOVAR_ANNOTATE' {
-    time='12h'
-    container = 'shub://IARCbioinfo/table_annovar-nf:v1.1'
-    memory='10 GB'
-  }
-
-  withName: 'ANNOVAR2MAF' {
-    time='24h'
-    memory='5 GB'
-  }
-}
-
-
-process {
-  withName: 'PLATYPUS_CALL_VARIANTS' {
-    time='24h'
-    container = 'https://depot.galaxyproject.org/singularity/platypus-variant%3A0.8.1.1--htslib1.5_0'
-  }
-}
-
 
 process {
    withName: 'BCFTOOLS_SPLIT_VEP' {
@@ -120,6 +98,13 @@ process {
     ]}
   }
 
+  withName: 'RDS_PROCESSING' {
+    memory='50 GB'
+    time='1h'
+    container = 'docker://lvaleriani/cnaqc:v5'
+  }
+
+
   withName: 'VIBER' {
     memory='128 GB'
     time='2h'
@@ -140,6 +125,7 @@ process {
       "re_assign" : params.viber_re_assign
     ]}
   }
+
   withName: 'PYCLONEVI' {
     memory='50 GB'
     time='2h'
@@ -257,7 +243,6 @@ process {
       "log_file": params.sparsesignatures_log_file
     ]}
   }  
-  
 }
 
 
