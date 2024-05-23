@@ -39,7 +39,7 @@ process MOBSTERh {
     #!/usr/bin/env Rscript
 
     # Sys.setenv("VROOM_CONNECTION_SIZE"=99999999)
-
+    library(CNAqc)
     library(mobster)
     library(dplyr)
     source("$moduleDir/getters.R")
@@ -53,7 +53,7 @@ process MOBSTERh {
     samples <-strsplit(x = "$sampleID", " ")%>% unlist()
     print(samples)
     
-    orginal <- readRDS("$joint_table") %>% get_sample(sample = samples,which_obj = "orginal")
+    original <- readRDS("$joint_table") %>% get_sample(sample = samples,which_obj = "original")
     joint_table = lapply(names(original), function(sample_name) CNAqc::Mutations(x=original[[sample_name]]) %>% dplyr::mutate(sample_id=sample_name)) %>% 
       dplyr::bind_rows()
     #read.csv("$joint_table", sep="\t") %>% filter(sample_id%in%samples) %>% 
@@ -62,6 +62,7 @@ process MOBSTERh {
     
     # input_tab = read.csv("$outDir/joint_table.tsv", sep="\t") %>%
     input_tab = joint_table %>%
+      dplyr::filter(VAF<1) %>%
       #dplyr::rename(variantID = gene) %>%
       #dplyr::rename(is.driver = is_driver) %>%
       #dplyr::rename(tumour_content = purity) %>%

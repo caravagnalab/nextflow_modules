@@ -1,5 +1,7 @@
 **/.nextflow*
 *.log*
+*.out*
+*err*
 *work
 .Rhistory
 out_files

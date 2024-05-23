@@ -1,3 +1,6 @@
+## This source file is temporary, only needed in
+## absence of the updated CNAqc package
+
 get_sample <- function(m_cnaqc_obj,
                        sample,
                        which_obj) {
@@ -26,7 +29,7 @@ get_sample <- function(m_cnaqc_obj,
         
         # check if the original cnaqc obj exist
         
-        check_or = any(names(m_cnaqc_obj) == type)
+        check_or = any(names(x) == type)
         
         if (check_or == FALSE) {
             cli::cli_abort(c("mCNAqc object was build without keeping original CNAqc objects"), 
@@ -50,29 +53,56 @@ get_sample <- function(m_cnaqc_obj,
     return(cnaqc_samples)
 }
 
-get_sample_name <-function(x) {
+get_sample_name <-function(m_cnaqc_obj,
+                       sample,
+                       which_obj) {
+    if (class(m_cnaqc_obj) != "m_cnaqc") {
+        wrong_class_all = class(m_cnaqc_obj)
 
-    if (class(x) == "m_cnaqc") {
+        cli::cli_abort(
+            c("cnaqc_objs must be a {.field m_cnaqc} object",
+              "x" = "{.var m_cnaqc_obj} is a {.cls {class(m_cnaqc_obj)}}")
+        )
+    }
 
-        lapply(x$cnaqc_obj_new_segmentation, function(y) {
+    consented_obj <- c("shared", "original")
 
-            y$sample
+    if ((which_obj %in% consented_obj) == FALSE) {
 
-        }) %>% unlist() %>% unname()
+        cli::cli_abort("{.var which_obj} must be one of {.val shared} or {.val original}")
 
-    } else if (class(x) == "cnaqc") {
+    }
 
-        x$sample
+    # define the element names
+
+    if (which_obj == "original") {
+
+        type = "original_cnaqc_objc"
+
+        # check if the original cnaqc obj exist
+
+        check_or = any(names(x) == type)
+
+        if (check_or == FALSE) {
+            cli::cli_abort(c("mCNAqc object was build without keeping original CNAqc objects"),
+                           "x" = "It is not possible to retrieve the required samples")
+        } else {
+
+            cli::cli_h1("Retrieving original {.cls CNAqc} objects")
+            cnaqc_samples = m_cnaqc_obj[[type]][sample]
+
+        }
 
     } else {
 
-        wrong_class_all = class(x)
+        type = "cnaqc_obj_new_segmentation"
 
-        cli::cli_abort(
-            c("must provide a {.field m_cnaqc} object",
-              "x" = "{.var x} is a {.cls {class(x)}}")
-        )
+        cli::cli_h1("Retrieving {.cls CNAqc} objects with the new segmentation")
+
+        cnaqc_samples = m_cnaqc_obj[[type]][sample]
     }
+
+    return(cnaqc_samples)
 }
 
 get_mCNAqc_stats <- function(m_cnaqc_obj){
