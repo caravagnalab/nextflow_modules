@@ -4,11 +4,11 @@ cleanup=true
 includeConfig "$baseDir/modules/config/params.config"
 
 
- singularity {
+singularity {
      enabled = true
      singularity.envWhitelist = ["SINGULARITY_TMPDIR"]
      runOptions = '--bind /orfeo:/orfeo --bind $SINGULARITY_TMPDIR:/tmp'
- }
+}
  
 process {
    executor='slurm'
@@ -16,11 +16,6 @@ process {
    errorStrategy = 'finish'
 }
 
-// process {
-//   executor='slurm'
-//   queue='THIN'
-//   errorStrategy = 'finish'
-// }
 
 process {
   withName: 'VEP_ANNOTATE' {
@@ -49,12 +44,13 @@ process {
         "removeNonMutated": params.maftools_removeNonMutated
     ]}
   }
- }
+}
+ 
 
 
 process {
-   withName: 'BCFTOOLS_SPLIT_VEP' {
-   container = 'https://depot.galaxyproject.org/singularity/bcftools%3A1.14--hde04aa1_1'
+  withName: 'BCFTOOLS_SPLIT_VEP' {
+    container = 'https://depot.galaxyproject.org/singularity/bcftools%3A1.14--hde04aa1_1'
   }
 }
 
@@ -84,9 +80,11 @@ process {
       "delta_ploidy": params.seqcna_delta_ploidy,
 
       "matching_strategy": params.seqcna_matching_strategy
-      ]}
+    ]}
   }
+}
 
+process {
   withName: 'VARTRIX' {
     memory='50 GB'
     time='2h'
@@ -96,14 +94,15 @@ process {
         "padding": params.vartrix_padding,
         "umi": params.vartrix_umi
     ]}
-  }
+  } 
+}
 
+process {
   withName: 'RDS_PROCESSING' {
     memory='50 GB'
     time='1h'
     container = 'docker://lvaleriani/cnaqc:v5'
   }
-
 
   withName: 'VIBER' {
     memory='128 GB'
@@ -171,8 +170,15 @@ process {
       "store_max" : params.ctree_store_max
     ]}
   }
+}
 
- 
+process {
+  withName: 'RDS_PROCESSING' {
+    memory='50 GB'
+    time='1h'
+    container = 'docker://lvaleriani/cnaqc:v5'
+  }
+   
   withName: 'SIG_PROFILER' {
     time='5h'
     memory='100 GB'
@@ -242,7 +248,7 @@ process {
       "verbose": params.sparsesignatures_verbose,
       "log_file": params.sparsesignatures_log_file
     ]}
-  }  
+  }
 }
 
 
