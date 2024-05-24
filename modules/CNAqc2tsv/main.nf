@@ -24,7 +24,9 @@ process RDS_PROCESSING {
     library(tidyr)
 
     source("$moduleDir/utils.R")
-
+    
+    res_dir = paste0("$datasetID", "/", "$patientID", "/CNAqc2tsv/")
+    dir.create(res_dir, recursive = TRUE)
  
     multi_cnaqc = readRDS(file = "$join_cnaqc")
     mutations_multisample <- get_sample(m_cnaqc_obj = multi_cnaqc,sample = get_sample_name(multi_cnaqc),
@@ -33,7 +35,7 @@ process RDS_PROCESSING {
 
     for (s in get_sample_name(multi_cnaqc)){
       purity <- mutations_multisample[[s]][["purity"]]
-      multisample_joint[[s]] <- mutations_multisample[[s]][["mutations"]] %>%
+      multisample_jointTable[[s]] <- mutations_multisample[[s]][["mutations"]] %>%
         dplyr::mutate(purity=purity)
       }
     
