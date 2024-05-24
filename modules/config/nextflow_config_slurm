@@ -1,5 +1,5 @@
 nextflow.enable.dsl=2
-cleanup=false
+cleanup=true
 
 includeConfig "$baseDir/modules/config/params.config"
 
