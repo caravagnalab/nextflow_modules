@@ -8,6 +8,8 @@ process VCF_PROCESSING {
      tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/$sampleID/vcf2CNAqc/*.rds"), emit: rds 
 
     script:
+        def args              = task.ext.args                         ?: ''
+        def filter_mutations  = args!='' && args.filter_mutations     ?  "$args.filter_mutations" : "FALSE"
 
     """
     #!/usr/bin/env Rscript 
@@ -27,13 +29,16 @@ process VCF_PROCESSING {
     source = vcfR::queryMETA(vcf, element = 'source')[[1]]
 
     if (grepl(pattern = 'Mutect', x = source)){
-        calls = parse_Mutect(vcf, sample_id = "$sampleID")
+        calls = parse_Mutect(vcf, sample_id = "$sampleID", filter_mutations = "$filter_mutations")
         
     } else if (grepl(pattern = 'Strelka', x = source)){
-        calls = parse_Strelka(vcf, sample_id = "$sampleID")
+        calls = parse_Strelka(vcf, sample_id = "$sampleID", filter_mutations = "$filter_mutations")
     
     } else if (grepl(pattern = 'Platypus', x = source)){
-        calls = parse_Platypus(vcf, sample_id = "$sampleID")
+        calls = parse_Platypus(vcf, sample_id = "$sampleID", filter_mutations = "$filter_mutations")
+
+    } else if (grepl(pattern = 'freeBayes', x = source)){
+        calls = parse_Freebayes(vcf, sample_id = "$sampleID", filter_mutations = "$filter_mutations") 
 
     } else {
         stop('Variant Caller not supported.')

@@ -1,5 +1,6 @@
 process CNA_PROCESSING {
-    publishDir params.publish_dir, mode: 'copy'
+    publishDir params.publish_dir
+    //mode: 'copy'
 
     input:
      tuple val(datasetID), val(patientID), val(sampleID), path(cnaPath), val(caller)

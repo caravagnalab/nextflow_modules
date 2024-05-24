@@ -1,20 +1,80 @@
 library(tidyverse)
 library(vcfR)
 
+# to add VEP
+parse_FreeBayes = function(vcf, sample_id, filter_mutations = FALSE){
+  tb = vcfR::vcfR2tidy(vcf)
+  
+  gt_field = tb$gt %>% 
+    tidyr::separate(gt_AD, sep = ",", into = c("NR", "NV")) %>%
+    dplyr::mutate(
+      NR = as.numeric(NR),
+      NV = as.numeric(NV),
+      DP = NV + NR,
+      VAF = NV/DP) %>%  
+    dplyr::rename(sample = Indiv)
+  
+  samples_list = gt_field$sample %>% unique
+  
+  fix_field = tb$fix %>%
+    dplyr::rename(
+      chr = CHROM,
+      from = POS,
+      ref = REF,
+      alt = ALT
+    ) %>%
+    dplyr::rowwise() %>%
+    dplyr::mutate(
+      from = as.numeric(from),
+      to = from + nchar(alt)
+    ) %>%
+    dplyr::ungroup() %>%
+    dplyr::select(chr, from, to, ref, alt, dplyr::everything(), -ChromKey, -DP) #-DP
+  
+  # if have to filter mutations
+  if (filter_mutations){ 
+    filter = c('PASS')
+  } else {
+    filter = fix_field$FILTER %>% unique()
+  }
+  
+  calls = lapply(
+    samples_list,
+    function(s){
+      gt_field_s = gt_field %>% dplyr::filter(sample == s)
+      
+      if(nrow(fix_field) != nrow(gt_field_s))
+        stop("Mismatch between the VCF fixed fields and the genotypes, will not process this file.")
+      
+      fits = list()
+      fits$sample = s
+      fits$mutations = dplyr::bind_cols(fix_field, gt_field_s) %>%
+        dplyr::select(chr, from, to, ref, alt, NV, DP, VAF, dplyr::everything()) %>% 
+        dplyr::filter(FILTER %in% filter)
+      fits
+      }) 
+  
+  names(calls) = samples_list
+  normal = names(calls)[length(calls)]
+  calls = calls[c(sample_id, normal)]
+  
+  return(calls)
+}
 
-parse_Mutect = function(vcf, sample_id){
+
+parse_Mutect = function(vcf, sample_id, filter_mutations = FALSE){
     # Transform vcf to tidy 
     tb = vcfR::vcfR2tidy(vcf)
 
     # Extract gt field and obtain coverage (DP) and variant allele frequency (VAF) fields
     gt_field = tb$gt %>% 
-            tidyr::separate(gt_AD, sep = ",", into = c("NR", "NV")) %>%
-            dplyr::mutate(
-            NR = as.numeric(NR),
-            NV = as.numeric(NV),
-            DP = NV + NR,
-            VAF = NV/DP) %>%  
-            dplyr::rename(sample = Indiv)
+      tidyr::separate(gt_AD, sep = ",", into = c("NR", "NV")) %>%
+      dplyr::mutate(
+        NR = as.numeric(NR),
+        NV = as.numeric(NV),
+        DP = NV + NR,
+        VAF = NV/DP) %>%  
+      dplyr::rename(sample = Indiv)
     
     # Extract sample names
     samples_list = gt_field$sample %>% unique
@@ -34,35 +94,40 @@ parse_Mutect = function(vcf, sample_id){
 
     # Tranform the fix field by splittig the CSQ and select the columns needed
     fix_field = tb$fix %>%
-                        dplyr::rename(
-                            chr = CHROM,
-                            from = POS,
-                            ref = REF,
-                            alt = ALT) %>%
-                        dplyr::rowwise() %>%
-                        dplyr::mutate(
-                            from = as.numeric(from),
-                            to = from + nchar(alt)) %>%
-                        dplyr::ungroup() %>%
-                        dplyr::select(chr, from, to, ref, alt, CSQ) %>% 
-                        tidyr::separate(CSQ, vep_field, sep = "\\|") %>% 
-                        dplyr::select(chr, from, to, ref, alt, IMPACT, SYMBOL, Gene) #can add other thing, CSQ, HGSP
+      dplyr::rename(
+        chr = CHROM,
+        from = POS,
+        ref = REF,
+        alt = ALT) %>%
+      dplyr::rowwise() %>%
+      dplyr::mutate(
+        from = as.numeric(from),
+        to = from + nchar(alt)) %>%
+      dplyr::ungroup() %>%
+      dplyr::select(chr, from, to, ref, alt, CSQ) %>% 
+      tidyr::separate(CSQ, vep_field, sep = "\\|") %>% 
+      dplyr::select(chr, from, to, ref, alt, IMPACT, SYMBOL, Gene, dplyr::everything()) #can add other thing, CSQ, HGSP
+    
     } else {
         # Take from fix field some columns
         fix_field = tb$fix %>%
-            dplyr::rename(
+          dplyr::rename(
             chr = CHROM,
             from = POS,
             ref = REF,
-            alt = ALT
-            ) %>%
-            dplyr::rowwise() %>%
-            dplyr::mutate(
+            alt = ALT) %>%
+          dplyr::rowwise() %>%
+          dplyr::mutate(
             from = as.numeric(from),
-            to = from + nchar(alt)
-            ) %>%
-            dplyr::ungroup() %>%
-            dplyr::select(chr, from, to, ref, alt, dplyr::everything(), -ChromKey, -DP) #-DP
+            to = from + nchar(alt)) %>%
+          dplyr::ungroup() %>%
+          dplyr::select(chr, from, to, ref, alt, dplyr::everything(), -ChromKey, -DP) #-DP
+    }
+    
+    if (filter_mutations){ 
+      filter = c('PASS')
+    } else {
+      filter = fix$FILTER %>% unique()
     }
     
     # For each sample create the table of mutations 
@@ -77,32 +142,104 @@ parse_Mutect = function(vcf, sample_id){
             fits = list()
             fits$sample = s
             fits$mutations = dplyr::bind_cols(fix_field, gt_field_s) %>%
-                dplyr::select(chr, from, to, ref, alt, NV, DP, VAF, dplyr::everything())
-
-            fits})
+                dplyr::select(chr, from, to, ref, alt, NV, DP, VAF, dplyr::everything()) %>% 
+                dplyr::filter(FILTER %in% filter)
+            fits
+            })
 
     names(calls) = samples_list
-    normal = names(calls)[length(calls)] # last element is always the normal
+    normal = names(calls)[length(calls)] 
     calls = calls[c(sample_id, normal)]
 
     return(calls)
 }
 
+retrieve_ref_alt = function(row){
+  ref = row$ref
+  alt = row$alt
+  if (ref == 'A'){NR=as.integer(strsplit(row$gt_AU, split=',')[[1]][1])}
+  if (ref == 'T'){NR=as.integer(strsplit(row$gt_TU, split=',')[[1]][1])}
+  if (ref == 'G'){NR=as.integer(strsplit(row$gt_GU, split=',')[[1]][1])}
+  if (ref == 'C'){NR=as.integer(strsplit(row$gt_CU, split=',')[[1]][1])}
+  
+  if (alt == 'A'){NV=as.integer(strsplit(row$gt_AU, split=',')[[1]][1])}
+  if (alt == 'T'){NV=as.integer(strsplit(row$gt_TU, split=',')[[1]][1])}
+  if (alt == 'G'){NV=as.integer(strsplit(row$gt_GU, split=',')[[1]][1])}
+  if (alt == 'C'){NV=as.integer(strsplit(row$gt_GU, split=',')[[1]][1])}
+  
+  ref_alt = paste0(NR, ',', NV)
+  ref_alt
+}
 
-parse_Strelka = function(vcf, sample_id){
-  calls = NA
+# to add VEP
+parse_Strelka = function(vcf, sample_id, filter_mutations = FALSE){
+  tb = vcfR::vcfR2tidy(vcf)
+  gt_field = tb$gt %>% rename(sample = Indiv)
+  
+  fix_field = tb$fix  %>% 
+    dplyr::rename(chr = CHROM, 
+                  from = POS,
+                  ref = REF, 
+                  alt = ALT) %>% 
+    dplyr::rowwise() %>% 
+    dplyr::mutate(from = as.numeric(from),
+                  to = from + nchar(alt)) %>% 
+    dplyr::ungroup() %>% 
+    dplyr::select(chr, from, to, ref, alt, dplyr::everything(), -ChromKey)
+  
+  samples_list = gt_field$sample %>% unique
+  
+  if (filter_mutations){ 
+    filter = c('PASS')
+  } else {
+    filter = fix_field$FILTER %>% unique()
+  }
+  
+  calls = lapply(
+    samples_list,
+    function(s){
+      gt_field_s = gt_field %>% dplyr::filter(sample == s)
+      
+      fits = list()
+      fits$sample = s
+      
+      mutations = dplyr::bind_cols(fix_field, gt_field_s) 
+      
+      ref_alt = lapply(1:nrow(mutations), function(r){
+        retrieve_ref_alt(mutations[r,])
+      })
+      
+      ref_alt = ref_alt %>% unlist()
+      mutations$ref_alt = ref_alt
+      mutations = mutations %>% 
+        tidyr::separate(ref_alt, into = c('NR', 'NV')) %>%
+        dplyr::mutate(NR= as.integer(NR), 
+                      NV= as.integer(NV)) %>%
+        dplyr::mutate(DP= NR+NV) %>% 
+        dplyr::mutate(VAF = NV/DP) %>% 
+        dplyr::select(chr, from, to, ref, alt, NV, DP, VAF, everything()) %>% 
+        dplyr::filter(FILTER %in% filter)
+      
+      fits$mutations = mutations
+      fits
+    })
+  
+  names(calls) = samples_list
+  # normal = names(calls)[length(calls)] 
+  # calls = calls[c(sample_id, normal)]
   return(calls)
 }
 
-parse_Platypus = function(vcf, sample_id){
 
+parse_Platypus = function(vcf, sample_id, filter_mutations = FALSE){
     tb = vcfR::vcfR2tidy(vcf)
 
-    gt_field = tb$gt %>% dplyr::mutate(
-      DP = as.numeric(gt_NR),
-      NV = as.numeric(gt_NV),
-      VAF = NV/DP
-    ) %>% dplyr::rename(sample = Indiv)
+    gt_field = tb$gt %>% 
+      dplyr::mutate(
+            DP = as.numeric(gt_NR),
+            NV = as.numeric(gt_NV),
+            VAF = NV/DP) %>% 
+      dplyr::rename(sample = Indiv)
 
     # Extract each sample
     samples_list = gt_field$sample %>% unique
@@ -122,41 +259,46 @@ parse_Platypus = function(vcf, sample_id){
 
     # Tranform the fix field by splittig the CSQ and select the columns needed
     fix_field = tb$fix %>%
-                        dplyr::rename(
-                            chr = CHROM,
-                            from = POS,
-                            ref = REF,
-                            alt = ALT) %>%
-                        dplyr::rowwise() %>%
-                        dplyr::mutate(
-                            from = as.numeric(from),
-                            to = from + nchar(alt)) %>%
-                        dplyr::ungroup() %>%
-                        dplyr::select(chr, from, to, ref, alt, CSQ) %>% 
-                        tidyr::separate(CSQ, vep_field, sep = "\\|") %>% 
-                        dplyr::select(chr, from, to, ref, alt, IMPACT, SYMBOL, Gene) #can add other thing, CSQ, HGSP
-    
-    } else {
-    fix_field = tb$fix %>%
-        dplyr::rename(
+      dplyr::rename(
         chr = CHROM,
         from = POS,
         ref = REF,
-        alt = ALT
-        ) %>%
+        alt = ALT) %>%
+      dplyr::rowwise() %>%
+      dplyr::mutate(
+        from = as.numeric(from),
+        to = from + nchar(alt)) %>%
+      dplyr::ungroup() %>%
+      dplyr::select(chr, from, to, ref, alt, CSQ) %>% 
+      tidyr::separate(CSQ, vep_field, sep = "\\|") %>% 
+      dplyr::select(chr, from, to, ref, alt, IMPACT, SYMBOL, Gene, dplyr::everything()) #can add other thing, CSQ, HGSP
+    
+    } else {
+      fix_field = tb$fix %>%
+        dplyr::rename(
+          chr = CHROM,
+          from = POS,
+          ref = REF,
+          alt = ALT) %>%
         dplyr::rowwise() %>%
         dplyr::mutate(
-        from = as.numeric(from),
-        to = from + nchar(alt)
-        ) %>%
+          from = as.numeric(from),
+          to = from + nchar(alt)) %>%
         dplyr::ungroup() %>%
-        dplyr::select(chr, from, to, ref, alt, dplyr::everything())
+        dplyr::select(chr, from, to, ref, alt, dplyr::everything(), -ChromKey)
     }
-
+    
+    if (filter_mutations){ 
+      filter = c('PASS')
+    } else {
+      filter = fix_field$FILTER %>% unique()
+    }
+    
     calls = lapply(
         samples_list,
         function(s){
-        gt_field_s = gt_field %>% dplyr::filter(sample == s)
+        gt_field_s = gt_field %>% 
+          dplyr::filter(sample == s)
 
         if(nrow(fix_field) != nrow(gt_field_s))
             stop("Mismatch between the VCF fixed fields and the genotypes, will not process this file.")
@@ -164,12 +306,13 @@ parse_Platypus = function(vcf, sample_id){
         fits = list()
         fits$sample = s
         fits$mutations = dplyr::bind_cols(fix_field, gt_field_s) %>%
-            dplyr::select(chr, from, to, ref, alt, NV, DP, VAF, dplyr::everything())
-
+            dplyr::select(chr, from, to, ref, alt, NV, DP, VAF, dplyr::everything()) %>% 
+            dplyr::filter(FILTER %in% filter)
         fits
         })
 
     names(calls) = samples_list
-
+    normal = names(calls)[length(calls)] 
+    calls = calls[c(sample_id, normal)]
     return(calls)
 }

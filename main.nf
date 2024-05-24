@@ -37,7 +37,7 @@ workflow {
   FORMATTER_VCF(VARIANT_ANNOTATION.out.vep, "vcf")//VARIANT_ANNOTATION.out.vep
   FORMATTER_CNA(input_cna, "cna")
 
-// // if multisample 
+// // if multisample and bam present
 //   LIFTER(FORMATTER_VCF.out, tumor_bam) // work
 //   DRIVER_ANNOTATION(LIFTER.out)
 
