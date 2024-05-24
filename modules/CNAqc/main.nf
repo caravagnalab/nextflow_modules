@@ -13,9 +13,26 @@ process CNAQC {
     
   script:
 
-    def args              = task.ext.args                         ?: ''
-    def matching_strategy = args!='' && args.matching_strategy    ?  "$args.matching_strategy" : "closest"
+    def args                                = task.ext.args                                         ?: ''
+    def matching_strategy                   = args!='' && args.matching_strategy                    ?  "$args.matching_strategy" : "closest"
+    def karyotypes                          = args!='' && args.karyotypes                           ?  "$args.karyotypes" : "c("1:0", "1:1", "2:0", "2:1", "2:2")"
+    def min_karyotype_size                  = args!='' && args.min_karyotype_size                   ?  "$args.min_karyotype_size" : "0"
+    def min_absolute_karyotype_mutations    = args!='' && args.min_absolute_karyotype_mutations     ?  "$args.min_absolute_karyotype_mutations" : "100"
+    def p_binsize_peaks                     = args!='' && args.p_binsize_peaks                      ?  "$args.p_binsize_peaks" : "0.005"
+    def matching_epsilon                    = args!='' && args.matching_epsilon                     ?  "$args.matching_epsilon" : "NULL"
+    def purity_error                        = args!='' && args.purity_error                         ?  "$args.purity_error" : "0.05"
+    def VAF_tolerance                       = args!='' && args.VAF_tolerance                        ?  "$args.VAF_tolerance" : "0.015"
+    def n_bootstrap                         = args!='' && args.n_bootstrap                          ?  "$args.n_bootstrap" : "1"
+    def kernel_adjust                       = args!='' && args.kernel_adjust                        ?  "$args.kernel_adjust" : "1"
+    def KDE                                 = args!='' && args.KDE                                  ?  "$args.KDE" : "TRUE"
+    def starting_state_subclonal_evolution  = args!='' && args.starting_state_subclonal_evolution   ?  "$args.starting_state_subclonal_evolution" : "1:1"
+    def cluster_subclonal_CCF               = args!='' && args.cluster_subclonal_CCF                ?  "$args.cluster_subclonal_CCF" : "FALSE"
 
+    def muts_per_karyotype                  = args!='' && args.muts_per_karyotype                   ?  "$args.muts_per_karyotype" : "25"
+    def cutoff_QC_PASS                      = args!='' && args.cutoff_QC_PASS                       ?  "$args.cutoff_QC_PASS" : "0.1"
+    def method                              = args!='' && args.method                               ?  "$args.method" : "ENTROPY"
+
+    def plot_cn                             = args!='' && args.plot_cn                               ?  "$args.plot_cn" : "absolute"
     """
     #!/usr/bin/env Rscript
 
@@ -42,20 +59,34 @@ process CNAQC {
     x\$mutations = x\$mutations %>% filter(VAF > 0)
 
     x = CNAqc::analyze_peaks(x, 
-      matching_strategy = "$matching_strategy")
+      matching_strategy = "$matching_strategy",
+      karyotypes = "$karyotypes",
+      min_karyotype_size = "$min_karyotype_size",
+      min_absolute_karyotype_mutations = "$min_absolute_karyotype_mutations",
+      p_binsize_peaks = "$p_binsize_peaks",
+      matching_epsilon = "$matching_epsilon",
+      purity_error = "$purity_error",
+      VAF_tolerance = "$VAF_tolerance",
+      n_bootstrap = "$n_bootstrap",
+      kernel_adjust = "$kernel_adjust",
+      KDE = "$KDE",
+      starting_state_subclonal_evolution = "$starting_state_subclonal_evolution",
+      cluster_subclonal_CCF = "$cluster_subclonal_CCF"
+      )
 
     x = CNAqc::compute_CCF(
       x,
-      muts_per_karyotype = 25,
-      cutoff_QC_PASS = 0.1,
-      method = "ENTROPY"
+      karyotypes = "$karyotypes",
+      muts_per_karyotype = "$muts_per_karyotype",
+      cutoff_QC_PASS = "$cutoff_QC_PASS",
+      method = "$method"
     )
 
     pl = ggpubr::ggarrange(
-      CNAqc::plot_data_histogram(x, which = 'VAF'),
-      CNAqc::plot_data_histogram(x, which = 'DP'),
-      CNAqc::plot_data_histogram(x, which = 'NV'),
-      CNAqc::plot_data_histogram(x, which = 'CCF'),
+      CNAqc::plot_data_histogram(x, which = 'VAF', karyotypes = "$karyotypes"),
+      CNAqc::plot_data_histogram(x, which = 'DP', karyotypes = "$karyotypes"),
+      CNAqc::plot_data_histogram(x, which = 'NV', karyotypes = "$karyotypes"),
+      CNAqc::plot_data_histogram(x, which = 'CCF', karyotypes = "$karyotypes"),
       ncol = 2,
       nrow = 2
     )
@@ -64,7 +95,7 @@ process CNAQC {
       CNAqc::plot_gw_counts(x),
       CNAqc::plot_gw_vaf(x, N = 10000),
       CNAqc::plot_gw_depth(x, N = 10000),
-      CNAqc::plot_segments(x, highlight = c("1:0", "1:1", "2:0", "2:1", '2:2')),
+      CNAqc::plot_segments(x, highlight = "$karyotypes", cn = "$plot_cn"),
       pl,
       align = 'v', 
       nrow = 5,
