@@ -12,7 +12,7 @@ import argparse
 
 #input data preprocessing
 def create_pyclone_input(input_data, patient_id,output_data):
-    df = pd.read_csv(input_data, sep = '\t')
+    df = pd.read_csv(input_data, sep = '\t',header=0)
     df['normal_cn'] = 2
     df['mutation_id'] = df.apply(lambda row: f"{patient_id}:{row['chr'][3:]}:{row['from']}:{row['alt']}", axis=1)
     df[['major_cn', 'minor_cn']] = df['karyotype'].str.split(':', expand=True)
@@ -20,7 +20,7 @@ def create_pyclone_input(input_data, patient_id,output_data):
     df = df.rename(columns={'Indiv': 'sample_id', 'NR': 'ref_counts', 'NV': 'alt_counts', 'purity': 'tumour_content'})
     df = df.loc[:, ['mutation_id', 'sample_id', 'ref_counts', 'alt_counts', 'normal_cn', 'major_cn','minor_cn','tumour_content']]
     df.to_csv(output_data, sep="\t",index=False, header=True)
-    return df
+    print(df.head())
 
 # def divide(a, b):
 #     """Divide two numbers."""
@@ -51,7 +51,7 @@ def main():
 
     # Call the appropriate function based on the command
     if args.command == 'create_pyclone_input':
-        result = add(args.input_data, args.patient_id, args.output_data)
+        result = create_pyclone_input(args.input_data, args.patient_id, args.output_data)
     # elif args.command == 'subtract':
     #     result = subtract(args.a, args.b)
     # elif args.command == 'multiply':

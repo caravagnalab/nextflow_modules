@@ -19,7 +19,7 @@ workflow SUBCLONAL_DECONVOLUTION {
     // single sample subclonal deconvolution
 
     if (params.step && params.step.split(',').contains('subclonal_singlesample')){
-        input_joint_table=joint_table.transpose(by: [1]) // split by patient to have list of samples
+        input_joint_table=joint_table.transpose(by: [2]) // split by patient to have list of samples
         // viber single sample
         if (params.tools && params.tools.split(',').contains('viber')){ 
             t=VIBER_SINGLE(input_joint_table)
@@ -32,8 +32,8 @@ workflow SUBCLONAL_DECONVOLUTION {
         }
 	if (params.tools && params.tools.split(',').contains('pyclone-vi')){
             // need to parse m_cnaqc obj to convert to tsv
-            CNAQC_TO_TSV(input_joint_table) // list of patient and sample ids
-            t=PYCLONEVI_SINGLE(CNAQC_TO_TSV.out.input_table) 
+            //CNAQC_TO_TSV(input_joint_table) // list of patient and sample ids
+            t=PYCLONEVI_SINGLE(input_joint_table) 
             //CTREE_PYCLONEVI(PYCLONEVI_SINGLE.out.ctree_input)
             //ctree_plot_pyclonevi = CTREE_PYCLONEVI.out.ctree_plot
             emit:

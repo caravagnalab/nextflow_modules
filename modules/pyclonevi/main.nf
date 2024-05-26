@@ -6,12 +6,12 @@ process PYCLONEVI {
                
     input:
 
-      tuple val(patientID), val(sampleID), path(joint_table) // from the formatter output
+      tuple val(datasetID), val(patientID), val(sampleID), path(joint_table) // from the formatter output
 
     output:
       // tuple val(patientID), val(sampleID), path(path_ctree), emit: ctree_input
       // tuple val(patientID), val(sampleID), path(all_fits), emit: pyclone_all_fits
-      tuple val(patientID), val(sampleID), path(best_fit), emit: pyclone_best_fit
+      tuple val(datasetID), val(patientID), val(sampleID), path(best_fit), emit: pyclone_best_fit
       // tuple val(patientID), val(sampleID), path(pyclone_joint), emit: pyclone_anno_joint
     script:
       def args = task.ext.args ?: ''
@@ -22,20 +22,20 @@ process PYCLONEVI {
       def step                    = args.step                     ?  "$args.step" : ""
 
       if (step == "subclonal_singlesample") {
-        outDir = "$patientID/$sampleID/pyclonevi"
-        outDir_ctree = "$patientID/$sampleID/ctree"
-        all_fits = "$patientID/$sampleID/pyclonevi/all_fits.h5"
-        best_fit = "$patientID/$sampleID/pyclonevi/best_fit.txt"
-        path_ctree = "$patientID/$sampleID/ctree/ctree_input_pyclonevi.csv"
-        pyclone_joint = "$patientID/$sampleID/pyclonevi/pyclone_joint.tsv"
+        outDir = "$datasetID/$patientID/$sampleID/pyclonevi"
+        outDir_ctree = "$datasetID/$patientID/$sampleID/ctree"
+        all_fits = "$datasetID/$patientID/$sampleID/pyclonevi/all_fits.h5"
+        best_fit = "$datasetID/$patientID/$sampleID/pyclonevi/best_fit.txt"
+        path_ctree = "$datasetID/$patientID/$sampleID/ctree/ctree_input_pyclonevi.csv"
+        pyclone_joint = "$datasetID/$patientID/$sampleID/pyclonevi/pyclone_joint.tsv"
       } else if (step == "subclonal_multisample"){
         sampleID = sampleID.join(' ')
-        outDir = "$patientID/pyclonevi"
-        outDir_ctree = "$patientID/ctree"
-        all_fits = "$patientID/pyclonevi/all_fits.h5"
-        best_fit = "$patientID/pyclonevi/best_fit.txt"
-        path_ctree = "$patientID/ctree/ctree_input_pyclonevi.csv"
-        pyclone_joint = "$patientID/pyclonevi/pyclone_joint.tsv"
+        outDir = "$datasetID/$patientID/pyclonevi"
+        outDir_ctree = "$datasetID/$patientID/ctree"
+        all_fits = "$datasetID/$patientID/pyclonevi/all_fits.h5"
+        best_fit = "$datasetID/$patientID/pyclonevi/best_fit.txt"
+        path_ctree = "$datasetID/$patientID/ctree/ctree_input_pyclonevi.csv"
+        pyclone_joint = "$datasetID/$patientID/pyclonevi/pyclone_joint.tsv"
       }
 
       """
@@ -56,7 +56,7 @@ process PYCLONEVI {
       for i in $sampleID;
       do awk '\$2 == "'"\$i"'"' pyclone_input.tsv >> $outDir/pyclone_input.tsv;
       done
-      head $outDir/pyclone_input.tsv > $best_fit
+
       #pyclone-vi fit -i $outDir/joint_table.tsv -o $all_fits -c $n_cluster_arg -d $density_arg --num-grid-points $n_grid_point_arg --num-restarts $n_restarts_arg
       #pyclone-vi write-results-file -i $all_fits -o $best_fit
 
