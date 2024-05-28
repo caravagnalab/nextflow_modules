@@ -31,8 +31,8 @@ process MOBSTERh {
     def n_cutoff = args!="" && args.n_cutoff ? "$args.n_cutoff" : ""
     def auto_setup = args!="" && args.auto_setup ? "$args.auto_setup" : ""
     def silent = args!="" && args.silent ? "$args.silent" : ""
-    outDir = "$patientID/$sampleID/mobster"
-    new_joint = "$patientID/$sampleID/mobster/mobster_joint_table.tsv"
+    outDir = "subclonal_deconvolution/mobster/$patientID/$sampleID"
+    new_joint = "subclonal_deconvolution/mobster/$patientID/$sampleID/mobster_joint_table.tsv"
  
 
     """

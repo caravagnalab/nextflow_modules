@@ -6,13 +6,13 @@ process VIBER {
 
   input:
     
-    tuple val(patientID), val(sampleID), path(joint_table)
+    tuple val(datasetID), val(patientID), val(sampleID), path(joint_table) // from the formatter output
 
   output:
     
     // tuple val(patientID), val(sampleID), path(outputPath_ctree), emit: ctree_input  // do not save or save inside mobster
     // tuple val(patientID), path("$patientID/*/mobster/*.rds")  // save also fits for each sample in mobster/sample_id/mobster.rds
-    tuple val(patientID), val(sampleID), path(best_fit), emit: viber_rds
+    tuple val(datasetID), val(patientID), val(sampleID), path(best_fit), emit: viber_rds
     // tuple val(patientID), path("$patientID/mobster/*.pdf"), emit: mobster_pdf
 
   script:
