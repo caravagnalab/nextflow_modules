@@ -60,7 +60,7 @@ process SPARSE_SIGNATURES {
       dplyr::select(sample, chrom, start, end, ref, alt) %>%
       as.data.frame()
     
-    input_data$chrom = stringr::str_sub(input_data$chrom,4,5)
+    input_data["chrom"] = stringr::str_sub(input_data["chrom"],4,5)
 
     #Generate the patient vs mutation count matrix from mutation data
     #Install a reference human-genome specification.
@@ -79,7 +79,7 @@ process SPARSE_SIGNATURES {
     #estimate the initial values of beta
       
     starting_betas = SparseSignatures::startingBetaEstimation(x = mut_counts,
-                                      K= as.integer("$K"),
+                                      K = as.integer("$K"),
                                       background_signature  = "$background_signature")
 
     
@@ -107,7 +107,7 @@ process SPARSE_SIGNATURES {
     saveRDS(object = cv_out, file = paste0(res_SparseSig/, "cv_out.rds")
 
     #Analyze the mean squared error results averaging over cross-validation repetitions
-    cv_mses <- cv_out$grid_search_mse[1, , ]
+    cv_mses <- cv_out["grid_search_mse"][1, , ]
     cv_means_mse <- matrix(sapply(cv_mses, FUN = mean),
                      nrow = dim(cv_mses)[1]
       
