@@ -19,8 +19,9 @@ def create_pyclone_input(input_data, patient_id,output_data):
     df = df.drop(columns=['karyotype'])
     df = df.rename(columns={'Indiv': 'sample_id', 'NR': 'ref_counts', 'NV': 'alt_counts', 'purity': 'tumour_content'})
     df = df.loc[:, ['mutation_id', 'sample_id', 'ref_counts', 'alt_counts', 'normal_cn', 'major_cn','minor_cn','tumour_content']]
-    df.to_csv(output_data, sep="\t",index=False, header=True)
-    print(df.head())
+    column_names = ['mutation_id', 'sample_id', 'ref_counts', 'alt_counts', 'normal_cn', 'major_cn','minor_cn','tumour_content']
+    df.to_csv(output_data, sep="\t",index=False, header=column_names)
+    print(df)
 
 # def divide(a, b):
 #     """Divide two numbers."""

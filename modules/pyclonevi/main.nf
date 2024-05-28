@@ -10,7 +10,7 @@ process PYCLONEVI {
 
     output:
       // tuple val(patientID), val(sampleID), path(path_ctree), emit: ctree_input
-      // tuple val(patientID), val(sampleID), path(all_fits), emit: pyclone_all_fits
+      tuple val(datasetID), val(patientID), val(sampleID), path(all_fits), emit: pyclone_all_fits
       tuple val(datasetID), val(patientID), val(sampleID), path(best_fit), emit: pyclone_best_fit
       // tuple val(patientID), val(sampleID), path(pyclone_joint), emit: pyclone_anno_joint
     script:
@@ -45,18 +45,21 @@ process PYCLONEVI {
       
       # format the input table in order to be pyclone compliant
       python3 $moduleDir/pyclone_utils.py create_pyclone_input $joint_table $patientID pyclone_input.tsv
-
+      #mv pyclone_input.tsv tmp.tsv
       # echo $sampleID
       # head -1 $joint_table | sed 's/NV/alt_counts/g' | sed 's/NR/ref_counts/g' | sed 's/purity/tumour_content/g' > $outDir/joint_table.tsv
       # head -1 $joint_table | sed 's/NV/alt_counts/g' | sed 's/NR/ref_counts/g' | sed 's/purity/tumour_content/g' | sed 's/patient_id/patientID/g' | sed 's/gene/variantID/g' | sed 's/is_driver/is.driver/g' | sed 's/driver_label/variantID/g'> $outDir/joint_table.tsv 
       #for i in $sampleID;
       #do awk '\$2 == "'"\$i"'"' $joint_table >> $outDir/joint_table.tsv;
       #done
-      
+      colnames="mutation_id\tsample_id\tref_counts\talt_counts\tnormal_cn\tmajor_cn\tminor_cn\ttumour_content"
+      echo -e "\$colnames" > $outDir/pyclone_input.tsv 
       for i in $sampleID;
       do awk '\$2 == "'"\$i"'"' pyclone_input.tsv >> $outDir/pyclone_input.tsv;
       done
-
+      
+      pyclone-vi fit -i $outDir/pyclone_input.tsv -o $all_fits -c $n_cluster_arg -d $density_arg --num-grid-points $n_grid_point_arg --num-restarts $n_restarts_arg
+      pyclone-vi write-results-file -i $all_fits -o $best_fit
       #pyclone-vi fit -i $outDir/joint_table.tsv -o $all_fits -c $n_cluster_arg -d $density_arg --num-grid-points $n_grid_point_arg --num-restarts $n_restarts_arg
       #pyclone-vi write-results-file -i $all_fits -o $best_fit
 
