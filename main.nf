@@ -39,6 +39,7 @@ workflow {
 //PLATYPUS_CALL_VARIANTS(input_multisample.groupTuple(by: [0,3,4]))
 //JOINT_TABLE()
 //SEQUENZA_CNAqc(input_sequenza)
-FORMATTER_RDS(input_joint_table, "rds")
-SUBCLONAL_DECONVOLUTION(FORMATTER_RDS.out)
+//FORMATTER_RDS(input_joint_table, "rds")
+//SUBCLONAL_DECONVOLUTION(FORMATTER_RDS.out)
+SUBCLONAL_DECONVOLUTION(input_joint_table)
 }
