@@ -31,18 +31,20 @@ workflow {
             map{row ->
               tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(),file(row.joint_table))}.groupTuple(by: [0,1,3])
 
-//vep_output = VEP_ANNOTATE(input_vcf) 
-//annovar_output = ANNOVAR_ANNOTATE(input_vcf)
-//vcf2maf_output = VCF2MAF(vep_output)
-//maf_output = MAFTOOLS(vcf2maf_output.groupTuple(by: 0))
-//BCFTOOLS_SPLIT_VEP(vep_output)
-//PLATYPUS_CALL_VARIANTS(input_multisample.groupTuple(by: [0,3,4]))
-//JOINT_TABLE()
-//SEQUENZA_CNAqc(input_sequenza)
+  //vep_output = VEP_ANNOTATE(input_vcf) 
+  //annovar_output = ANNOVAR_ANNOTATE(input_vcf)
+  //vcf2maf_output = VCF2MAF(vep_output)
+  //maf_output = MAFTOOLS(vcf2maf_output.groupTuple(by: 0))
+  //BCFTOOLS_SPLIT_VEP(vep_output)
+  //PLATYPUS_CALL_VARIANTS(input_multisample.groupTuple(by: [0,3,4]))
+  //JOINT_TABLE()
+  //SEQUENZA_CNAqc(input_sequenza)
 
-
-
-FORMATTER_RDS(input_joint_table, "rds")
-SUBCLONAL_DECONVOLUTION(FORMATTER_RDS.out)
-//SUBCLONAL_DECONVOLUTION(input_joint_table)
+  // if pyclone need to run the formatter
+  if (params.tools && params.tools.split(',').contains('pyclone-vi')){
+    FORMATTER_RDS(input_joint_table, "rds")
+    SUBCLONAL_DECONVOLUTION(FORMATTER_RDS.out)
+  } else {
+    SUBCLONAL_DECONVOLUTION(input_joint_table)
+  }
 }
