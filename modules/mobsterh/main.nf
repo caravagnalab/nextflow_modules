@@ -70,28 +70,29 @@ process MOBSTERh {
       #dplyr::rename(is_driver=is.driver) 
       #dplyr::rename(is_driver=is.driver, driver_label=variantID)
 
-   #run_mobster_fit = function(inp_tb, descr) {
-   #   mobster_fit(x = inp_tb,
-   #               K = 1:5,
-   #               #K = eval(parse(text="$K")),
-   #               samples = as.integer("$samples"),
-   #               init = "$init",
-   #               tail = eval(parse(text="$tail")),
-   #               epsilon = as.numeric("$epsilon"),
-   #               maxIter = as.integer("$maxIter"),
-   #               fit.type = "$fit_type",
-   #               seed = as.integer("$seed"),
-   #               model.selection = "$model_selection",
-   #               trace = as.logical("$trace"),
-   #               parallel = as.logical("$parallel"),
-   #               pi_cutoff = as.numeric("$pi_cutoff"),
-   #               N_cutoff = as.integer("$n_cutoff"),
-   #               auto_setup = eval(parse(text="$auto_setup")),
-   #               silent = as.logical("$silent"),
-   #               description = descr)
-   # }
-    fit <-mobster_fit(x = input_tab,auto_setup = "FAST",
-                    K = 1:5,samples = as.integer("5"))
+   run_mobster_fit = function(inp_tb, descr) {
+      mobster_fit(x = inp_tb,
+                  K = 1:5,
+                  #K = eval(parse(text="$K")),
+                  samples = as.integer("$samples"),
+                  init = "$init",
+                  tail = eval(parse(text="$tail")),
+                  epsilon = as.numeric("$epsilon"),
+                  maxIter = as.integer("$maxIter"),
+                  fit.type = "$fit_type",
+                  seed = as.integer("$seed"),
+                  model.selection = "$model_selection",
+                  trace = as.logical("$trace"),
+                  parallel = as.logical("$parallel"),
+                  pi_cutoff = as.numeric("$pi_cutoff"),
+                  N_cutoff = as.integer("$n_cutoff"),
+                  auto_setup = eval(parse(text="$auto_setup")),
+                  silent = as.logical("$silent"),
+                  description = descr)
+    }
+    fit <- run_mobster_fit(inp_tb=input_tab,descr = description)
+    #fit <-mobster_fit(x = input_tab,auto_setup = "FAST",
+    #                K = 1:5,samples = as.integer("5"))
     best_fit = fit[["best"]]
     plot_fit = plot(best_fit)
     #annotated_tab = best_fit[["data"]]
