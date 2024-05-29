@@ -66,8 +66,8 @@ process SIG_PROFILER {
     from SigProfilerExtractor import sigpro as sig
     from SigProfilerMatrixGenerator.scripts import SigProfilerMatrixGeneratorFunc as matGen
 
-    input_path = "$input_path/"
-    output_path = input_path + "$output_folder/"   
+    input_path = "$input_path_sigprof/"
+    output_path = input_path + "$output_folder_sigprof/"   
     
     if os.path.exists(output_path):
         shutil.rmtree(output_path)
@@ -78,11 +78,11 @@ process SIG_PROFILER {
     
     #input data preprocessing
     def input_processing(data):
-        new_columns = {'Project': "CLL", 'Genome': 'GRCh37', 'Type': "SOMATIC", 'mut_type': "SNP"}
+        new_columns = {'Project': "$datasetID", 'Genome': 'GRCh38', 'Type': "SOMATIC", 'mut_type': "SNP"}
         df = data.assign(**new_columns)
         df['chr'] = df['chr'].astype(str).str[3:]
-        df = df.rename(columns={'sample_id': 'Sample', 'patient_id': 'ID', 'chr': 'chrom', 'from': 'pos_start', 'from': 'pos_start',
-                       'to': 'pos_end'})
+        df = df.rename(columns={'Indiv': 'Sample', 'chr': 'chrom', 'from': 'pos_start', 'to': 'pos_end'})
+        df["ID"] = df["Sample"]
         df = df.loc[:, ['Project', 'Sample', 'ID', 'Genome', 'mut_type', 'chrom', 'pos_start', 'pos_end', 'ref', 'alt', 'Type']]
         return df
     
@@ -93,7 +93,7 @@ process SIG_PROFILER {
 
     #mutation's counts matrix generation
     input_matrix = matGen.SigProfilerMatrixGeneratorFunc(
-            project = "$name_of_project", 
+            project = "$datasetID", 
             reference_genome = "$reference_genome", 
             path_to_input_file = "$output_path",
             exome = "$exome",
