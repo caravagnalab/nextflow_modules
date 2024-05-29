@@ -157,7 +157,7 @@ process {
   }
 
   withName: "MOBSTERh" {
-    memory='50 GB'
+    memory='128 GB'
     time='2h'
     container='file:///fast/cdslab/ebusca00/singularity/cdslab.sif'
     //container='file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'

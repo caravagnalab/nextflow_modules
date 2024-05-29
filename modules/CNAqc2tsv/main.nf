@@ -9,7 +9,7 @@ process RDS_PROCESSING {
       tuple val(datasetID), val(patientID),  val(sampleID), path(join_cnaqc)
 
     output:
-      tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/CNAqc2tsv/joint_table.tsv"), emit: tsv
+      tuple val(datasetID), val(patientID), val(sampleID), path("CNAqc2tsv/$datasetID/$patientID/joint_table.tsv"), emit: tsv
     
     script:
 
@@ -25,7 +25,7 @@ process RDS_PROCESSING {
 
     source("$moduleDir/utils.R")
 
-    res_dir = paste0("$datasetID", "/", "$patientID", "/CNAqc2tsv/")
+    res_dir = paste0("CNAqc2tsv/","$datasetID", "/", "$patientID/",)
     dir.create(res_dir, recursive = TRUE)
  
     multi_cnaqc = readRDS(file = "$join_cnaqc")

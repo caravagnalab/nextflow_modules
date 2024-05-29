@@ -5,13 +5,13 @@ process MOBSTERh {
   )
 
   input:
-    tuple val(patientID), val(sampleID), path(joint_table)
+    tuple val(datasetID), val(patientID), val(sampleID), path(joint_table)
 
   output:
     //tuple val(patientID), path("$patientID/ctree/ctree_input_mobsterh.csv"), emit: ctree_input  // do not save or save inside mobster
     // tuple val(patientID), path("$patientID/*/mobster/*.rds")  // save also fits for each sample in mobster/sample_id/mobster.rds
-    tuple val(patientID), val(sampleID), path("$patientID/$sampleID/mobster/*.rds"), emit: mobster_rds
-    tuple val(patientID), val(sampleID), path("$outDir/mobster_joint*"), emit: mobster_joint
+    tuple val(datasetID), val(patientID), val(sampleID), path("$best_fit"), emit: mobster_rds
+    // tuple val(datasetID), val(patientID), val(sampleID), path("$outDir/mobster_joint*"), emit: mobster_joint
     //tuple val(patientID), path("$patientID/mobster/*.pdf"), emit: mobster_pdf
 
   script:
@@ -31,9 +31,9 @@ process MOBSTERh {
     def n_cutoff = args!="" && args.n_cutoff ? "$args.n_cutoff" : ""
     def auto_setup = args!="" && args.auto_setup ? "$args.auto_setup" : ""
     def silent = args!="" && args.silent ? "$args.silent" : ""
-    outDir = "subclonal_deconvolution/mobster/$patientID/$sampleID"
+    outDir = "subclonal_deconvolution/mobster/$datasetID/$patientID/$sampleID/"
     new_joint = "subclonal_deconvolution/mobster/$patientID/$sampleID/mobster_joint_table.tsv"
- 
+    best_fit = "subclonal_deconvolution/mobster/$datasetID/$patientID/$sampleID/best_st_fit.rds" 
 
     """
     #!/usr/bin/env Rscript
@@ -48,7 +48,7 @@ process MOBSTERh {
     description = patientID
 
     ## Extract col names from joint
-    out_dirname_mobsterh = paste0("$patientID","/","$sampleID","/mobster/")
+    out_dirname_mobsterh = paste0("$outDir")
     dir.create(out_dirname_mobsterh, recursive = TRUE)
     samples <-strsplit(x = "$sampleID", " ")%>% unlist()
     print(samples)
@@ -70,31 +70,33 @@ process MOBSTERh {
       #dplyr::rename(is_driver=is.driver) 
       #dplyr::rename(is_driver=is.driver, driver_label=variantID)
 
-   run_mobster_fit = function(inp_tb, descr) {
-      mobster_fit(x = inp_tb,
-                  K = eval(parse(text="$K")),
-                  samples = as.integer("$samples"),
-                  init = "$init",
-                  tail = eval(parse(text="$tail")),
-                  epsilon = as.numeric("$epsilon"),
-                  maxIter = as.integer("$maxIter"),
-                  fit.type = "$fit_type",
-                  seed = as.integer("$seed"),
-                  model.selection = "$model_selection",
-                  trace = as.logical("$trace"),
-                  parallel = as.logical("$parallel"),
-                  pi_cutoff = as.numeric("$pi_cutoff"),
-                  N_cutoff = as.integer("$n_cutoff"),
-                  auto_setup = eval(parse(text="$auto_setup")),
-                  silent = as.logical("$silent"),
-                  description = descr)
-    }
-    fit = run_mobster_fit(inp_tb = input_tab, descr = description)
+   #run_mobster_fit = function(inp_tb, descr) {
+   #   mobster_fit(x = inp_tb,
+   #               K = 1:5,
+   #               #K = eval(parse(text="$K")),
+   #               samples = as.integer("$samples"),
+   #               init = "$init",
+   #               tail = eval(parse(text="$tail")),
+   #               epsilon = as.numeric("$epsilon"),
+   #               maxIter = as.integer("$maxIter"),
+   #               fit.type = "$fit_type",
+   #               seed = as.integer("$seed"),
+   #               model.selection = "$model_selection",
+   #               trace = as.logical("$trace"),
+   #               parallel = as.logical("$parallel"),
+   #               pi_cutoff = as.numeric("$pi_cutoff"),
+   #               N_cutoff = as.integer("$n_cutoff"),
+   #               auto_setup = eval(parse(text="$auto_setup")),
+   #               silent = as.logical("$silent"),
+   #               description = descr)
+   # }
+    fit <-mobster_fit(x = input_tab,auto_setup = "FAST",
+                    K = 1:5,samples = as.integer("5"))
     best_fit = fit[["best"]]
     plot_fit = plot(best_fit)
-    annotated_tab = best_fit[["data"]]
-    sample_id = "$sampleID"
-    write.table(x = annotated_tab,file = paste0("$outDir","/mobster_joint_",sample_id,".tsv"),append = F,quote = F,sep = "\t",row.names = F)
-    saveRDS(object=fit, file=paste0(out_dirname_mobsterh, "mobsterh_fit.rds"))
+    #annotated_tab = best_fit[["data"]]
+    #sample_id = "$sampleID"
+    #write.table(x = annotated_tab,file = paste0("$outDir","/mobster_joint_",sample_id,".tsv"),append = F,quote = F,sep = "\t",row.names = F)
+    saveRDS(object=fit, file="$best_fit")
     """
 }

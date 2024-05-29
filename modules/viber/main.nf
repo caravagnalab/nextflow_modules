@@ -63,7 +63,7 @@ process VIBER {
     samples <-strsplit(x = "$sampleID", " ")%>% unlist()
     print(samples)
     
-    original <- readRDS("$joint_table") %>% get_sample(sample = samples,which_obj = "original")
+    original <- readRDS("$joint_table") %>% get_sample(sample = samples,which_obj = "shared")
     joint_table = lapply(names(original), function(sample_name) CNAqc::Mutations(x=original[[sample_name]]) %>% dplyr::mutate(sample_id=sample_name)) %>% 
       dplyr::bind_rows()
  
@@ -86,9 +86,10 @@ process VIBER {
       #dplyr::rename(is_driver=is.driver, driver_label=variantID)
 
     ## Convert the input table into longer format
-    reads_data = input_tab %>% 
+    reads_data = input_tab %>%
+      select(chr,from,ref,alt,NV,DP,VAF,sample_id) %>% 
       tidyr::pivot_wider(names_from="sample_id",
-                         values_from=c("NR","NV",
+                         values_from=c("NV",
                                        #"normal_cn",
                                        #"major_cn","minor_cn","purity",
                                        "DP","VAF"), names_sep=".")
@@ -133,7 +134,7 @@ process VIBER {
       ## save plots
       plot_fit = plot(best_fit)
       plot_fit_heuristic = plot(best_fit_heuristic)
-      #saveRDS(best_fit, file=paste0("$outDir", "/viber_best_st_fit.rds"))
+      #saveRDS(plot_fit, file=paste0("$outDir", "/viber_best_st_fit.rds"))
       #saveRDS(plot_fit_heuristic, file =paste0("$outDir", "/viber_best_st_heuristic_plots.rds"))
     } else {
       print("single sample mode on")
