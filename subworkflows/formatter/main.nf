@@ -17,7 +17,7 @@ workflow FORMATTER {
                 out = VCF_PROCESSING(input)
         } else if (extension == "cna"){
                 out = CNA_PROCESSING(input)
-         } else if (extension == "rds"){
+         } else if (extension == "rds"){ // for pyclone-vi
                 out = RDS_PROCESSING(input)
          }
 

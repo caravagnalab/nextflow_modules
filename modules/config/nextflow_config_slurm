@@ -139,7 +139,7 @@ process {
       "dimensions_cutoff" : params.viber_dimensions_cutoff,
       "pi_cutoff" : params.viber_pi_cutoff,
       "re_assign" : params.viber_re_assign,
-      "step": params.step
+      "mode": params.mode
     ]}
   }
 
@@ -152,7 +152,7 @@ process {
       "density": params.pyclonevi_density,
       "n_grid_point": params.pyclonevi_n_grid_point,
       "n_restarts": params.pyclonevi_n_restarts,
-      "step": params.step
+      "mode": params.mode
     ]}
   }
 

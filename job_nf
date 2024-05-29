@@ -26,6 +26,6 @@ RESULTS_PATH="/orfeo/cephfs/scratch/cdslab/ggandolfi/nextflow_results"
 
 /orfeo/LTS/CDSLab/LT_storage/ncalonaci/nextflow/nextflow run $REPO_PATH/main.nf \
     -c $REPO_PATH/modules/config/nextflow_config_slurm \
-    --samples $REPO_PATH/sample_input.csv --publish_dir $RESULTS_PATH --tools "pyclone-vi" \
-    --step "subclonal_singlesample"
+    --samples $REPO_PATH/sample_input.csv --publish_dir $RESULTS_PATH --tools "viber" \
+    --mode "singlesample"
 

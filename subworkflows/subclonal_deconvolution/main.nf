@@ -18,7 +18,7 @@ workflow SUBCLONAL_DECONVOLUTION {
     main:
     // single sample subclonal deconvolution
 
-    if (params.step && params.step.split(',').contains('subclonal_singlesample')){
+    if (params.mode && params.mode.split(',').contains('singlesample')){
         input_joint_table=joint_table.transpose(by: [2]) // split by patient to have list of samples
         // viber single sample
         if (params.tools && params.tools.split(',').contains('viber')){ 
@@ -51,9 +51,9 @@ workflow SUBCLONAL_DECONVOLUTION {
     }
     //multi sample subclonal deconvolution
 
-    if (params.step && params.step.split(',').contains('subclonal_multisample')){
+    if (params.mode && params.mode.split(',').contains('multisample')){
         if (params.tools && params.tools.split(',').contains('mobster')){
-            input_joint_table=joint_table.transpose(by: [1])
+            input_joint_table=joint_table.transpose(by: [2])
             MOBSTERh_MULTI(input_joint_table) // tuple val(patientID), val(sampleID), path("$outDir/mobster_joint*"), emit: mobster_joint
             input_joint_table=JOINT_FIT((MOBSTERh_MULTI.out.mobster_joint).groupTuple(by: [0]))
             }
@@ -66,8 +66,8 @@ workflow SUBCLONAL_DECONVOLUTION {
             //ctree_plot_viber
             }
         if (params.tools && params.tools.split(',').contains('pyclone-vi')){
-            CNAQC_TO_TSV(input_joint_table) // list of patient and sample ids
-            t=PYCLONEVI_MULTI(CNAQC_TO_TSV.out.input_table)
+            //CNAQC_TO_TSV(joint_table) // list of patient and sample ids
+            t=PYCLONEVI_MULTI(joint_table)
             //CTREE_PYCLONEVI(PYCLONEVI_MULTI.out.ctree_input)
             //ctree_plot_pyclonevi = CTREE_PYCLONEVI.out.ctree_plot
             emit:

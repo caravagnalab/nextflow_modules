@@ -6,7 +6,7 @@ process VIBER {
 
   input:
     
-    tuple val(datasetID), val(patientID), val(sampleID), path(joint_table) // from the formatter output
+    tuple val(datasetID), val(patientID), val(sampleID), path(joint_table)
 
   output:
     
@@ -32,17 +32,17 @@ process VIBER {
     def n_cutoff = args!="" && args.n_cutoff ? "$args.n_cutoff" : ""
     def pi_cutoff = args!="" && args.pi_cutoff ? "$args.pi_cutoff" : ""
     def re_assign = args!="" && args.re_assign ? "$args.re_assign" : ""
-    def step                    = args.step                     ?  "$args.step" : ""
+    def mode                    = args.mode                     ?  "$args.mode" : ""
 
-      if (step == "subclonal_singlesample") {
-        outDir = "$patientID/$sampleID/viber"
+      if (mode == "singlesample") {
+        outDir = "subclonal_deconvolution/viber/$datasetID/$patientID/$sampleID"
         outDir_ctree = "$patientID/$sampleID/ctree"
-        best_fit = "$patientID/$sampleID/viber/viber_best_st_fit.rds"
-      } else if (step == "subclonal_multisample"){
+        best_fit = "subclonal_deconvolution/viber/$datasetID/$patientID/$sampleID/viber_best_st_fit.rds"
+      } else if (mode == "multisample"){
         sampleID = sampleID.join(' ')
-        outDir = "$patientID/viber"
+        outDir = "subclonal_deconvolution/viber/$datasetID/$patientID/"
         outDir_ctree = "$patientID/ctree"
-        best_fit = "$patientID/viber/viber_best_st_fit.rds"
+        best_fit = "subclonal_deconvolution/viber/$datasetID/$patientID/viber_best_st_fit.rds"
         //path_ctree = "$patientID/ctree/ctree_input_pyclonevi.csv"
       }
 
@@ -55,23 +55,29 @@ process VIBER {
     library(VIBER)
     library(dplyr)
     library(tidyverse)
-
+    source("$moduleDir/getters.R")
     print("$sampleID") 
     patientID="$patientID"
     
     dir.create("$outDir", recursive = TRUE)
     samples <-strsplit(x = "$sampleID", " ")%>% unlist()
-    print(samples) 
-    read.csv("$joint_table", sep="\t") %>% filter(sample_id%in%samples) %>% 
-      write.table(append = F,file = paste0("$outDir","/joint_table.tsv"), quote = F,sep = "\t",row.names = F)
+    print(samples)
+    
+    original <- readRDS("$joint_table") %>% get_sample(sample = samples,which_obj = "original")
+    joint_table = lapply(names(original), function(sample_name) CNAqc::Mutations(x=original[[sample_name]]) %>% dplyr::mutate(sample_id=sample_name)) %>% 
+      dplyr::bind_rows()
+ 
+    #read.csv("$joint_table", sep="\t") %>% filter(sample_id%in%samples) %>% 
+    #  write.table(append = F,file = paste0("$outDir","/joint_table.tsv"), quote = F,sep = "\t",row.names = F)
     
     print("Subset joint done")
     ## Read input joint table
-    input_tab = read.csv("$outDir/joint_table.tsv", sep="\t") %>%
-      dplyr::rename(variantID = gene) %>%
+    input_tab = joint_table %>% 
+      #read.csv("$outDir/joint_table.tsv", sep="\t") %>%
+      # dplyr::rename(variantID = gene) %>%
       #dplyr::rename(is.driver = is_driver) %>%
       #dplyr::rename(tumour_content = purity) %>%
-      dplyr::filter(patientID==patientID) %>%
+      #dplyr::filter(patientID==patientID) %>%
       #dplyr::mutate(DP=ref_counts+alt_counts, 
       #              VAF=alt_counts/DP) %>%
       # dplyr::filter(VAF <= 1) %>% 
@@ -82,8 +88,9 @@ process VIBER {
     ## Convert the input table into longer format
     reads_data = input_tab %>% 
       tidyr::pivot_wider(names_from="sample_id",
-                         values_from=c("NR","NV","normal_cn",
-                                       "major_cn","minor_cn","purity",
+                         values_from=c("NR","NV",
+                                       #"normal_cn",
+                                       #"major_cn","minor_cn","purity",
                                        "DP","VAF"), names_sep=".")
 
     ## Extract DP (depth)
@@ -118,7 +125,7 @@ process VIBER {
     best_fit_heuristic = st_heuristic_fit
     
     # Plot and save the fits
-    if ("$step"=="subclonal_multisample"){ #mutlisample mode on
+    if ("$mode"=="multisample"){ #mutlisample mode on
       print("multisample mode on")
       ## save fits
       saveRDS(best_fit, file = "$best_fit")

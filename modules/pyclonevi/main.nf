@@ -19,16 +19,16 @@ process PYCLONEVI {
       def density_arg                    = args.density                     ?  "$args.density" : ""
       def n_grid_point_arg                    = args.n_grid_point                     ?  "$args.n_grid_point" : ""
       def n_restarts_arg                    = args.n_restarts                     ?  "$args.n_restarts" : ""
-      def step                    = args.step                     ?  "$args.step" : ""
+      def mode                    = args.mode                     ?  "$args.mode" : ""
 
-      if (step == "subclonal_singlesample") {
+      if (mode == "singlesample") {
         outDir = "subclonal_deconvolution/pyclonevi/$datasetID/$patientID/$sampleID/"
         outDir_ctree = "$datasetID/$patientID/$sampleID/ctree"
         all_fits = "subclonal_deconvolution/pyclonevi/$datasetID/$patientID/$sampleID/all_fits.h5"
         best_fit = "subclonal_deconvolution/pyclonevi/$datasetID/$patientID/$sampleID/best_fit.txt"
         path_ctree = "$datasetID/$patientID/$sampleID/ctree/ctree_input_pyclonevi.csv"
         pyclone_joint = "subclonal_deconvolution/pyclonevi/$datasetID/$patientID/$sampleID/pyclone_joint.tsv"
-      } else if (step == "subclonal_multisample"){
+      } else if (mode == "multisample"){
         sampleID = sampleID.join(' ')
         outDir = "subclonal_deconvolution/pyclonevi/$datasetID/$patientID"
         outDir_ctree = "$datasetID/$patientID/ctree"
