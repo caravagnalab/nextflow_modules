@@ -78,7 +78,7 @@ process SIG_PROFILER {
     
     #input data preprocessing
     def input_processing(data):
-        new_columns = {'Project': "$datasetID", 'Genome': 'GRCh38', 'Type': "SOMATIC", 'mut_type': "SNP"}
+        new_columns = {'Project': "$datasetID", 'Genome': '$reference_genome', 'Type': "SOMATIC", 'mut_type': "SNP"}
         df = data.assign(**new_columns)
         df['chr'] = df['chr'].astype(str).str[3:]
         df = df.rename(columns={'Indiv': 'Sample', 'chr': 'chrom', 'from': 'pos_start', 'to': 'pos_end'})
@@ -102,12 +102,12 @@ process SIG_PROFILER {
             plot = "$plot",
             tsb_stat = "$tsb_stat",
             seqInfo = "$seqInfo,
-            cushion = "$cushion
+            cushion = "$cushion,
             volume = "$volume")
 
     # Perform model fitting
     sig.sigProfilerExtractor(input_type = "$input_type", 
-                             out_put = "results", 
+                             out_put = "results_sigprof", 
                              input_data = "$output_path",  #path to the file
                              context_type = "$contex_type",  
                              exome = "$exome",
@@ -137,10 +137,10 @@ process SIG_PROFILER {
                              make_decomposition_plots = "$make_decomposition_plots", 
                              collapse_to_SBS96 = "$collapse_to_SBS96", #SBS288 and SBS1536 Denovo signatures will be mapped to SBS96 reference signatures
                              get_all_signature_matrices = "$get_all_signatures_matrices",
-                             export_probabilities = "$export_probabilities")
+                             export_probabilities = "$export_probabilities"
+)
     
     
-
 
     #save the output results
 
