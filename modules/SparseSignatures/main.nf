@@ -25,7 +25,7 @@ process SPARSE_SIGNATURES {
     def num_processes                     = args!='' && args.num_processes                ?  "$args.num_processes" : "Inf"
     def cross_validation_entries          = args!='' && args.cross_validation_entries     ?  "$args.cross_validation_entries" : "0.01"
     def cross_validation_iterations       = args!='' && args.cross_validation_iterations  ?  "$args.cross_validation_iterations" : "5"
-    def cross_validation_repetitions      = args!='' && args.cross_validation_repetitions ?  "$args.cross_validation_repetitions" : "50"
+    def cross_validation_repetitions      = args!='' && args.cross_validation_repetitions ?  "$args.cross_validation_repetitions" : "20"
     def lambda_values_alpha               = args!='' && args.lambda_values_alpha          ?  "$args.lambda_values_alpha" : "0"
     def lambda_values_beta                = args!='' && args.lambda__values_beta          ?  "$args.lambda_values_beta" : "c(0.01, 0.05, 0.10, 0.20)"
     
@@ -124,7 +124,7 @@ process SPARSE_SIGNATURES {
                                         beta = "$beta", 
                                         background_signature = "$background_signature", 
                                         normalize_counts = "$normalize_counts",
-                                        lambda_rate_alpha = $lambda_values_alpha, 
+                                        lambda_rate_alpha = "$lambda_values_alpha", 
                                         lambda_rate_beta = min_Lambda_beta,
                                         iterations = "$iterations", 
                                         max_iterations_lasso = "$max_iterations_lasso", 
@@ -134,7 +134,7 @@ process SPARSE_SIGNATURES {
 
   #signature visualization
 
-  signatures = nmf_Lasso_out$beta
+  signatures = nmf_Lasso_out[["beta"]]
   plot_signatures <- SparseSignatures::signatures.plot(beta=signatures, xlabels=FALSE)
 
   ggplot2::ggsave(plot = plot_signatures, filename = paste0(res_SparseSig, "disc_signatures.pdf"), width = 12, height = 18, units = 'in', dpi = 200)
