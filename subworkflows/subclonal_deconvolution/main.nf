@@ -23,7 +23,7 @@ workflow SUBCLONAL_DECONVOLUTION {
         // viber single sample
         if (params.tools && params.tools.split(',').contains('viber')){ 
             t=VIBER_SINGLE(input_joint_table)
-            //CTREE_VIBER(VIBER_SINGLE.out.ctree_input)
+            CTREE_VIBER(VIBER_SINGLE.out.ctree_input,'viber')
             //ctree_plot_viber = CTREE_VIBER.out.ctree_plot
             emit:
             t
@@ -34,7 +34,7 @@ workflow SUBCLONAL_DECONVOLUTION {
             // need to parse m_cnaqc obj to convert to tsv
             //CNAQC_TO_TSV(input_joint_table) // list of patient and sample ids
             t=PYCLONEVI_SINGLE(input_joint_table) 
-            //CTREE_PYCLONEVI(PYCLONEVI_SINGLE.out.ctree_input)
+            CTREE_PYCLONEVI(PYCLONEVI_SINGLE.out.ctree_input,'pyclonevi')
             //ctree_plot_pyclonevi = CTREE_PYCLONEVI.out.ctree_plot
             emit:
             t
@@ -58,8 +58,8 @@ workflow SUBCLONAL_DECONVOLUTION {
             input_joint_table=JOINT_FIT((MOBSTERh_MULTI.out.mobster_joint).groupTuple(by: [0]))
             }
         if (params.tools && params.tools.split(',').contains('viber')){
-            t=VIBER_MULTI(joint_table)
-            //CTREE_VIBER(VIBER_MULTI.out.ctree_input)
+            VIBER_MULTI(joint_table)
+            CTREE_VIBER(VIBER_MULTI.out.ctree_input, 'viber')
             //ctree_plot_viber = CTREE_VIBER.out.ctree_plot
             emit:
             t
@@ -68,7 +68,7 @@ workflow SUBCLONAL_DECONVOLUTION {
         if (params.tools && params.tools.split(',').contains('pyclone-vi')){
             //CNAQC_TO_TSV(joint_table) // list of patient and sample ids
             t=PYCLONEVI_MULTI(joint_table)
-            //CTREE_PYCLONEVI(PYCLONEVI_MULTI.out.ctree_input)
+            CTREE_PYCLONEVI(PYCLONEVI_MULTI.out.ctree_input, 'pyclonevi')
             //ctree_plot_pyclonevi = CTREE_PYCLONEVI.out.ctree_plot
             emit:
             t

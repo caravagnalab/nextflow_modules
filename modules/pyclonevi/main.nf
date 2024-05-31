@@ -46,11 +46,6 @@ process PYCLONEVI {
       # format the input table in order to be pyclone compliant
       python3 $moduleDir/pyclone_utils.py create_pyclone_input $joint_table $patientID pyclone_input.tsv
     
-      # head -1 $joint_table | sed 's/NV/alt_counts/g' | sed 's/NR/ref_counts/g' | sed 's/purity/tumour_content/g' > $outDir/joint_table.tsv
-      # head -1 $joint_table | sed 's/NV/alt_counts/g' | sed 's/NR/ref_counts/g' | sed 's/purity/tumour_content/g' | sed 's/patient_id/patientID/g' | sed 's/gene/variantID/g' | sed 's/is_driver/is.driver/g' | sed 's/driver_label/variantID/g'> $outDir/joint_table.tsv 
-      #for i in $sampleID;
-      #do awk '\$2 == "'"\$i"'"' $joint_table >> $outDir/joint_table.tsv;
-      #done
       colnames="mutation_id\tsample_id\tref_counts\talt_counts\tnormal_cn\tmajor_cn\tminor_cn\ttumour_content"
       echo -e "\$colnames" > $outDir/pyclone_input.tsv 
       for i in $sampleID;
