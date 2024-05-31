@@ -49,13 +49,13 @@ process PYCLONEVI {
       colnames="mutation_id\tsample_id\tref_counts\talt_counts\tnormal_cn\tmajor_cn\tminor_cn\ttumour_content"
       echo -e "\$colnames" > $outDir/pyclone_input.tsv 
       for i in $sampleID;
-      do awk '\$2 == "'"\$i"'"' pyclone_input.tsv >> $outDir/pyclone_input.tsv;
+        do awk '\$2 == "'"\$i"'"' pyclone_input.tsv >> $outDir/pyclone_input.tsv;
       done
       
       pyclone-vi fit -i $outDir/pyclone_input.tsv -o $all_fits -c $n_cluster_arg -d $density_arg --num-grid-points $n_grid_point_arg --num-restarts $n_restarts_arg
       pyclone-vi write-results-file -i $all_fits -o $best_fit
 
-      #python3 $moduleDir/pyclone_ctree.py --joint $outDir/joint_table.tsv --best_fit $best_fit --ctree_input $path_ctree --pyclone_joint $pyclone_joint
+      # python3 $moduleDir/pyclone_ctree.py --joint $outDir/joint_table.tsv --best_fit $best_fit --ctree_input $path_ctree --pyclone_joint $pyclone_joint
 
       """
 }

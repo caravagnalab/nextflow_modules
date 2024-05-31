@@ -10,10 +10,9 @@ process VIBER {
 
   output:
     
-    // tuple val(patientID), val(sampleID), path(outputPath_ctree), emit: ctree_input  // do not save or save inside mobster
-    // tuple val(patientID), path("$patientID/*/mobster/*.rds")  // save also fits for each sample in mobster/sample_id/mobster.rds
-    tuple val(datasetID), val(patientID), val(sampleID), path(best_fit), emit: viber_rds
-    // tuple val(patientID), path("$patientID/mobster/*.pdf"), emit: mobster_pdf
+    tuple val(datasetID), val(patientID), val(sampleID), path("$outDir/viber_best_st_fit.rds"), emit: viber_rds
+    tuple val(datasetID), val(patientID), val(sampleID), path("$outDir/viber_best_st_heuristic_fit.rds"), emit: viber_heuristic_rds
+    tuple val(datasetID), val(patientID), val(sampleID), path("$outDir/*plots.rds"), emit: viber_plots_rds
 
   script:
     // viber fit params
@@ -32,20 +31,14 @@ process VIBER {
     def n_cutoff = args!="" && args.n_cutoff ? "$args.n_cutoff" : ""
     def pi_cutoff = args!="" && args.pi_cutoff ? "$args.pi_cutoff" : ""
     def re_assign = args!="" && args.re_assign ? "$args.re_assign" : ""
-    def mode                    = args.mode                     ?  "$args.mode" : ""
+    def mode = args.mode ?  "$args.mode" : ""
 
-      if (mode == "singlesample") {
-        outDir = "subclonal_deconvolution/viber/$datasetID/$patientID/$sampleID"
-        outDir_ctree = "$patientID/$sampleID/ctree"
-        best_fit = "subclonal_deconvolution/viber/$datasetID/$patientID/$sampleID/viber_best_st_fit.rds"
-      } else if (mode == "multisample"){
-        sampleID = sampleID.join(' ')
-        outDir = "subclonal_deconvolution/viber/$datasetID/$patientID/"
-        outDir_ctree = "$patientID/ctree"
-        best_fit = "subclonal_deconvolution/viber/$datasetID/$patientID/viber_best_st_fit.rds"
-        //path_ctree = "$patientID/ctree/ctree_input_pyclonevi.csv"
-      }
-
+    if (mode == "singlesample") {
+      outDir = "subclonal_deconvolution/viber/$datasetID/$patientID/$sampleID/"
+    } else if (mode == "multisample"){
+      sampleID = sampleID.join(" ")
+      outDir = "subclonal_deconvolution/viber/$datasetID/$patientID/"
+    }
 
     """
     #!/usr/bin/env Rscript
@@ -56,43 +49,38 @@ process VIBER {
     library(dplyr)
     library(tidyverse)
     source("$moduleDir/getters.R")
-    print("$sampleID") 
-    patientID="$patientID"
-    
     dir.create("$outDir", recursive = TRUE)
-    samples <-strsplit(x = "$sampleID", " ")%>% unlist()
+
+    patientID = "$patientID"
+    samples = strsplit(x = "$sampleID", " ")%>% unlist()
+
+    print("$sampleID")
     print(samples)
-    
-    original <- readRDS("$joint_table") %>% get_sample(sample = samples,which_obj = "shared")
-    joint_table = lapply(names(original), function(sample_name) CNAqc::Mutations(x=original[[sample_name]]) %>% dplyr::mutate(sample_id=sample_name)) %>% 
-      dplyr::bind_rows()
- 
-    #read.csv("$joint_table", sep="\t") %>% filter(sample_id%in%samples) %>% 
-    #  write.table(append = F,file = paste0("$outDir","/joint_table.tsv"), quote = F,sep = "\t",row.names = F)
-    
+
+    if (tolower(file_ext($joint_table)) == "rds") {
+      if (class($joint_table) == "m_cnaqc") {
+        shared = readRDS("$joint_table") %>% get_sample(sample=samples, which_obj="shared")
+        joint_table = lapply(names(shared), 
+                             function(sample_name) 
+                               CNAqc::Mutations(x=shared[[sample_name]]) %>% 
+                                 dplyr::mutate(sample_id=sample_name)
+                             ) %>% dplyr::bind_rows()
+      } else {
+        cli::cli_alert_warning("Object of class {class($joint_table)} not supported.")
+        return()
+      }
+    }
+
     print("Subset joint done")
     ## Read input joint table
     input_tab = joint_table %>% 
-      #read.csv("$outDir/joint_table.tsv", sep="\t") %>%
-      # dplyr::rename(variantID = gene) %>%
-      #dplyr::rename(is.driver = is_driver) %>%
-      #dplyr::rename(tumour_content = purity) %>%
-      #dplyr::filter(patientID==patientID) %>%
-      #dplyr::mutate(DP=ref_counts+alt_counts, 
-      #              VAF=alt_counts/DP) %>%
-      # dplyr::filter(VAF <= 1) %>% 
       dplyr::mutate(VAF=replace(VAF, VAF==0, 1e-7))
-      #dplyr::rename(is_driver=is.driver) 
-      #dplyr::rename(is_driver=is.driver, driver_label=variantID)
 
     ## Convert the input table into longer format
     reads_data = input_tab %>%
-      select(chr,from,ref,alt,NV,DP,VAF,sample_id) %>% 
+      dplyr::select(chr, from, ref, alt, NV, DP, VAF, sample_id) %>% 
       tidyr::pivot_wider(names_from="sample_id",
-                         values_from=c("NV",
-                                       #"normal_cn",
-                                       #"major_cn","minor_cn","purity",
-                                       "DP","VAF"), names_sep=".")
+                         values_from=c("NV","DP","VAF"), names_sep=".")
 
     ## Extract DP (depth)
     dp = reads_data %>%  
@@ -114,38 +102,39 @@ process VIBER {
     viber_K = eval(parse(text="$K")) 
     viber_K[which.min(viber_K)] = 2
     st_fit = VIBER::variational_fit(nv, dp, 
-                                 K=viber_K, 
-                                 data=reads_data,samples = 1
-                                 # %>% dplyr::filter(mutation_id %in% non_tail)
-                                 )
+                                    K=viber_K, 
+                                    data=reads_data,
+                                    # %>% dplyr::filter(mutation_id %in% non_tail)
+                                    )
 
     best_fit = st_fit
 
     # Apply the heuristic
-    st_heuristic_fit = VIBER::choose_clusters(st_fit, dimensions_cutoff = 0)
-    best_fit_heuristic = st_heuristic_fit
-    
-    # Plot and save the fits
-    if ("$mode"=="multisample"){ #mutlisample mode on
+    best_fit_heuristic = VIBER::choose_clusters(st_fit, 
+                                              binomial_cutoff=binomial_cutoff,
+                                              dimensions_cutoff=dimensions_cutoff,
+                                              pi_cutoff=pi_cutoff,
+                                              re_assign=re_assign
+                                              )
+
+    # Save fits
+    saveRDS(best_fit, file=paste0("$outDir", "viber_best_st_fit.rds")")
+    saveRDS(best_fit_heuristic, file = paste0("$outDir", "viber_best_st_heuristic_fit.rds"))
+
+    # Save plots
+    if ("$mode" == "multisample") { #mutlisample mode on
       print("multisample mode on")
-      ## save fits
-      saveRDS(best_fit, file = "$best_fit")
-      #saveRDS(best_fit_heuristic, file = paste0("$outDir", "/viber_best_st_heuristic_fit.rds"))
-      ## save plots
       plot_fit = plot(best_fit)
       plot_fit_heuristic = plot(best_fit_heuristic)
-      #saveRDS(plot_fit, file=paste0("$outDir", "/viber_best_st_fit.rds"))
-      #saveRDS(plot_fit_heuristic, file =paste0("$outDir", "/viber_best_st_heuristic_plots.rds"))
-    } else {
-      print("single sample mode on")
-      ## save fits
-      saveRDS(best_fit, file = "$best_fit")
-      #saveRDS(best_fit_heuristic, file = paste0("$outDir", "/viber_best_st_heuristic_fit.rds"))
-      ## save plots
-      plot_fit_mixing <- plot_mixing_proportions(best_fit)
-      plot_fit_mixing_heuristic <- plot_mixing_proportions(best_fit_heuristic)
-      #saveRDS(plot_fit_mixing, file = paste0("$outDir", "/viber_best_st_mixing_plots.rds"))
-      #saveRDS(plot_fit_mixing_heuristic, file = paste0("$outDir", "/viber_best_st_heuristic_mixing_plots.rds"))
+      
+      saveRDS(plot_fit, file=paste0("$outDir", "/viber_best_st_fit.rds"))
+      saveRDS(plot_fit_heuristic, file =paste0("$outDir", "viber_best_st_heuristic_plots.rds"))
+    } else if ("$mode" == "singlesample") {
+      plot_fit_mixing = plot_mixing_proportions(best_fit)
+      plot_fit_mixing_heuristic = plot_mixing_proportions(best_fit_heuristic)
+
+      saveRDS(plot_fit_mixing, file = paste0("$outDir", "viber_best_st_mixing_plots.rds"))
+      saveRDS(plot_fit_mixing_heuristic, file = paste0("$outDir", "viber_best_st_heuristic_mixing_plots.rds"))
     }
     """
 }
