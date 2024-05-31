@@ -1,5 +1,6 @@
 process BCFTOOLS_MPILEUP {
-    publishDir params.publish_dir, mode: 'copy'
+    publishDir params.publish_dir
+    //mode: 'copy'
 
     input:
 
@@ -8,12 +9,12 @@ process BCFTOOLS_MPILEUP {
 
     output:
 
-    tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/$sampleID/mpileup/*.vcf"), emit: vcf
+    tuple val(datasetID), val(patientID), val(sampleID), path("lifter/mpileup/$datasetID/$patientID/$sampleID/*.vcf"), emit: vcf
 
     script:
     """
     
-    out_dir=$datasetID/$patientID/$sampleID/mpileup
+    out_dir=lifter/mpileup/$datasetID/$patientID/$sampleID/
     mkdir -p \$out_dir
 
     bcftools mpileup $tumor_bam \\

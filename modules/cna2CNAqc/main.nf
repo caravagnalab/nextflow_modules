@@ -6,14 +6,14 @@ process CNA_PROCESSING {
      tuple val(datasetID), val(patientID), val(sampleID), path(cnaPath), val(caller)
 
     output:
-     tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/$sampleID/cna2CNAqc/CNA.rds"), emit: rds
+     tuple val(datasetID), val(patientID), val(sampleID), path("formatter/cna2CNAqc/$datasetID/$patientID/$sampleID/CNA.rds"), emit: rds
 
     script:
     
     """
     #!/usr/bin/env Rscript 
   
-    res_dir = paste0("$datasetID", "/", "$patientID", "/", "$sampleID", "/cna2CNAqc/")
+    res_dir = paste0("formatter/cna2CNAqc/", "$datasetID", "/", "$patientID", "/", "$sampleID", "/")
     dir.create(res_dir, recursive = TRUE)
 
     source(paste0("$moduleDir", '/parser_CNA.R'))

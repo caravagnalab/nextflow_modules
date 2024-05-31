@@ -8,8 +8,8 @@ process CNAQC {
   
   output:
 
-    tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/$sampleID/CNAqc/*.rds"), emit: rds
-    tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/$sampleID/CNAqc/*.pdf"), emit: pdf
+    tuple val(datasetID), val(patientID), val(sampleID), path("QC/CNAqc/$datasetID/$patientID/$sampleID/*.rds"), emit: rds
+    tuple val(datasetID), val(patientID), val(sampleID), path("QC/CNAqc/$datasetID/$patientID/$sampleID/*.pdf"), emit: pdf
     
   script:
 
@@ -24,7 +24,7 @@ process CNAQC {
     def VAF_tolerance                       = args!='' && args.VAF_tolerance                        ?  "$args.VAF_tolerance" : "0.015"
     def n_bootstrap                         = args!='' && args.n_bootstrap                          ?  "$args.n_bootstrap" : "1"
     def kernel_adjust                       = args!='' && args.kernel_adjust                        ?  "$args.kernel_adjust" : "1"
-    def KDE                                 = args!='' && args.KDE                                  ?  "$args.KDE" : "TRUE"
+    def kde                                 = args!='' && args.kde                                  ?  "$args.KDE" : "TRUE"
     def starting_state_subclonal_evolution  = args!='' && args.starting_state_subclonal_evolution   ?  "$args.starting_state_subclonal_evolution" : "1:1"
     def cluster_subclonal_CCF               = args!='' && args.cluster_subclonal_CCF                ?  "$args.cluster_subclonal_CCF" : "FALSE"
 
@@ -39,8 +39,8 @@ process CNAQC {
     library(tidyverse)
     library(CNAqc)
     
-    res_dir = paste0("$datasetID", "/", "$patientID", "/", "$sampleID", "/CNAqc/")
-    dir.create(res_dir, recursive = TRUE)
+    res_dir = paste0("QC/CNAqc/", "$datasetID", "/", "$patientID", "/", "$sampleID", "/")
+    dir.create(res_dir, recursive = TRUE, showWarnings = F)
 
     SNV = readRDS("$snv_RDS")
     SNV = SNV[["$sampleID"]]
@@ -53,40 +53,38 @@ process CNAQC {
         purity = CNA\$purity ,
         ref = "$params.assembly")
     
-    #x = CNAqc::annotate_variants(x, drivers = CNAqc::intogen_drivers)
-
-    old_mutations = x\$mutations
     x\$mutations = x\$mutations %>% filter(VAF > 0)
 
     x = CNAqc::analyze_peaks(x, 
       matching_strategy = "$matching_strategy",
-      karyotypes = "$karyotypes",
-      min_karyotype_size = "$min_karyotype_size",
-      min_absolute_karyotype_mutations = "$min_absolute_karyotype_mutations",
-      p_binsize_peaks = "$p_binsize_peaks",
-      matching_epsilon = "$matching_epsilon",
-      purity_error = "$purity_error",
-      VAF_tolerance = "$VAF_tolerance",
-      n_bootstrap = "$n_bootstrap",
-      kernel_adjust = "$kernel_adjust",
-      KDE = "$KDE",
+      karyotypes =  eval(parse(text="$karyotypes")),
+      min_karyotype_size = as.integer("$min_karyotype_size"),
+      min_absolute_karyotype_mutations = as.integer("$min_absolute_karyotype_mutations"),
+      p_binsize_peaks = as.integer("$p_binsize_peaks"),
+      matching_epsilon = eval(parse(text="$matching_epsilon")),
+      purity_error = as.integer("$purity_error"),
+      VAF_tolerance = as.integer("$VAF_tolerance"),
+      n_bootstrap = as.integer("$n_bootstrap"),
+      kernel_adjust = as.integer("$kernel_adjust"),
+      KDE = as.logical("$kde"),
       starting_state_subclonal_evolution = "$starting_state_subclonal_evolution",
-      cluster_subclonal_CCF = "$cluster_subclonal_CCF"
+      cluster_subclonal_CCF = as.logical( "$cluster_subclonal_CCF"),
+      #min_VAF = 0,
       )
 
     x = CNAqc::compute_CCF(
       x,
-      karyotypes = "$karyotypes",
-      muts_per_karyotype = "$muts_per_karyotype",
-      cutoff_QC_PASS = "$cutoff_QC_PASS",
+      karyotypes = eval(parse(text="$karyotypes")),
+      muts_per_karyotype = as.integer("$muts_per_karyotype"),
+      cutoff_QC_PASS = as.integer("$cutoff_QC_PASS"),
       method = "$method"
     )
 
     pl = ggpubr::ggarrange(
-      CNAqc::plot_data_histogram(x, which = 'VAF', karyotypes = "$karyotypes"),
-      CNAqc::plot_data_histogram(x, which = 'DP', karyotypes = "$karyotypes"),
-      CNAqc::plot_data_histogram(x, which = 'NV', karyotypes = "$karyotypes"),
-      CNAqc::plot_data_histogram(x, which = 'CCF', karyotypes = "$karyotypes"),
+      CNAqc::plot_data_histogram(x, which = 'VAF', karyotypes = eval(parse(text="$karyotypes"))),
+      CNAqc::plot_data_histogram(x, which = 'DP', karyotypes = eval(parse(text="$karyotypes"))),
+      CNAqc::plot_data_histogram(x, which = 'NV', karyotypes = eval(parse(text="$karyotypes"))),
+      CNAqc::plot_data_histogram(x, which = 'CCF', karyotypes = eval(parse(text="$karyotypes"))),
       ncol = 2,
       nrow = 2
     )
@@ -95,7 +93,9 @@ process CNAQC {
       CNAqc::plot_gw_counts(x),
       CNAqc::plot_gw_vaf(x, N = 10000),
       CNAqc::plot_gw_depth(x, N = 10000),
-      CNAqc::plot_segments(x, highlight = "$karyotypes", cn = "$plot_cn"),
+      CNAqc::plot_segments(x, 
+        highlight = eval(parse(text="$karyotypes")), 
+        cn = "$plot_cn"),
       pl,
       align = 'v', 
       nrow = 5,
@@ -111,9 +111,6 @@ process CNAQC {
       nrow = 5,
       rel_heights = c(.15, .15, .15, .3, .15)
     )
-
-    mutations = inner_join(old_mutations, x\$mutations)
-    x\$mutations = mutations
 
     saveRDS(object = x, file = paste0(res_dir, "qc.rds"))
 

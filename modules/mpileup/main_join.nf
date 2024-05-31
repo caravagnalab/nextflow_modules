@@ -7,7 +7,7 @@ process JOIN_POSITIONS {
  
     output:
 
-    tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/$sampleID/mpileup/*.rds"), emit: rds
+    tuple val(datasetID), val(patientID), val(sampleID), path("lifter/mpileup/$datasetID/$patientID/$sampleID/*.rds"), emit: rds
 
     script:
     """
@@ -16,10 +16,9 @@ process JOIN_POSITIONS {
     library(tidyverse)
     library(vcfR)
 
-    res_dir = paste0("$datasetID", "/", "$patientID", "/", "$sampleID", "/mpileup/")
-    dir.create(res_dir, recursive = TRUE)
+    res_dir = paste0("lifter/mpileup/", "$datasetID", "/", "$patientID", "/", "$sampleID", "/")
+    dir.create(res_dir,recursive = T, showWarnings = F)
 
-    print("$sampleID")
     all_positions = read.table("$positions", header = T) %>% 
                     dplyr::as_tibble() %>% 
                     dplyr::mutate(id = paste(chr, from, to, sep = ':')) %>% 
