@@ -36,7 +36,7 @@ process SPARSE_SIGNATURES {
   library(SparseSignatures)
   library(ggplot2)
   library(stringr)
-  librarry(BSgenome.Hsapiens.1000genomes.hs37d5)
+  library(BSgenome.Hsapiens.1000genomes.hs37d5)
     
   res_SparseSig = paste0("SparseSig/")
   dir.create(res_SparseSig, recursive = TRUE)
