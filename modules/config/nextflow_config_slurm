@@ -12,7 +12,7 @@ singularity {
  
 process {
    executor='slurm'
-   queue='EPYC'
+   queue='THIN'
    errorStrategy = 'finish'
 }
 
@@ -183,7 +183,7 @@ process {
   withName: 'SIG_PROFILER' {
     time='5h'
     memory='100 GB'
-    container = "docker://fauzul/sigprofiler:1.0"
+    container = "docker://lculibrk/sigprofiler:latest"
     ext.args   = {[
       "reference_genome": params.sigprofiler_reference_genome,
       "exome": params.sigprofiler_exome,
@@ -229,7 +229,7 @@ process {
     withName: 'SPARSE_SIGNATURES' {
         time = '75h'
         memory = '200 GB'
-        container = 'https://depot.galaxyproject.org/singularity/bioconductor-sparsesignatures%3A2.8.0--r42hdfd78af_0'
+       // container = 'https://depot.galaxyproject.org/singularity/bioconductor-sparsesignatures%3A2.12.0--r43hdfd78af_0'
         ext.args = {[
           "K" : params.sparsesignatures_K,
           "background_signature" : params.sparsesignatures_background_signature,
@@ -245,6 +245,7 @@ process {
           "cross_validation_iterations" : params.sparsesignatures_cross_validation_iterations,
           "lambda_values_alpha" : params.sparsesignatures_lambda_values_alpha,
           "lambda_values_beta" : params.sparsesignatures_lambda_values_beta
+          "verbose": params.sparsesignatures_verbose
         ]}
     }
 }
