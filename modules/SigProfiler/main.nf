@@ -18,7 +18,7 @@ process SIG_PROFILER {
     script:
     
       def args                              = task.ext.args                                 ?: ''
-      def reference_genome                  = args!='' && args.reference_genome             ? "$args.reference_genome" : "{GRCh37, GRCh38}"
+      def reference_genome                  = args!='' && args.reference_genome             ? "$args.reference_genome" : "GRCh37"
       def exome                             = args!='' && args.exome                        ? "$args.background_signature" : "False"
       def bed_file                          = args!='' && args.bed_file                     ? "$args.bed_file" : "None"
       def chrom_based                       = args!='' && args.chrom_based                  ? "$args.chrom_based" : "False"
@@ -42,11 +42,11 @@ process SIG_PROFILER {
       def tolerance                         = args!='' && args.tolerance                    ? "$args.tolerance" : "1e-15"
       def cpu                               = args!='' && args.cpu                          ? "$args.cpu" : "-1"
       def gpu                               = args!='' && args.gpu                          ? "$args.gpu" : "False"
-      def batch_size                        = args!='' && args.batch_size                   ? "$args.cpu" : "1"
+      def batch_size                        = args!='' && args.batch_size                   ? "$args.batch_size" : "1"
       def stability                         = args!='' && args.stability                    ? "$args.stability" : "0.8"
       def min_stability                     = args!='' && args.min_stability                ? "$args.min_stability" : "0.2"
       def combined_stability                = args!='' && args.combined_stability           ? "$args.combined_stability" : "1.0"   
-      def cosmic_version                    = args!='' && args.cosmic_version               ? "$args.cosmic_version" : "3.1"
+      def cosmic_version                    = args!='' && args.cosmic_version               ? "$args.cosmic_version" : "3.4"
       def de_novo_fit_penalty               = args!='' && args.de_novo_fit_penalty          ? "$args.de_novo_fit_penalty" : "0.02"
       def nnls_add_penalty                  = args!='' && args.nnls_add_penalty             ? "$args.nnls_add_penalty" : "0.05"
       def nnls_remove_penalty               = args!='' && args.nnls_remove_penalty          ? "$args.nnls_remove_penalty" : "0.01"
@@ -96,13 +96,13 @@ process SIG_PROFILER {
             project = "$datasetID", 
             reference_genome = "$reference_genome", 
             path_to_input_file = "$output_path",
-            exome = "$exome",
+            exome = bool("$exome"),
             bed_file = "$bed_file",
-            chrom_based = "$chrom_based",
-            plot = "$plot",
-            tsb_stat = "$tsb_stat",
-            seqInfo = "$seqInfo,
-            cushion = "$cushion,
+            chrom_based = bool("$chrom_based"),
+            plot = bool("$plot"),
+            tsb_stat = bool("$tsb_stat"),
+            seqInfo = bool("$seqInfo),
+            cushion = int("$cushion),
             volume = "$volume")
 
     # Perform model fitting
@@ -111,33 +111,33 @@ process SIG_PROFILER {
                              input_data = "$output_path",  #path to the file
                              context_type = "$contex_type",  
                              exome = "$exome",
-                             minimum_signatures = "$minimum_signatures",  
-                             maximum_signatures = "$maximum_signatures", 
-                             nmf_replicates = "$nmf_replicates", #the number of iteration to be performed to extract each number signature
-                             resample = "$resample",
+                             minimum_signatures = int("$minimum_signatures"),  
+                             maximum_signatures = int("$maximum_signatures"), 
+                             nmf_replicates = int("$nmf_replicates"), #the number of iteration to be performed to extract each number signature
+                             resample = bool("$resample"),
                              matrix_normalization = "$matrix_normalization", 
                              seeds= "$seeds",
                              nmf_init = "$nmf_init", #he initialization algorithm for W and H matrix of NMF
-                             min_nmf_iterations = "$min_nmf_iterations", 
-                             max_nmf_iterations = "$max_nmf_iterations",
-                             nmf_test_conv = "$nmf_test_conv", 
-                             nmf_tolerance = "$nmf_tolerance", 
-                             cpu = "$cpu",
-                             gpu = "$gpu",
-                             batch_size = "$batch_size",
-                             stability = "$stability",
-                             min_stability = "$min_stability",
-                             combined_stability = "$combined_stability",
-                             cosmic_version = "$cosmic_version",
-                             de_novo_fit_penalty = "$de_novo_fit_penalty",
-                             nnls_add_penalty = "$nnls_add_penalty",
-                             nnls_remove_penalty = "$nnls_remove_penalty",
-                             initial_remove_penalty = "$initial_remove_penalty",
-                             refit_denovo_signatures = "$refit_denovo_signatures",
-                             make_decomposition_plots = "$make_decomposition_plots", 
-                             collapse_to_SBS96 = "$collapse_to_SBS96", #SBS288 and SBS1536 Denovo signatures will be mapped to SBS96 reference signatures
-                             get_all_signature_matrices = "$get_all_signatures_matrices",
-                             export_probabilities = "$export_probabilities"
+                             min_nmf_iterations = int("$min_nmf_iterations"), 
+                             max_nmf_iterations = int("$max_nmf_iterations"),
+                             nmf_test_conv = int("$nmf_test_conv"), 
+                             nmf_tolerance = float("$nmf_tolerance"), 
+                             cpu = int("$cpu"),
+                             gpu = bool("$gpu"),
+                             batch_size = int("$batch_size"),
+                             stability = float("$stability"),
+                             min_stability = float("$min_stability"),
+                             combined_stability = float("$combined_stability"),
+                             cosmic_version = float("$cosmic_version"),
+                             de_novo_fit_penalty = float("$de_novo_fit_penalty"),
+                             nnls_add_penalty = float("$nnls_add_penalty"),
+                             nnls_remove_penalty = float("$nnls_remove_penalty"),
+                             initial_remove_penalty = float("$initial_remove_penalty"),
+                             refit_denovo_signatures = bool("$refit_denovo_signatures"),
+                             make_decomposition_plots = bool("$make_decomposition_plots"), 
+                             collapse_to_SBS96 = bool("$collapse_to_SBS96"), #SBS288 and SBS1536 Denovo signatures will be mapped to SBS96 reference signatures
+                             get_all_signature_matrices = bool("$get_all_signatures_matrices"),
+                             export_probabilities = bool("$export_probabilities")
 )
     
     
