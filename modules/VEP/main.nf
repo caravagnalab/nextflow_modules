@@ -11,16 +11,16 @@ process VEP_ANNOTATE {
 
     output:
 
-      tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/$sampleID/VEP/*.vcf.gz"), emit: vep_output 
+      tuple val(datasetID), val(patientID), val(sampleID), path("VariantAnnotation/VEP/$datasetID/$patientID/$sampleID/*.vcf.gz"), emit: vep_output 
 
     script:
 
     """
 
-    mkdir -p $datasetID/$patientID/$sampleID/VEP
+    mkdir -p VariantAnnotation/VEP/$datasetID/$patientID/$sampleID/
 
     vep --input_file $vcf_File \\
-    --output_file $datasetID/$patientID/$sampleID/VEP/vep.vcf.gz \\
+    --output_file VariantAnnotation/VEP/$datasetID/$patientID/$sampleID/vep.vcf.gz \\
     --vcf \\
     --plugin SingleLetterAA \\
     --compress_output gzip \\

@@ -26,8 +26,7 @@ parse_FreeBayes = function(vcf, sample_id, filter_mutations = FALSE){
     dplyr::rowwise() %>%
     dplyr::mutate(
       from = as.numeric(from),
-      to = from + nchar(alt)
-    ) %>%
+      to = from + nchar(alt)) %>%
     dplyr::ungroup() %>%
     dplyr::select(chr, from, to, ref, alt, dplyr::everything(), -ChromKey, -DP) #-DP
   
@@ -104,7 +103,7 @@ parse_Mutect = function(vcf, sample_id, filter_mutations = FALSE){
         from = as.numeric(from),
         to = from + nchar(alt)) %>%
       dplyr::ungroup() %>%
-      dplyr::select(chr, from, to, ref, alt, CSQ) %>% 
+      dplyr::select(chr, from, to, ref, alt, CSQ, dplyr::everything()) %>% 
       tidyr::separate(CSQ, vep_field, sep = "\\|") %>% 
       dplyr::select(chr, from, to, ref, alt, IMPACT, SYMBOL, Gene, dplyr::everything()) #can add other thing, CSQ, HGSP
     
@@ -269,9 +268,9 @@ parse_Platypus = function(vcf, sample_id, filter_mutations = FALSE){
         from = as.numeric(from),
         to = from + nchar(alt)) %>%
       dplyr::ungroup() %>%
-      dplyr::select(chr, from, to, ref, alt, CSQ) %>% 
+      dplyr::select(chr, from, to, ref, alt, CSQ, dplyr::everything()) %>% 
       tidyr::separate(CSQ, vep_field, sep = "\\|") %>% 
-      dplyr::select(chr, from, to, ref, alt, IMPACT, SYMBOL, Gene, dplyr::everything()) #can add other thing, CSQ, HGSP
+      dplyr::select(chr, from, to, ref, alt, IMPACT, SYMBOL, Gene, dplyr::everything())
     
     } else {
       fix_field = tb$fix %>%

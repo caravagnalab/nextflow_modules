@@ -12,7 +12,7 @@ process MAFTOOLS {
 
     output:
 
-      tuple val(datasetID), path("$datasetID/MAFTOOLS/*.pdf"), path("$datasetID/MAFTOOLS/*.rds")
+      tuple val(datasetID), path("VariantAnnotation/MAFTOOLS/$datasetID/*.pdf"), path("VariantAnnotation/MAFTOOLS/$datasetID/*.rds")
 
     script:
 
@@ -23,7 +23,7 @@ process MAFTOOLS {
 
     #Create results output directory
 
-    dir.create(paste0("$datasetID","/MAFTOOLS"), recursive = TRUE)
+    dir.create(paste0("VariantAnnotation/MAFTOOLS/", "$datasetID"), recursive = TRUE)
     
     #Reading maf files
     mafs <- lapply(X = strsplit("$maf_File", " ")[[1]], FUN = maftools::read.maf)

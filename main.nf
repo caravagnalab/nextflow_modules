@@ -4,19 +4,29 @@ nextflow.enable.dsl=2
 include { VARIANT_ANNOTATION } from "${baseDir}/subworkflows/variant_annotation/main"
 include { FORMATTER as FORMATTER_CNA } from "${baseDir}/subworkflows/formatter/main"
 include { FORMATTER as FORMATTER_VCF} from "${baseDir}/subworkflows/formatter/main"
-// include { LIFTER } from "${baseDir}/subworkflows/lifter/main"
-// include { DRIVER_ANNOTATION } from "${baseDir}/subworkflows/driver_annotation/main"
+include { LIFTER } from "${baseDir}/subworkflows/lifter/main"
+include { DRIVER_ANNOTATION } from "${baseDir}/subworkflows/driver_annotation/main"
 include { QC } from "${baseDir}/subworkflows/QC/main"
 // include { SUBCLONAL_DECONVOLUTION } from "${baseDir}/subworkflows/subclonal_deconvolution/main"
 
 
 workflow {
 
+  check_tumor_bam = Channel.fromPath(params.samples).
+        splitCsv(header: true).
+        map{row -> row.tumour_bam}.
+        ifEmpty('empty')
+
   input_vcf = Channel.fromPath(params.samples).
       splitCsv(header: true).
       map{row ->
         tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.vcf), file(row.vcf_tbi))}
  
+  cancer_type = Channel.fromPath(params.samples).
+      splitCsv(header: true).
+      map{row -> row.cancer_type.toString()}
+ 
+
   input_cna = Channel.fromPath(params.samples).
     splitCsv(header: true).
     map{row ->
@@ -27,24 +37,25 @@ workflow {
   //   map{row ->
   //    tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.normal_bam), file(row.normal_bai))}
 
-  // tumor_bam = Channel.fromPath(params.samples).
-  //   splitCsv(header: true).
-  //   map{row ->
-  //    tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.tumour_bam), file(row.tumour_bai))}  
-
 
   VARIANT_ANNOTATION(input_vcf) //work
-  FORMATTER_VCF(VARIANT_ANNOTATION.out.vep, "vcf")//VARIANT_ANNOTATION.out.vep
+  FORMATTER_VCF(VARIANT_ANNOTATION.out.vep, "vcf")
   FORMATTER_CNA(input_cna, "cna")
 
-// // if multisample and bam present
-//   LIFTER(FORMATTER_VCF.out, tumor_bam) // work
-//   DRIVER_ANNOTATION(LIFTER.out)
+  if (params.mode == 'multi_sample' && check_tumor_bam != 'empty'){
+    tumor_bam = Channel.fromPath(params.samples).
+        splitCsv(header: true).
+        map{row ->
+         tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.tumour_bam), file(row.tumour_bai))}  
 
-// // if singlesample 
-//   DRIVER_ANNOTATION(FORMATTER.out.vcf)
+    LIFTER(FORMATTER_VCF.out, tumor_bam)
+    annotation = DRIVER_ANNOTATION(LIFTER.out, cancer_type)
 
-  join_CNAqc = QC(FORMATTER_CNA.out, FORMATTER_VCF.out) // work
-//  SUBCLONAL_DECONVOLUTION(join_CNAqc)
+  } else if (params.mode == 'single_sample') {
+    annotation = DRIVER_ANNOTATION(FORMATTER_VCF.out, cancer_type)
+  }
+  
+  join_CNAqc = QC(FORMATTER_CNA.out, DRIVER_ANNOTATION.out) // work
+ //  SUBCLONAL_DECONVOLUTION(join_CNAqc)
 
 }
