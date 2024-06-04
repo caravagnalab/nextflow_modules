@@ -213,7 +213,7 @@ process {
       "p_binsize_peaks":params.cnaqc_p_binsize_peaks,
       "matching_epsilon":params.cnaqc_matching_epsilon,
       "purity_error":params.cnaqc_purity_error,
-      "VAF_tolerance":params.cnaqc_VAF_tolerance,
+      "vaf_tolerance":params.cnaqc_vaf_tolerance,
       "n_bootstrap":params.cnaqc_n_bootstrap,
       "kernel_adjust":params.cnaqc_kernel_adjust,
       "kde":params.cnaqc_kde,

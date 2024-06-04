@@ -8,8 +8,8 @@ process GET_POSITIONS {
 
     output:
 
-    tuple val(datasetID), val(patientID), val(sampleID), path("lifter/mpileup/$datasetID/$patientID/*/*.bed"), emit: bed
-    tuple val(datasetID), val(patientID), val(sampleID), path("lifter/mpileup/$datasetID/$patientID/*.bed"), emit: pos
+    tuple val(datasetID), val(patientID), val(sampleID), path("Lifter/mpileup/$datasetID/$patientID/*/*.bed"), emit: bed
+    tuple val(datasetID), val(patientID), val(sampleID), path("Lifter/mpileup/$datasetID/$patientID/*.bed"), emit: pos
 
     script:
 

@@ -7,7 +7,7 @@ process JOIN_POSITIONS {
  
     output:
 
-    tuple val(datasetID), val(patientID), val(sampleID), path("lifter/mpileup/$datasetID/$patientID/$sampleID/*.rds"), emit: rds
+    tuple val(datasetID), val(patientID), val(sampleID), path("Lifter/mpileup/$datasetID/$patientID/$sampleID/*.rds"), emit: rds
 
     script:
     """

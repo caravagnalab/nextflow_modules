@@ -21,14 +21,13 @@ process ANNOTATE_DRIVER {
     res_dir = paste0("DriverAnnotation/", "$datasetID", "/", "$patientID", "/", "$sampleID", "/")
     dir.create(res_dir, recursive = TRUE)
 
-    SNV = readRDS("$snv_RDS")
-    SNV = SNV[["$sampleID"]]
+    data = readRDS("$snv_RDS")
+    SNV = data[["$sampleID"]]
     SNV = SNV\$mutations
 
     drivers_table = readr::read_tsv(file = "$params.drivers_table") 
     
     if("$cancer_type" == 'PANCANCER'){
-    
       drivers_table = drivers_table %>% 
         dplyr::group_by(SYMBOL) %>% 
         dplyr::reframe(CGC_CANCER_GENE = any(CGC_CANCER_GENE), dplyr::across(dplyr::everything())) %>% 
@@ -49,11 +48,13 @@ process ANNOTATE_DRIVER {
       ) %>% 
       dplyr::mutate(
           is_driver = (CGC_CANCER_GENE & IMPACT %in% c('MODERATE', 'HIGH')),
-          driverl_label = paste(SYMBOL, HGVSp_Short)
-      ) // this is our rule for driver assignment
+          driverl_label = paste(SYMBOL, HGVSp)
+      )
 
-
-    saveRDS(object = x, file = paste0(res_dir, "annotated_drivers.rds"))
+    new_data = list()
+    new_data[["$sampleID"]]\$mutations = x
+    new_data[["$sampleID"]]\$sample = data[["$sampleID"]]\$sample
+    saveRDS(object = new_data, file = paste0(res_dir, "annotated_drivers.rds"))
 
     """
 }

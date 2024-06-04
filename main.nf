@@ -10,12 +10,14 @@ include { QC } from "${baseDir}/subworkflows/QC/main"
 // include { SUBCLONAL_DECONVOLUTION } from "${baseDir}/subworkflows/subclonal_deconvolution/main"
 
 
-workflow {
-
+workflow {  
+  
+  // tumour_bam should be in sample sheet
   check_tumor_bam = Channel.fromPath(params.samples).
         splitCsv(header: true).
         map{row -> row.tumour_bam}.
-        ifEmpty('empty')
+        ifEmpty('').
+        first()
 
   input_vcf = Channel.fromPath(params.samples).
       splitCsv(header: true).
@@ -37,12 +39,11 @@ workflow {
   //   map{row ->
   //    tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.normal_bam), file(row.normal_bai))}
 
-
-  VARIANT_ANNOTATION(input_vcf) //work
+  VARIANT_ANNOTATION(input_vcf) 
   FORMATTER_VCF(VARIANT_ANNOTATION.out.vep, "vcf")
   FORMATTER_CNA(input_cna, "cna")
 
-  if (params.mode == 'multi_sample' && check_tumor_bam != 'empty'){
+  if (params.mode == 'multi_sample' && !check_tumor_bam.isEmpty()){
     tumor_bam = Channel.fromPath(params.samples).
         splitCsv(header: true).
         map{row ->
@@ -51,11 +52,10 @@ workflow {
     LIFTER(FORMATTER_VCF.out, tumor_bam)
     annotation = DRIVER_ANNOTATION(LIFTER.out, cancer_type)
 
-  } else if (params.mode == 'single_sample') {
+  } else {
     annotation = DRIVER_ANNOTATION(FORMATTER_VCF.out, cancer_type)
   }
   
-  join_CNAqc = QC(FORMATTER_CNA.out, DRIVER_ANNOTATION.out) // work
- //  SUBCLONAL_DECONVOLUTION(join_CNAqc)
-
+  join_CNAqc = QC(FORMATTER_CNA.out, annotation)
+  //SUBCLONAL_DECONVOLUTION(join_CNAqc)
 }

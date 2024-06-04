@@ -14,25 +14,25 @@ process CNAQC {
   script:
 
     def args                                = task.ext.args                                         ?: ''
-    def matching_strategy                   = args!='' && args.matching_strategy                    ?  "$args.matching_strategy" : "closest"
-    def karyotypes                          = args!='' && args.karyotypes                           ?  "$args.karyotypes" : "c("1:0", "1:1", "2:0", "2:1", "2:2")"
-    def min_karyotype_size                  = args!='' && args.min_karyotype_size                   ?  "$args.min_karyotype_size" : "0"
-    def min_absolute_karyotype_mutations    = args!='' && args.min_absolute_karyotype_mutations     ?  "$args.min_absolute_karyotype_mutations" : "100"
-    def p_binsize_peaks                     = args!='' && args.p_binsize_peaks                      ?  "$args.p_binsize_peaks" : "0.005"
-    def matching_epsilon                    = args!='' && args.matching_epsilon                     ?  "$args.matching_epsilon" : "NULL"
-    def purity_error                        = args!='' && args.purity_error                         ?  "$args.purity_error" : "0.05"
-    def VAF_tolerance                       = args!='' && args.VAF_tolerance                        ?  "$args.VAF_tolerance" : "0.015"
-    def n_bootstrap                         = args!='' && args.n_bootstrap                          ?  "$args.n_bootstrap" : "1"
-    def kernel_adjust                       = args!='' && args.kernel_adjust                        ?  "$args.kernel_adjust" : "1"
-    def kde                                 = args!='' && args.kde                                  ?  "$args.KDE" : "TRUE"
-    def starting_state_subclonal_evolution  = args!='' && args.starting_state_subclonal_evolution   ?  "$args.starting_state_subclonal_evolution" : "1:1"
-    def cluster_subclonal_CCF               = args!='' && args.cluster_subclonal_CCF                ?  "$args.cluster_subclonal_CCF" : "FALSE"
+    def matching_strategy                   = args!='' && args.matching_strategy                    ?  "$args.matching_strategy" : ""
+    def karyotypes                          = args!='' && args.karyotypes                           ?  "$args.karyotypes" : ""
+    def min_karyotype_size                  = args!='' && args.min_karyotype_size                   ?  "$args.min_karyotype_size" : ""
+    def min_absolute_karyotype_mutations    = args!='' && args.min_absolute_karyotype_mutations     ?  "$args.min_absolute_karyotype_mutations" : ""
+    def p_binsize_peaks                     = args!='' && args.p_binsize_peaks                      ?  "$args.p_binsize_peaks" : ""
+    def matching_epsilon                    = args!='' && args.matching_epsilon                     ?  "$args.matching_epsilon" : ""
+    def purity_error                        = args!='' && args.purity_error                         ?  "$args.purity_error" : ""
+    def vaf_tolerance                       = args!='' && args.vaf_tolerance                        ?  "$args.vaf_tolerance" : ""
+    def n_bootstrap                         = args!='' && args.n_bootstrap                          ?  "$args.n_bootstrap" : ""
+    def kernel_adjust                       = args!='' && args.kernel_adjust                        ?  "$args.kernel_adjust" : ""
+    def kde                                 = args!='' && args.kde                                  ?  "$args.KDE" : ""
+    def starting_state_subclonal_evolution  = args!='' && args.starting_state_subclonal_evolution   ?  "$args.starting_state_subclonal_evolution" : ""
+    def cluster_subclonal_CCF               = args!='' && args.cluster_subclonal_CCF                ?  "$args.cluster_subclonal_CCF" : ""
 
-    def muts_per_karyotype                  = args!='' && args.muts_per_karyotype                   ?  "$args.muts_per_karyotype" : "25"
-    def cutoff_QC_PASS                      = args!='' && args.cutoff_QC_PASS                       ?  "$args.cutoff_QC_PASS" : "0.1"
-    def method                              = args!='' && args.method                               ?  "$args.method" : "ENTROPY"
+    def muts_per_karyotype                  = args!='' && args.muts_per_karyotype                   ?  "$args.muts_per_karyotype" : ""
+    def cutoff_QC_PASS                      = args!='' && args.cutoff_QC_PASS                       ?  "$args.cutoff_QC_PASS" : ""
+    def method                              = args!='' && args.method                               ?  "$args.method" : ""
 
-    def plot_cn                             = args!='' && args.plot_cn                               ?  "$args.plot_cn" : "absolute"
+    def plot_cn                             = args!='' && args.plot_cn                               ?  "$args.plot_cn" : ""
     """
     #!/usr/bin/env Rscript
 
@@ -58,25 +58,24 @@ process CNAQC {
     x = CNAqc::analyze_peaks(x, 
       matching_strategy = "$matching_strategy",
       karyotypes =  eval(parse(text="$karyotypes")),
-      min_karyotype_size = as.integer("$min_karyotype_size"),
-      min_absolute_karyotype_mutations = as.integer("$min_absolute_karyotype_mutations"),
-      p_binsize_peaks = as.integer("$p_binsize_peaks"),
+      min_karyotype_size = as.numeric("$min_karyotype_size"),
+      min_absolute_karyotype_mutations = as.numeric("$min_absolute_karyotype_mutations"),
+      p_binsize_peaks = as.numeric("$p_binsize_peaks"),
       matching_epsilon = eval(parse(text="$matching_epsilon")),
-      purity_error = as.integer("$purity_error"),
-      VAF_tolerance = as.integer("$VAF_tolerance"),
-      n_bootstrap = as.integer("$n_bootstrap"),
-      kernel_adjust = as.integer("$kernel_adjust"),
-      KDE = as.logical("$kde"),
+      purity_error = as.numeric("$purity_error"),
+      VAF_tolerance = as.numeric("$vaf_tolerance"),
+      n_bootstrap = as.numeric("$n_bootstrap"),
+      kernel_adjust = as.numeric("$kernel_adjust"),
+      KDE = eval(parse(text = "$kde")),
       starting_state_subclonal_evolution = "$starting_state_subclonal_evolution",
-      cluster_subclonal_CCF = as.logical( "$cluster_subclonal_CCF"),
-      #min_VAF = 0,
+      cluster_subclonal_CCF = as.logical("$cluster_subclonal_CCF")
       )
 
     x = CNAqc::compute_CCF(
       x,
       karyotypes = eval(parse(text="$karyotypes")),
-      muts_per_karyotype = as.integer("$muts_per_karyotype"),
-      cutoff_QC_PASS = as.integer("$cutoff_QC_PASS"),
+      muts_per_karyotype = as.numeric("$muts_per_karyotype"),
+      cutoff_QC_PASS = as.numeric("$cutoff_QC_PASS"),
       method = "$method"
     )
 

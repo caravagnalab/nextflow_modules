@@ -9,7 +9,7 @@ process BCFTOOLS_MPILEUP {
 
     output:
 
-    tuple val(datasetID), val(patientID), val(sampleID), path("lifter/mpileup/$datasetID/$patientID/$sampleID/*.vcf"), emit: vcf
+    tuple val(datasetID), val(patientID), val(sampleID), path("Lifter/mpileup/$datasetID/$patientID/$sampleID/*.vcf"), emit: vcf
 
     script:
     """

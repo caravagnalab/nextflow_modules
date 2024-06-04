@@ -10,7 +10,7 @@ process VCF_PROCESSING {
 
     script:
         def args              = task.ext.args                         ?: ''
-        def filter_mutations  = args!='' && args.filter_mutations     ?  "$args.filter_mutations" : "FALSE"
+        def filter_mutations  = args!='' && args.filter_mutations     ?  "$args.filter_mutations" : ""
 
     """
     #!/usr/bin/env Rscript 
