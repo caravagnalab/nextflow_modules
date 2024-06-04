@@ -14,6 +14,7 @@ process CTREE {
     def sspace_cutoff = args!="" && args.sspace_cutoff ? "$args.sspace_cutoff" : ""
     def n_sampling = args!="" && args.n_sampling ? "$args.n_sampling" : ""
     def store_max = args!="" && args.store_max ? "$args.store_max" : ""
+    def mode = args!="" && args.mode ?  "$args.mode" : ""
     
     if (mode == "singlesample") {
       outDir = "subclonal_deconvolution/ctree/$datasetID/$patientID/$sampleID/"
@@ -27,7 +28,7 @@ process CTREE {
 
     library(ctree)
     library(dplyr)
-    library(viber)
+    library(VIBER)
     library(mobster)
     
     initialize_ctree_obj = function(ctree_input){
@@ -45,7 +46,7 @@ process CTREE {
       drivers_table = ctree_input %>% 
         dplyr::select(patientID, sampleID, variantID, cluster, is.driver, is.clonal, CCF) %>% 
         dplyr::filter(is.driver) %>% 
-        mutate(cluster = as.character(cluster)) %>%
+        dplyr::mutate(cluster = as.character(cluster)) %>%
         tidyr::pivot_wider(names_from="sampleID", values_from="CCF",values_fill = 0)
       
       samples = unique(ctree_input[["sampleID"]])  # if multisample, this is a list
@@ -57,22 +58,45 @@ process CTREE {
       return(ctree_init)
     }
 
-    if (tolower(file_ext($ctree_input)) == "rds") {
-      best_fit = readRDS($ctree_input)
+    if ( grepl(".rds\$", tolower("$ctree_input")) ) {
+      best_fit = readRDS("$ctree_input")
+
+      if (!"data" %in% names(best_fit)) { best_fit[["data"]] =  data.frame(row.names=1:best_fit[["N"]])}
+
+      ## viber
+      if (class(best_fit) == "vb_bmm") {
+        fn_name = VIBER::get_clone_trees
+        subclonal_tool = "VIBER"
+        if (!"gene" %in% colnames(best_fit[["data"]]) | !"driver" %in% colnames(best_fit[["data"]])) {
+          best_fit[["data"]] = best_fit[["data"]] %>% dplyr::mutate(driver=FALSE, gene=NA)
+          best_fit[["data"]][1, "driver"] = TRUE; best_fit[["data"]][1, "gene"] = ""
+        }
+      }
+
+      ## mobster
+      if (class(best_fit) == "dbpmm") {
+        fn_name = mobster::get_clone_trees
+        subclonal_tool = "MOBSTERh"
+        if (!"driver_label" %in% colnames(best_fit[["data"]]) | !"is_driver" %in% colnames(best_fit[["data"]])) {
+          best_fit[["data"]] = best_fit[["data"]] %>% dplyr::mutate(is_driver=FALSE, driver_label=NA)
+          best_fit[["data"]][1, "is_driver"] = TRUE; best_fit[["data"]][1, "driver_label"] = ""
+        }
+      }
+
+      print(names(best_fit))
+      print(best_fit[["data"]])
+
       if (class(best_fit) %in% c("vb_bmm", "dbpmm")) {
         # VIBER or MOBSTER object
-        trees = get_clone_trees(x = best_fit,
-                                sspace.cutoff = as.integer("$sspace_cutoff"),
-                                n.sampling = as.integer("$n_sampling"),
-                                store.max = as.integer("$store_max"))
-        ctree_output = dplyr::case_when(
-          class(best_fit) == "vb_bmm" ~ subclonal_tool = "VIBER",
-          class(best_fit) == "dbpmm" ~ subclonal_tool = "MOBSTERh"
-        )
+        trees = fn_name(x = best_fit,
+                        sspace.cutoff = as.integer("$sspace_cutoff"),
+                        n.sampling = as.integer("$n_sampling"),
+                        store.max = as.integer("$store_max"))
       } else {
-        cli::cli_alert_warning("Object of class {class($ctree_input)} not supported.")
+        cli::cli_alert_warning("Object of class {class(best_fit)} not supported.")
         return()
       }
+
     } else {
       subclonal_tool = "pyclonevi"
       input_table = read.csv($ctree_input, sep="\t")

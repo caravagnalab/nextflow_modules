@@ -4,16 +4,16 @@ cleanup=true
 includeConfig "$baseDir/modules/config/params.config"
 
 
- singularity {
-     enabled = true
-     singularity.envWhitelist = ["SINGULARITY_TMPDIR"]
-     runOptions = '--bind /orfeo:/orfeo --bind $SINGULARITY_TMPDIR:/tmp'
- }
+singularity {
+  enabled = true
+  singularity.envWhitelist = ["SINGULARITY_TMPDIR"]
+  runOptions = '--bind /orfeo:/orfeo --bind $SINGULARITY_TMPDIR:/tmp'
+}
  
 process {
-   executor='slurm'
-   queue='EPYC'
-   errorStrategy = 'finish'
+  executor='slurm'
+  queue='EPYC'
+  errorStrategy = 'finish'
 }
 
 // process {
@@ -36,10 +36,9 @@ process {
   withName: 'MAFTOOLS' {
     memory = '5 GB'
   }
- }
+}
 
 process {
-
   withName: 'ANNOVAR_ANNOTATE' {
     time='12h'
     container = 'shub://IARCbioinfo/table_annovar-nf:v1.1'
@@ -54,13 +53,13 @@ process {
 
 
 process {
-
   withName: 'SNPEFF_ANNOTATE' {
     time='24h'
     container = 'https://depot.galaxyproject.org/singularity/snpeff:5.1--hdfd78af_2'
     memory='16 GB'
   }
 }
+
 process {
   withName: 'PLATYPUS_CALL_VARIANTS' {
     time='24h'
@@ -187,7 +186,8 @@ process {
     ext.args = {[
       "sspace_cutoff" : params.ctree_sspace_cutoff,
       "n_sampling" : params.ctree_n_sampling,
-      "store_max" : params.ctree_store_max
+      "store_max" : params.ctree_store_max,
+      "mode": params.mode
     ]}
   }
 
