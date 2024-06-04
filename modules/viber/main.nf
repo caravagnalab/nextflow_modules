@@ -60,6 +60,7 @@ process VIBER {
     samples = strsplit(x = "$sampleID", " ")%>% unlist()
 
     print("$sampleID")
+    print("$joint_table")
     print(samples)
 
     if ( grepl(".rds\$", tolower("$joint_table")) ) {

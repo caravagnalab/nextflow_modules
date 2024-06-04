@@ -25,7 +25,7 @@ process RDS_PROCESSING {
 
     source("$moduleDir/utils.R")
 
-    res_dir = paste0("CNAqc2tsv/","$datasetID", "/", "$patientID/",)
+    res_dir = paste0("CNAqc2tsv/","$datasetID", "/", "$patientID/")
     dir.create(res_dir, recursive = TRUE)
  
     multi_cnaqc = readRDS(file = "$join_cnaqc")
