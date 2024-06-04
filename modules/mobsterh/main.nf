@@ -9,10 +9,9 @@ process MOBSTERh {
 
   output:
 
-    // try : /path/{$(echo $sampleID | tr ' ' ',')} to get the outputs for all sampleIDs
     tuple val(datasetID), val(patientID), val(sampleID), path("$outDir/*/mobsterh_st_fit.rds"), emit: mobster_rds
-    tuple val(datasetID), val(patientID), val(sampleID), path("$outDir/*/mobsterh_st_best_fit.rds"), emit: mobster_best_rds
-    tuple val(datasetID), val(patientID), val(sampleID), path("$outDir/*/*plots.rds"), emit: mobster_plots_rds
+    tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/*/mobsterh_st_best_fit.rds"), emit: mobster_best_rds
+    tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/*/*plots.rds"), emit: mobster_plots_rds
 
   script:
     def args = task.ext.args ?: ""
@@ -32,8 +31,12 @@ process MOBSTERh {
     def auto_setup = args!="" && args.auto_setup ? "$args.auto_setup" : ""
     def silent = args!="" && args.silent ? "$args.silent" : ""
 
-    outDir = "subclonal_deconvolution/mobster/$datasetID/$patientID/"
-    sampleID = sampleID.join(" ")
+    outDir = "subclonal_deconvolution/mobster/$datasetID/$patientID"
+    // sampleID = sampleID.join(" ")
+    
+    if (!(sampleID instanceof String)) {
+      sampleID = sampleID.join(",")
+    }
 
     """
     #!/usr/bin/env Rscript
@@ -46,17 +49,18 @@ process MOBSTERh {
     source("$moduleDir/getters.R")
 
     patientID = description = "$patientID"
-    samples = strsplit(x = "$sampleID", " ") %>% unlist()  # list of samples
+    samples = strsplit(x = "$sampleID", ",") %>% unlist()  # list of samples
     dir.create("$outDir", recursive = TRUE)
 
     print("$sampleID")
     print(samples)
 
     ## read mCNAqc object
-    if (tolower(file_ext($joint_table)) == "rds") {
-      if (class($joint_table) == "m_cnaqc") {
-        original = readRDS("$joint_table") %>% get_sample(sample=samples, which_obj="original")
-        joint_table = lapply(names(original), 
+    if ( grepl(".rds\$", tolower("$joint_table")) ) {
+      obj = readRDS("$joint_table")
+      if (class(obj) == "m_cnaqc") {
+        original = obj %>% get_sample(sample=samples, which_obj="original")
+        input_table = lapply(names(original), 
                              function(sample_name) 
                                CNAqc::Mutations(x=original[[sample_name]]) %>% 
                                  dplyr::mutate(sample_id=sample_name)
@@ -66,7 +70,7 @@ process MOBSTERh {
         return()
       }
     } else {
-      input_table = read.csv(joint_table)
+      input_table = read.csv("$joint_table")
     }
 
     ## Function to run a single mobster fit
@@ -101,11 +105,11 @@ process MOBSTERh {
                   description = descr)
     }
 
-    lapply(samples, function(sample_id) {
-      outDir_sample = paste0("$outDir/", sample_id, "/")
+    lapply(samples, function(sample_name) {
+      outDir_sample = paste0("$outDir/", sample_name, "/")
       dir.create(outDir_sample, recursive = TRUE)
 
-      fit = run_mobster_fit(inp_tb=input_table %>% dplyr::filter(sample_id == !!sample_id), 
+      fit = run_mobster_fit(joint_table=input_table %>% dplyr::filter(sample_id == !!sample_name), 
                             descr=description)
       
       best_fit = fit[["best"]]
@@ -115,9 +119,6 @@ process MOBSTERh {
       saveRDS(object=best_fit, file=paste0(outDir_sample, "mobsterh_st_best_fit.rds"))
       saveRDS(object=plot_fit, file=paste0(outDir_sample, "mobsterh_st_best_fit_plots.rds"))
       
-      # annotated_tab = best_fit[["data"]]
-      # write.table(x=annotated_tab, file=paste0(outDir_sample,"mobster_joint_",sample_id,".tsv"),
-                    append=F, quote=F, sep="\t", row.names=F)
     })
     """
 }
