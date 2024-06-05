@@ -12,14 +12,14 @@ process SIG_PROFILER {
     output:
 
       tuple val(datasetID), path("$datasetID/SIGPROFILER/results/SBS96/SBS96_selection_plot.pdf"),
-      path("$datasetID/SIGPROFILER/results/SBS96/Suggested_Solution/COSMIC_SBS96_Decomposed_Solution/SBS96_Decomposition_Plots.pdf"), 
+      path("$datasetID/SIGPROFILER/results/SBS96/Suggested_Solution/"), 
       path("$datasetID/SIGPROFILER/results/SBS96/Samples.txt")
     
     script:
     
       def args                              = task.ext.args                                 ?: ''
       def reference_genome                  = args!='' && args.reference_genome             ? "$args.reference_genome" : "GRCh37"
-      def exome                             = args!='' && args.exome                        ? "$args.background_signature" : "False"
+      def exome                             = args!='' && args.exome                        ? "$args.exome" : "False"
       def bed_file                          = args!='' && args.bed_file                     ? "$args.bed_file" : "None"
       def chrom_based                       = args!='' && args.chrom_based                  ? "$args.chrom_based" : "False"
       def plot                              = args!='' && args.plot                         ? "$args.plot" : "False"
@@ -55,8 +55,7 @@ process SIG_PROFILER {
       def make_decomposition_plots          = args!='' && args.make_decomposition_plots     ? "$args.make_decomposition_plots" : "True"
       def collapse_to_SBS96                 = args!='' && args.collapse_to_SBS96            ? "$args.collapse_to_SBS96" : "True"
       def get_all_signature_matrices        = args!='' && args.get_all_signature_matrices   ? "$args.get_all_signature_matrices" : "False"
-      def export_probabilities              = args!='' && args.export_probabilities         ? "$args.export_probabilities" : "True"
-      
+      def export_probabilities              = args!='' && args.export_probabilities         ? "$args.export_probabil   
 
     """
     #!/usr/bin/env python3
@@ -65,13 +64,17 @@ process SIG_PROFILER {
     import shutil
     from SigProfilerExtractor import sigpro as sig
     from SigProfilerMatrixGenerator.scripts import SigProfilerMatrixGeneratorFunc as matGen
-
-    input_path = "$input_path_sigprof/"
-    output_path = input_path + "$output_folder_sigprof/"   
+  
     
-    if os.path.exists(output_path):
-        shutil.rmtree(output_path)
-    os.mkdir(output_path)
+    #if os.path.exists(output_path):
+       # shutil.rmtree(output_path)
+    
+    os.mkdir("$datasetID")
+    os.mkdir("$datasetID/SIGPROFILER")
+   
+    input_path = "$datasetID/"
+    output_path = "output/SBS/$datasetID.SBS96.all"
+    output_folder_sigprof = "results/SBS96/"
 
     #import input data
     input_data = pd.read_csv("$joint_table", sep = '\t')
@@ -89,13 +92,13 @@ process SIG_PROFILER {
     input_data = input_processing(input_data)
 
     #saving input matrix to txt
-    input_data.to_csv('$output_path', sep='\t', index=False, header=True)
+    input_data.to_csv("input_path/input_data.txt", sep='\t', index=False, header=True)
 
     #mutation's counts matrix generation
     input_matrix = matGen.SigProfilerMatrixGeneratorFunc(
             project = "$datasetID", 
             reference_genome = "$reference_genome", 
-            path_to_input_file = "$output_path",
+            path_to_input_file = input_path,
             exome = bool("$exome"),
             bed_file = "$bed_file",
             chrom_based = bool("$chrom_based"),
@@ -103,21 +106,22 @@ process SIG_PROFILER {
             tsb_stat = bool("$tsb_stat"),
             seqInfo = bool("$seqInfo),
             cushion = int("$cushion),
-            volume = "$volume")
+            volume = "$volume"
+)
 
     # Perform model fitting
     sig.sigProfilerExtractor(input_type = "$input_type", 
-                             out_put = "results_sigprof", 
-                             input_data = "$output_path",  #path to the file
-                             context_type = "$contex_type",  
+                             out_put = "results", 
+                             input_data = input_path+output_path,  
+                             context_type = "$context_type",  
                              exome = "$exome",
                              minimum_signatures = int("$minimum_signatures"),  
                              maximum_signatures = int("$maximum_signatures"), 
-                             nmf_replicates = int("$nmf_replicates"), #the number of iteration to be performed to extract each number signature
+                             nmf_replicates = int("$nmf_replicates"),
                              resample = bool("$resample"),
                              matrix_normalization = "$matrix_normalization", 
                              seeds= "$seeds",
-                             nmf_init = "$nmf_init", #he initialization algorithm for W and H matrix of NMF
+                             nmf_init = "$nmf_init", 
                              min_nmf_iterations = int("$min_nmf_iterations"), 
                              max_nmf_iterations = int("$max_nmf_iterations"),
                              nmf_test_conv = int("$nmf_test_conv"), 
@@ -135,7 +139,7 @@ process SIG_PROFILER {
                              initial_remove_penalty = float("$initial_remove_penalty"),
                              refit_denovo_signatures = bool("$refit_denovo_signatures"),
                              make_decomposition_plots = bool("$make_decomposition_plots"), 
-                             collapse_to_SBS96 = bool("$collapse_to_SBS96"), #SBS288 and SBS1536 Denovo signatures will be mapped to SBS96 reference signatures
+                             collapse_to_SBS96 = bool("$collapse_to_SBS96"), 
                              get_all_signature_matrices = bool("$get_all_signatures_matrices"),
                              export_probabilities = bool("$export_probabilities")
 )
@@ -144,8 +148,8 @@ process SIG_PROFILER {
 
     #save the output results
 
-    source_dir = ""
-    dest_dir = ""
+    source_dir = "output_folder_sigprof"
+    dest_dir = "$datasetID/SIGPROFILER/"
     shutil.copytree(source_dir, dest_dir)
 
     """
