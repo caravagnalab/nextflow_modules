@@ -21,18 +21,18 @@ workflow SUBCLONAL_DECONVOLUTION {
     main:
     
     // single sample subclonal deconvolution
-    if (params.mode && params.mode.split(",").contains("singlesample")){
+    if (params.mode && params.mode.split(",").contains("singlesample")) {
         input_joint_table = joint_table.transpose(by: [2]) // split by patient to have list of samples
 
         // viber single sample
-        if (params.tools && params.tools.split(",").contains("viber")){ 
+        if (params.tools && params.tools.split(",").contains("viber")) { 
             t = VIBER_SINGLE(input_joint_table)
             // working but not producing outputs with the current VIBER function `get_clone_trees()` when only one sample
             CTREE_VIBER(VIBER_SINGLE.out.viber_rds)
             emit:
             t
         }
-        if (params.tools && params.tools.split(",").contains("pyclone-vi")){
+        if (params.tools && params.tools.split(",").contains("pyclone-vi")) {
             // need to parse m_cnaqc obj to convert to tsv
             // CNAQC_TO_TSV(input_joint_table) // list of patient and sample ids
             FORMATTER_RDS_SINGLE(input_joint_table, "rds")
@@ -41,7 +41,7 @@ workflow SUBCLONAL_DECONVOLUTION {
             emit:
             t
         }
-        if (params.tools && params.tools.split(",").contains("mobster")){
+        if (params.tools && params.tools.split(",").contains("mobster")) {
             t = MOBSTERh_SINGLE(input_joint_table)
             CTREE_MOBSTERh(MOBSTERh_SINGLE.out.mobster_best_rds)
             emit:
@@ -51,21 +51,24 @@ workflow SUBCLONAL_DECONVOLUTION {
 
 
     // multi sample subclonal deconvolution
-    if (params.mode && params.mode.split(",").contains("multisample")){
-        if (params.tools && params.tools.split(",").contains("mobster")){
-            input_joint_table = joint_table.transpose(by: [2])
+    if (params.mode && params.mode.split(",").contains("multisample")) {
+
+        if (params.tools && params.tools.split(",").contains("mobster")) {
+            // run MOBSTER on all samples independently
+            joint_table_singlesample = joint_table.transpose(by: [2])
             // tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/*/mobsterh_st_best_fit.rds"), emit: mobster_best_rds
-            MOBSTERh_MULTI(input_joint_table)
-            input_joint_table = JOINT_FIT((MOBSTERh_MULTI.out.mobster_best_rds).groupTuple(by: [0]))
+            MOBSTERh_MULTI(joint_table_singlesample)
+            // collect all results and group by patient
+            joint_table = JOINT_FIT( (MOBSTERh_MULTI.out.mobster_best_rds).groupTuple(by: [1]) )
         }
 
-        if (params.tools && params.tools.split(",").contains("viber")){
+        if (params.tools && params.tools.split(",").contains("viber")) {
             t = VIBER_MULTI(joint_table)
             CTREE_VIBER(VIBER_MULTI.out.viber_rds)
             emit:
             t
         }
-        if (params.tools && params.tools.split(",").contains("pyclone-vi")){
+        if (params.tools && params.tools.split(",").contains("pyclone-vi")) {
             // CNAQC_TO_TSV(joint_table) // list of patient and sample ids
             FORMATTER_RDS_MULTI(joint_table, "rds")
             t = PYCLONEVI_MULTI(FORMATTER_RDS_MULTI.out)

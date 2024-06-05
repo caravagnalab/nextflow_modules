@@ -5,13 +5,10 @@ process JOINT_FIT {
   )
 
   input:
-    tuple val(patientID), val(sampleID), path(mobster_joint)
+    tuple val(datasetID), val(patientID), val(sampleID), path(mobster_fits)
 
   output:
-    //tuple val(patientID), path("$patientID/ctree/ctree_input_mobsterh.csv"), emit: ctree_input  // do not save or save inside mobster
-    // tuple val(patientID), path("$patientID/*/mobster/*.rds")  // save also fits for each sample in mobster/sample_id/mobster.rds
-    tuple val(patientID), val(sampleID), path("$patientID/mobster/annotated_joint_table.tsv"), emit: annotated_joint
-    //tuple val(patientID), path("$patientID/mobster/*.pdf"), emit: mobster_pdf
+    tuple val(datasetID), val(patientID), val(sampleID), path("$outDir/annotated_joint_table.tsv"), emit: annotated_joint
 
   script:
     def args = task.ext.args ?: ""
@@ -32,20 +29,26 @@ process JOINT_FIT {
     def silent = args!="" && args.silent ? "$args.silent" : ""
     def tools = args!="" && args.tools ? "$args.tools" : ""
 
+    outDir = "subclonal_deconvolution/mobster/$datasetID/$patientID"
+
     """
     #!/usr/bin/env Rscript
 
     # Sys.setenv("VROOM_CONNECTION_SIZE"=99999999)
+
     library(plyr)
     library(dplyr)
+    
     patientID = "$patientID"
     description = patientID
-    dir.create("$patientID/mobster/", recursive = TRUE) 
-    tsv_files = strsplit("$mobster_joint", " ")[[1]]
+
+    dir.create("$outDir", recursive = TRUE) 
+    tsv_files = strsplit("$mobster_fits", " ")[[1]]
     tsvs <- list()
     for (i in seq_along(tsv_files)){
-       tsvs[[i]]<-read.table(file = tsv_files[i],header = T,sep = "\t")
+       tsvs[[i]] <- read.table(file=tsv_files[i], header=T, sep="\t")
     }
+    
     t = plyr::ldply(tsvs, rbind)
     t["cluster"] %>% 
      apply(MARGIN=1, FUN = function(w) {any(w=="Tail", na.rm=TRUE)}) %>% table()

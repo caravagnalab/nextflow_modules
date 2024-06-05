@@ -8,8 +8,7 @@ process MOBSTERh {
     tuple val(datasetID), val(patientID), val(sampleID), path(joint_table)
 
   output:
-
-    tuple val(datasetID), val(patientID), val(sampleID), path("$outDir/*/mobsterh_st_fit.rds"), emit: mobster_rds
+    tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/*/mobsterh_st_fit.rds"), emit: mobster_rds
     tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/*/mobsterh_st_best_fit.rds"), emit: mobster_best_rds
     tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/*/*plots.rds"), emit: mobster_plots_rds
 
@@ -52,9 +51,6 @@ process MOBSTERh {
     samples = strsplit(x = "$sampleID", ",") %>% unlist()  # list of samples
     dir.create("$outDir", recursive = TRUE)
 
-    print("$sampleID")
-    print(samples)
-
     ## read mCNAqc object
     if ( grepl(".rds\$", tolower("$joint_table")) ) {
       obj = readRDS("$joint_table")
@@ -66,8 +62,7 @@ process MOBSTERh {
                                  dplyr::mutate(sample_id=sample_name)
                              ) %>% dplyr::bind_rows()
       } else {
-        cli::cli_alert_warning("Object of class {class($joint_table)} not supported.")
-        return()
+        cli::cli_abort("Object of class {class($joint_table)} not supported.")
       }
     } else {
       input_table = read.csv("$joint_table")
@@ -118,7 +113,7 @@ process MOBSTERh {
       saveRDS(object=fit, file=paste0(outDir_sample, "mobsterh_st_fit.rds"))
       saveRDS(object=best_fit, file=paste0(outDir_sample, "mobsterh_st_best_fit.rds"))
       saveRDS(object=plot_fit, file=paste0(outDir_sample, "mobsterh_st_best_fit_plots.rds"))
-      
     })
+
     """
 }
