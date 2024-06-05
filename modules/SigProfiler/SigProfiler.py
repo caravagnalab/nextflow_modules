@@ -49,7 +49,7 @@ output_path = "output/SBS/CLL.SBS96.txt"
 # Perform model fitting
 sig.sigProfilerExtractor(input_type = "matrix", 
                          output = "results", 
-                         input_data = input_path+output_path,  
+                         input_data = SBS_file,  
                          exome = False,
                          minimum_signatures = 1,
                          maximum_signatures = 10,
