@@ -9,7 +9,7 @@ process PYCLONEVI {
       tuple val(datasetID), val(patientID), val(sampleID), path(joint_table) // from the formatter output
 
     output:
-      // tuple val(patientID), val(sampleID), path("${outDir_ctree}/ctree_input_pyclonevi.csv"), emit: ctree_input
+      tuple val(patientID), val(sampleID), path("${outDir_ctree}/ctree_input_pyclonevi.csv"), emit: ctree_input
       tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/all_fits.h5"), emit: pyclone_all_fits
       tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/best_fit.txt"), emit: pyclone_best_fit
       // tuple val(patientID), val(sampleID), path("${outDir}/pyclone_joint.tsv"), emit: pyclone_anno_joint
@@ -61,7 +61,7 @@ process PYCLONEVI {
       pyclone-vi fit -i $outDir/pyclone_input.tsv -o $all_fits -c $n_cluster_arg -d $density_arg --num-grid-points $n_grid_point_arg --num-restarts $n_restarts_arg
       pyclone-vi write-results-file -i $all_fits -o $best_fit
 
-      # python3 $moduleDir/pyclone_ctree.py --joint $outDir/pyclone_input.tsv --best_fit $best_fit --ctree_input $path_ctree --pyclone_joint $pyclone_joint
+      python3 $moduleDir/pyclone_ctree.py --joint $outDir/pyclone_input.tsv --best_fit $best_fit --ctree_input $path_ctree
 
       """
 }
