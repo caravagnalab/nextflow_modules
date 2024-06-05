@@ -41,10 +41,13 @@ workflow {
   //SEQUENZA_CNAqc(input_sequenza)
 
   // if pyclone need to run the formatter
-  if (params.tools && params.tools.split(',').contains('pyclone-vi')){
-    FORMATTER_RDS(input_joint_table, "rds")
-    SUBCLONAL_DECONVOLUTION(FORMATTER_RDS.out)
-  } else {
-    SUBCLONAL_DECONVOLUTION(input_joint_table)
-  }
+  // if (params.tools && params.tools.split(',').contains('pyclone-vi')){
+  //   FORMATTER_RDS(input_joint_table, "rds")
+  //   SUBCLONAL_DECONVOLUTION(FORMATTER_RDS.out)
+  // } else {
+  //   SUBCLONAL_DECONVOLUTION(input_joint_table)
+  // }
+
+  SUBCLONAL_DECONVOLUTION(input_joint_table)
+
 }
