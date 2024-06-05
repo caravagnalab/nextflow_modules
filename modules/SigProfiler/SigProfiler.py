@@ -11,16 +11,17 @@ from SigProfilerMatrixGenerator.scripts import SigProfilerMatrixGeneratorFunc as
 #os.mkdir(path)
 
 #import input data
-joint_table = "/orfeo/scratch/cdslab/kdavydzenka/CLL/input_joint_table/mut_joint_table.txt"
+joint_table = "/u/cdslab/kdavydzenka/mutationsTable.tsv"
 input_data = pd.read_csv(joint_table, sep = '\t')
+input_path = "/u/cdslab/kdavydzenka/CLL/input_multisample/"
 
 #input data preprocessing
 def input_processing(data):
     new_columns = {'Project': "CLL", 'Genome': 'GRCh37', 'Type': "SOMATIC", 'mut_type': "SNP"}
     df = data.assign(**new_columns)
     df['chr'] = df['chr'].astype(str).str[3:]
-    df = df.rename(columns={'sample_id': 'Sample', 'patient_id': 'ID', 'chr': 'chrom', 'from': 'pos_start', 'from': 'pos_start',
-                       'to': 'pos_end'})
+    df = df.rename(columns={'Indiv': 'Sample', 'chr': 'chrom', 'from': 'pos_start', 'to': 'pos_end'})
+    df["ID"] = df["Sample"]
     df = df.loc[:, ['Project', 'Sample', 'ID', 'Genome', 'mut_type', 'chrom', 'pos_start', 'pos_end', 'ref', 'alt', 'Type']]
     #df = df.style.hide(axis='index') #omit row indexes
     return df
@@ -34,7 +35,7 @@ input_data.to_csv('CLL/input_multisample/input_data.txt', sep='\t', index=False,
 input_matrix = matGen.SigProfilerMatrixGeneratorFunc(
         project = "CLL", 
         reference_genome = "GRCh37", 
-        path_to_input_file = "/orfeo/scratch/cdslab/kdavydzenka/CLL/input_multisample/")
+        path_to_input_file = input_path)
 
 #chose the data type that you would like to import: "vcf" or "matrix"
 #data = sig.importdata("matrix")
