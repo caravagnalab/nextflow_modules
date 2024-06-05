@@ -34,7 +34,7 @@ input_data.to_csv('CLL/input_multisample/input_data.txt', sep='\t', index=False,
 #mutation's counts matrix generation
 input_matrix = matGen.SigProfilerMatrixGeneratorFunc(
         project = "CLL", 
-        reference_genome = "GRCh37", 
+        reference_genome = "GRCh38", 
         path_to_input_files = input_path)
 
 #chose the data type that you would like to import: "vcf" or "matrix"
