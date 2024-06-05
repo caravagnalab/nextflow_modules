@@ -13,7 +13,7 @@ from SigProfilerMatrixGenerator.scripts import SigProfilerMatrixGeneratorFunc as
 #import input data
 joint_table = "/u/cdslab/kdavydzenka/mutationsTable.tsv"
 input_data = pd.read_csv(joint_table, sep = '\t')
-input_path = "/u/cdslab/kdavydzenka/CLL/input_multisample/"
+input_path_sigprof = "/u/cdslab/kdavydzenka/CLL/input_multisample/"
 
 #input data preprocessing
 def input_processing(data):
@@ -41,15 +41,12 @@ input_matrix = matGen.SigProfilerMatrixGeneratorFunc(
 #data = sig.importdata("matrix")
 
 SBS_file = "/u/cdslab/kdavydzenka/CLL/input_multisample/output/SBS/CLL.SBS96.all"
-SBS = pd.read_csv(SBS_file, sep = '\t')
-SBS = SBS.rename(columns={'MutationType': 'Mutation Types'})
-SBS.to_csv('CLL/input_multisample/output/SBS/CLL.SBS96.txt', sep='\t', header=True)
-output_path = "output/SBS/CLL.SBS96.txt"
+output_path = "output/SBS/CLL.SBS96.all"
 
 # Perform model fitting
 sig.sigProfilerExtractor(input_type = "matrix", 
                          output = "results", 
-                         input_data = SBS_file,  
+                         input_data = input_path+output_path,  
                          exome = False,
                          minimum_signatures = 1,
                          maximum_signatures = 10,
@@ -72,6 +69,6 @@ sig.sigProfilerExtractor(input_type = "matrix",
 
 
 #save the output results
-source_dir = "/orfeo/scratch/cdslab/kdavydzenka/results"
-dest_dir = "/orfeo/scratch/cdslab/kdavydzenka/SIGPROFILER/results"
+source_dir = ""
+dest_dir = ""
 shutil.copytree(source_dir, dest_dir)
