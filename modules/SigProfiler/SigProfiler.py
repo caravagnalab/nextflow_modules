@@ -35,15 +35,16 @@ input_data.to_csv('CLL/input_multisample/input_data.txt', sep='\t', index=False,
 input_matrix = matGen.SigProfilerMatrixGeneratorFunc(
         project = "CLL", 
         reference_genome = "GRCh37", 
-        path_to_input_file = input_path)
+        path_to_input_files = input_path)
 
 #chose the data type that you would like to import: "vcf" or "matrix"
 #data = sig.importdata("matrix")
 
+output_path = "output/SBS/CLL.SBS96.all"
 # Perform model fitting
 sig.sigProfilerExtractor(input_type = "matrix", 
                          output = "results", 
-                         input_data = "",  #path to the file
+                         input_data = input_path+output_path,  #path to the file
                          exome = False,
                          minimum_signatures = 1,  #default value
                          maximum_signatures = 10, #default value 25
