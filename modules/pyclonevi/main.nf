@@ -52,10 +52,10 @@ process PYCLONEVI {
       # format the input table in order to be pyclone compliant
       python3 $moduleDir/pyclone_utils.py create_pyclone_input $joint_table $patientID $outDir/pyclone_input_all_samples.tsv
     
-      colnames="mutation_id\tsample_id\tref_counts\talt_counts\tnormal_cn\tmajor_cn\tminor_cn\ttumour_content"
+      colnames="mutation_id\tpatient_id\tsample_id\tref_counts\talt_counts\tnormal_cn\tmajor_cn\tminor_cn\ttumour_content\tdriver_label\tis_driver"
       echo -e "\$colnames" > $outDir/pyclone_input.tsv
       for i in $sampleID;
-        do awk '\$2 == "'"\$i"'"' $outDir/pyclone_input_all_samples.tsv >> $outDir/pyclone_input.tsv;
+        do awk '\$3 == "'"\$i"'"' $outDir/pyclone_input_all_samples.tsv >> $outDir/pyclone_input.tsv;
       done
       
       pyclone-vi fit -i $outDir/pyclone_input.tsv -o $all_fits -c $n_cluster_arg -d $density_arg --num-grid-points $n_grid_point_arg --num-restarts $n_restarts_arg

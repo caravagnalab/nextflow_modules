@@ -14,12 +14,13 @@ import argparse
 def create_pyclone_input(input_data, patient_id,output_data):
     df = pd.read_csv(input_data, sep = '\t',header=0)
     df['normal_cn'] = 2
+    df['patient_id'] = patient_id
     df['mutation_id'] = df.apply(lambda row: f"{patient_id}:{row['chr'][3:]}:{row['from']}:{row['alt']}", axis=1)
     df[['major_cn', 'minor_cn']] = df['karyotype'].str.split(':', expand=True)
     df = df.drop(columns=['karyotype'])
     df = df.rename(columns={'Indiv': 'sample_id', 'NR': 'ref_counts', 'NV': 'alt_counts', 'purity': 'tumour_content'})
-    df = df.loc[:, ['mutation_id', 'sample_id', 'ref_counts', 'alt_counts', 'normal_cn', 'major_cn','minor_cn','tumour_content']]
-    column_names = ['mutation_id', 'sample_id', 'ref_counts', 'alt_counts', 'normal_cn', 'major_cn','minor_cn','tumour_content']
+    df = df.loc[:, ['mutation_id', 'patient_id','sample_id', 'ref_counts', 'alt_counts', 'normal_cn', 'major_cn','minor_cn','tumour_content','driver_label','is_driver']]
+    column_names = ['mutation_id', 'patient_id','sample_id', 'ref_counts', 'alt_counts', 'normal_cn', 'major_cn','minor_cn','tumour_content','driver_label','is_driver']
     df.to_csv(output_data, sep="\t",index=False, header=column_names)
     print(df)
 
