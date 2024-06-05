@@ -10,7 +10,8 @@ include { CTREE as CTREE_VIBER } from "../../modules/ctree/main"
 include { CTREE as CTREE_MOBSTERh } from "../../modules/ctree/main"
 include { MOBSTERh as MOBSTERh_SINGLE } from "../../modules/mobsterh/main"
 include { MOBSTERh as MOBSTERh_MULTI } from "../../modules/mobsterh/main"
-include { FORMATTER as FORMATTER_RDS} from "../../subworkflows/formatter/main"
+include { FORMATTER as FORMATTER_RDS_SINGLE} from "../../subworkflows/formatter/main"
+include { FORMATTER as FORMATTER_RDS_MULTI} from "../../subworkflows/formatter/main"
 include { JOINT_FIT } from "../../modules/joint_fit/main"
 
 workflow SUBCLONAL_DECONVOLUTION {
@@ -34,8 +35,8 @@ workflow SUBCLONAL_DECONVOLUTION {
         if (params.tools && params.tools.split(",").contains("pyclone-vi")){
             // need to parse m_cnaqc obj to convert to tsv
             // CNAQC_TO_TSV(input_joint_table) // list of patient and sample ids
-            FORMATTER_RDS(input_joint_table, "rds")
-            t = PYCLONEVI_SINGLE(FORMATTER_RDS.out) 
+            FORMATTER_RDS_SINGLE(input_joint_table, "rds")
+            t = PYCLONEVI_SINGLE(FORMATTER_RDS_SINGLE.out) 
             // CTREE_PYCLONEVI(PYCLONEVI_SINGLE.out.ctree_input)
             emit:
             t
@@ -53,8 +54,9 @@ workflow SUBCLONAL_DECONVOLUTION {
     if (params.mode && params.mode.split(",").contains("multisample")){
         if (params.tools && params.tools.split(",").contains("mobster")){
             input_joint_table = joint_table.transpose(by: [2])
-            MOBSTERh_MULTI(input_joint_table) // tuple val(patientID), val(sampleID), path("$outDir/mobster_joint*"), emit: mobster_joint
-            input_joint_table = JOINT_FIT((MOBSTERh_MULTI.out.mobster_joint).groupTuple(by: [0]))
+            // tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/*/mobsterh_st_best_fit.rds"), emit: mobster_best_rds
+            MOBSTERh_MULTI(input_joint_table)
+            input_joint_table = JOINT_FIT((MOBSTERh_MULTI.out.mobster_best_rds).groupTuple(by: [0]))
         }
 
         if (params.tools && params.tools.split(",").contains("viber")){
@@ -65,8 +67,9 @@ workflow SUBCLONAL_DECONVOLUTION {
         }
         if (params.tools && params.tools.split(",").contains("pyclone-vi")){
             // CNAQC_TO_TSV(joint_table) // list of patient and sample ids
-            t = PYCLONEVI_MULTI(joint_table)
-            CTREE_PYCLONEVI(PYCLONEVI_MULTI.out.ctree_input)
+            FORMATTER_RDS_MULTI(joint_table, "rds")
+            t = PYCLONEVI_MULTI(FORMATTER_RDS_MULTI.out)
+            // CTREE_PYCLONEVI(PYCLONEVI_MULTI.out.ctree_input)
             emit:
             t
         }
