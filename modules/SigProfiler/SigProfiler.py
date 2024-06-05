@@ -17,7 +17,7 @@ input_path = "/u/cdslab/kdavydzenka/CLL/input_multisample/"
 
 #input data preprocessing
 def input_processing(data):
-    new_columns = {'Project': "CLL", 'Genome': 'GRCh37', 'Type': "SOMATIC", 'mut_type': "SNP"}
+    new_columns = {'Project': "CLL", 'Genome': 'GRCh38', 'Type': "SOMATIC", 'mut_type': "SNP"}
     df = data.assign(**new_columns)
     df['chr'] = df['chr'].astype(str).str[3:]
     df = df.rename(columns={'Indiv': 'Sample', 'chr': 'chrom', 'from': 'pos_start', 'to': 'pos_end'})
@@ -62,9 +62,9 @@ sig.sigProfilerExtractor(input_type = "matrix",
                          max_nmf_iterations = 1000000, 
                          nmf_test_conv = 10000, 
                          nmf_tolerance = 1e-15,
-                         cpu = -1,
+                         cpu = 4,
                          gpu = False,
-                         cosmic_version = 3.4,
+                         cosmic_version = 3.1,
                          make_decomposition_plots = True, 
                          collapse_to_SBS96 = True, 
                          get_all_signature_matrices = True,
