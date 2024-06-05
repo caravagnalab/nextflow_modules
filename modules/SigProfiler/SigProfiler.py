@@ -40,7 +40,12 @@ input_matrix = matGen.SigProfilerMatrixGeneratorFunc(
 #chose the data type that you would like to import: "vcf" or "matrix"
 #data = sig.importdata("matrix")
 
-output_path = "output/SBS/CLL.SBS96.all"
+SBS_file = "/u/cdslab/kdavydzenka/CLL/input_multisample/output/SBS/CLL.SBS96.all"
+SBS = pd.read_csv(SBS_file, sep = '\t')
+SBS = SBS.rename(columns={'MutationType': 'Mutation Types'})
+SBS.to_csv('CLL/input_multisample/output/SBS/CLL.SBS96.txt', sep='\t', header=True)
+output_path = "output/SBS/CLL.SBS96.txt"
+
 # Perform model fitting
 sig.sigProfilerExtractor(input_type = "matrix", 
                          output = "results", 
