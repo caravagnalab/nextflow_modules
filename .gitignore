@@ -1,4 +1,5 @@
 **/.nextflow*
+*.out*
 *log*
 *err*
 **/work*

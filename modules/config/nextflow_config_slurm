@@ -3,11 +3,12 @@ cleanup=true
 
 includeConfig "$baseDir/modules/config/params.config"
 
- singularity {
-     enabled = true
-     singularity.envWhitelist = ["SINGULARITY_TMPDIR"]
-     runOptions = '--bind /orfeo:/orfeo --bind $SINGULARITY_TMPDIR:/tmp'
- }
+
+singularity {
+  enabled = true
+  singularity.envWhitelist = ["SINGULARITY_TMPDIR"]
+  runOptions = '--bind /orfeo:/orfeo --bind $SINGULARITY_TMPDIR:/tmp'
+}
  
  process {
    executor='slurm'
@@ -31,21 +32,17 @@ process {
     container = 'https://depot.galaxyproject.org/singularity/bioconductor-maftools%3A2.8.0--r41hd029910_0'
   }
 
-  withName: 'VARTRIX' {
-      memory='50 GB'
-      time='2h'
-      container = 'https://depot.galaxyproject.org/singularity/vartrix%3A1.1.22--h27d5293_3'
-      ext.args   = {[
-          "scoring": params.vartrix_scoring_method,
-          "padding": params.vartrix_padding,
-          "umi": params.vartrix_umi
-      ]}
-    }
-
+  withName: 'RDS_PROCESSING' {
+    memory='50 GB'
+    time='1h'
+    container = 'docker://lvaleriani/cnaqc:v5'
+  }
+  
   withName: 'VIBER' {
     memory='128 GB'
     time='2h'
     container='file:///fast/cdslab/ebusca00/singularity/cdslab.sif'
+    // container='file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
     ext.args = {[
       "K" : params.viber_K,
       "samples" : params.viber_samples,
@@ -59,7 +56,8 @@ process {
       "binomial_cutoff" : params.viber_binomial_cutoff,
       "dimensions_cutoff" : params.viber_dimensions_cutoff,
       "pi_cutoff" : params.viber_pi_cutoff,
-      "re_assign" : params.viber_re_assign
+      "re_assign" : params.viber_re_assign,
+      "mode": params.mode
     ]}
   }
 
@@ -71,14 +69,16 @@ process {
       "n_cluster": params.pyclonevi_n_cluster,
       "density": params.pyclonevi_density,
       "n_grid_point": params.pyclonevi_n_grid_point,
-      "n_restarts": params.pyclonevi_n_restarts
+      "n_restarts": params.pyclonevi_n_restarts,
+      "mode": params.mode
     ]}
   }
 
   withName: "MOBSTERh" {
-    memory='50 GB'
+    memory='128 GB'
     time='2h'
     container='file:///fast/cdslab/ebusca00/singularity/cdslab.sif'
+    //container='file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
     ext.args = {[
       "K" : params.mobster_K,
       "samples" : params.mobster_samples,
@@ -105,8 +105,15 @@ process {
     ext.args = {[
       "sspace_cutoff" : params.ctree_sspace_cutoff,
       "n_sampling" : params.ctree_n_sampling,
-      "store_max" : params.ctree_store_max
+      "store_max" : params.ctree_store_max,
+      "mode": params.mode
     ]}
+  }
+
+  withName: "JOINT_FIT" {
+    memory='50 GB'
+    time='2h'
+    container='file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
   }
 
   withName: 'SIG_PROFILER' {
@@ -160,6 +167,31 @@ process {
       memory = '50 GB'
       time = '1h'
       errorStrategy = 'finish'
+  }
+
+  withName: 'SPARSE_SIGNATURES' {
+    time='75h'
+    memory='200 GB'
+    container = 'https://depot.galaxyproject.org/singularity/bioconductor-sparsesignatures%3A2.8.0--r42hdfd78af_0'
+    
+    ext.args   = {[
+      "K": params.sparsesignatures_K,
+      "background_signature": params.sparsesignatures_background_signature,
+      "beta": params.sparsesignatures_beta,
+      "normalize_counts": params.sparsesignatures_normalize_counts
+      "nmf_runs": params.sparsesignatures_nmf_runs,
+      "iterations": params.sparsesignatures_iterations,
+      "max_iterations_lasso": params.sparsesignatures_max_iterations_lasso,
+      "num_processes": params.sparsesignatures_num_processes,
+      "starting_beta": params.sparsesignatures_starting_beta,
+      "cross_validation_entries": params.sparsesignatures_cross_validation_entries,
+      "cross_validation_repetitions": params.sparsesignatures_cross_validation_repetitions,
+      "cross_validation_iterations": params.sparsesignatures_cross_validation_iterations,
+      "lambda_rate_alpha": params.sparsesignatures_lambda_rate_alpha,
+      "lambda_rate_beta": params.sparsesignatures_lambda_rate_beta,
+      "seed": params.sparsesignatures_seed,
+      "verbose": params.sparsesignatures_verbose,
+      "log_file": params.sparsesignatures_log_file]}
   }
 
   withName: 'JOIN_POSITIONS' {

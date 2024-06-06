@@ -5,10 +5,10 @@ include { VARIANT_ANNOTATION } from "${baseDir}/subworkflows/variant_annotation/
 include { FORMATTER as FORMATTER_CNA } from "${baseDir}/subworkflows/formatter/main"
 include { FORMATTER as FORMATTER_VCF} from "${baseDir}/subworkflows/formatter/main"
 include { LIFTER } from "${baseDir}/subworkflows/lifter/main"
-include { DRIVER_ANNOTATION } from "${baseDir}/subworkflows/driver_annotation/main"
+include { DRIVER_ANNOTATION } from "${baseDir}/subworkflows/annotate_driver/main"
+include { FORMATTER as FORMATTER_RDS} from "${baseDir}/subworkflows/formatter/main"
 include { QC } from "${baseDir}/subworkflows/QC/main"
-// include { SUBCLONAL_DECONVOLUTION } from "${baseDir}/subworkflows/subclonal_deconvolution/main"
-
+include { SUBCLONAL_DECONVOLUTION } from "${baseDir}/subworkflows/subclonal_deconvolution/main"
 
 workflow {  
   input_vcf = Channel.fromPath(params.samples).
@@ -25,7 +25,7 @@ workflow {
     map{row ->
      tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.cnv_res), row.cnv_caller.toString())}
 
-  VARIANT_ANNOTATION(input_vcf) 
+  VARIANT_ANNOTATION(input_vcf)
   FORMATTER_VCF(VARIANT_ANNOTATION.out.vep, "vcf")
   FORMATTER_CNA(input_cna, "cna")
   
@@ -44,5 +44,5 @@ workflow {
   }
   
   join_CNAqc = QC(FORMATTER_CNA.out, annotation)
-  // SUBCLONAL_DECONVOLUTION(join_CNAqc)
+  SUBCLONAL_DECONVOLUTION(join_CNAqc)
 }
