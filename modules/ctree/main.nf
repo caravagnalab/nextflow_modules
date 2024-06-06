@@ -32,24 +32,41 @@ process CTREE {
     library(mobster)
     
     initialize_ctree_obj = function(ctree_input) {
+      driver_cluster <- unique(ctree_input[which(ctree_input["is.driver"]==TRUE),c("cluster")])
       # the CCF table must report CCF values for each cluster and sample
       # cluster | nMuts | is.driver | is.clonal | sample1 | sample2 | ...
       CCF_table = ctree_input %>% 
-        dplyr::select(sampleID, cluster, nMuts, is.driver, is.clonal, CCF) %>% 
-        dplyr::filter(cluster != "Tail") %>% 
+        dplyr::select(sample_id, cluster, nMuts, is.driver, is.clonal, CCF) %>%
+        dplyr::filter(is.driver  != "") %>%
+        dplyr::filter(cluster != "Tail") %>%
         mutate(cluster = as.character(cluster)) %>%
-        unique() %>% 
-        tidyr::pivot_wider(names_from="sampleID", values_from="CCF",values_fill = 0)
+        group_by(cluster) %>%
+        dplyr::filter(!(cluster %in% driver_cluster) | is.driver  == "TRUE") %>%
+        mutate(is.driver = as.logical(is.driver)) %>%
+        dplyr::ungroup() %>%
+        unique() %>%
+        tidyr::pivot_wider(names_from = "sample_id", values_from = "CCF", values_fill = 0)
+
+      #  dplyr::select(sampleID, cluster, nMuts, is.driver, is.clonal, CCF) %>% 
+      #  dplyr::filter(cluster != "Tail") %>% 
+      #  mutate(cluster = as.character(cluster)) %>%
+      #  unique() %>% 
+      #  tidyr::pivot_wider(names_from="sampleID", values_from="CCF",values_fill = 0)
       
       # the driver table must contain patient and variant IDs and report clonality and driver status
       # patientID | variantID | is.driver | is.clonal | cluster | sample1 | sample2 | ...
       drivers_table = ctree_input %>% 
-        dplyr::select(patientID, sampleID, variantID, cluster, is.driver, is.clonal, CCF) %>% 
-        dplyr::filter(is.driver) %>% 
-        dplyr::mutate(cluster = as.character(cluster)) %>%
-        tidyr::pivot_wider(names_from="sampleID", values_from="CCF",values_fill = 0)
-      
-      samples = unique(ctree_input[["sampleID"]])  # if multisample, this is a list
+      #  dplyr::select(patientID, sampleID, variantID, cluster, is.driver, is.clonal, CCF) %>% 
+      #  dplyr::filter(is.driver) %>% 
+      #  dplyr::mutate(cluster = as.character(cluster)) %>%
+      #  tidyr::pivot_wider(names_from="sampleID", values_from="CCF",values_fill = 0)
+         dplyr::select(patientID, sample_id, variantID, cluster, is.driver, is.clonal, CCF) %>%
+         dplyr::filter(is.driver==TRUE) %>%
+         mutate(is.driver = as.logical(is.driver)) %>%
+         dplyr::mutate(cluster = as.character(cluster)) %>%
+         tidyr::pivot_wider(names_from="sample_id", values_from="CCF",values_fill = 0)
+
+      samples = unique(ctree_input[["sample_id"]])  # if multisample, this is a list
       patient = unique(ctree_input[["patientID"]])
       ctree_init = list("CCF_table"=CCF_table,
                         "drivers_table"=drivers_table,
@@ -103,6 +120,7 @@ process CTREE {
       }
 
     } else {
+      do_fit = TRUE
       subclonal_tool = "pyclonevi"
       input_table = read.csv("$ctree_input", sep="\t")
       data_ctree = initialize_ctree_obj(input_table)

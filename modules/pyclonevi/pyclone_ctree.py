@@ -77,7 +77,7 @@ df_final['is.driver'] = df_final['is.driver'].replace({False: 'F', True: 'T'})
 
 # Final ctree input dataframe
 final_jt_file = args.ctree_input
-df_final.to_csv(final_jt_file, sep=",",index=False, header=True)
+df_final.to_csv(final_jt_file, sep="\t",index=False, header=True)
 
 # Annotate input joint table with pyclone-vi assignments
 #df2 = pd.merge(df_input, df_output[['mutation_id','sample_id','cluster_id','cellular_prevalence','cluster_assignment_prob']], on=['mutation_id','sample_id'])

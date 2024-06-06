@@ -37,7 +37,7 @@ workflow SUBCLONAL_DECONVOLUTION {
             // CNAQC_TO_TSV(input_joint_table) // list of patient and sample ids
             FORMATTER_RDS_SINGLE(input_joint_table, "rds")
             t = PYCLONEVI_SINGLE(FORMATTER_RDS_SINGLE.out) 
-            // CTREE_PYCLONEVI(PYCLONEVI_SINGLE.out.ctree_input)
+            CTREE_PYCLONEVI(PYCLONEVI_SINGLE.out.ctree_input)
             emit:
             t
         }
@@ -72,7 +72,7 @@ workflow SUBCLONAL_DECONVOLUTION {
             // CNAQC_TO_TSV(joint_table) // list of patient and sample ids
             FORMATTER_RDS_MULTI(joint_table, "rds")
             t = PYCLONEVI_MULTI(FORMATTER_RDS_MULTI.out)
-            // CTREE_PYCLONEVI(PYCLONEVI_MULTI.out.ctree_input)
+            CTREE_PYCLONEVI(PYCLONEVI_MULTI.out.ctree_input)
             emit:
             t
         }

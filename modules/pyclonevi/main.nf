@@ -9,7 +9,7 @@ process PYCLONEVI {
       tuple val(datasetID), val(patientID), val(sampleID), path(joint_table) // from the formatter output
 
     output:
-      tuple val(patientID), val(sampleID), path("${outDir_ctree}/ctree_input_pyclonevi.csv"), emit: ctree_input
+      tuple val(datasetID), val(patientID), val(sampleID), path("${outDir_ctree}/ctree_input_pyclonevi.csv"), emit: ctree_input
       tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/all_fits.h5"), emit: pyclone_all_fits
       tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/best_fit.txt"), emit: pyclone_best_fit
       // tuple val(patientID), val(sampleID), path("${outDir}/pyclone_joint.tsv"), emit: pyclone_anno_joint
