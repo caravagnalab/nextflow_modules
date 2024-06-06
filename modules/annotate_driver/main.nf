@@ -3,11 +3,12 @@ process ANNOTATE_DRIVER {
 
     input:
 
-    tuple val(datasetID), val(patientID), val(sampleID), path(snv_RDS), val(cancer_type) 
+    tuple val(datasetID), val(patientID), val(sampleID), path(snv_RDS)
+    val(cancer_type) 
 
     output:
 
-    tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/$sampleID/driver_annotation/*.rds"), emit: rds
+    tuple val(datasetID), val(patientID), val(sampleID), path("DriverAnnotation/$datasetID/$patientID/$sampleID/*.rds"), emit: rds
 
     script:
 
@@ -17,17 +18,16 @@ process ANNOTATE_DRIVER {
     library(dplyr)
     library(readr)
 
-    res_dir = paste0("$datasetID", "/", "$patientID", "/", "$sampleID", "/")
+    res_dir = paste0("DriverAnnotation/", "$datasetID", "/", "$patientID", "/", "$sampleID", "/")
     dir.create(res_dir, recursive = TRUE)
 
-    SNV = readRDS("$snv_RDS")
-    SNV = SNV[["$sampleID"]]
+    data = readRDS("$snv_RDS")
+    SNV = data[["$sampleID"]]
     SNV = SNV\$mutations
 
-    drivers_table = readr::read_tsv(file = $params.drivers_table) 
+    drivers_table = readr::read_tsv(file = "$params.drivers_table") 
     
-    if($cancer_type == 'PANCANCER'){
-    
+    if("$cancer_type" == 'PANCANCER'){
       drivers_table = drivers_table %>% 
         dplyr::group_by(SYMBOL) %>% 
         dplyr::reframe(CGC_CANCER_GENE = any(CGC_CANCER_GENE), dplyr::across(dplyr::everything())) %>% 
@@ -41,18 +41,20 @@ process ANNOTATE_DRIVER {
 
 
     x = SNV %>% 
-      dplyr::mutate(CANCER_TYPE = $cancer_type) %>% // we should definite it somewhere, maybe in the input sample sheet, maybe in place of dataset id
+      dplyr::mutate(CANCER_TYPE = "$cancer_type") %>%
       dplyr::left_join(
         drivers_table,
         by = c('SYMBOL', 'CANCER_TYPE')
       ) %>% 
       dplyr::mutate(
           is_driver = (CGC_CANCER_GENE & IMPACT %in% c('MODERATE', 'HIGH')),
-          driverl_label = paste(SYMBOL, HGVSp_Short)
-      ) // this is our rule for driver assignment
+          driver_label = paste(SYMBOL, HGVSp)
+      )
 
-
-    saveRDS(object = x, file = paste0(res_dir, "annotated_drivers.rds"))
+    new_data = list()
+    new_data[["$sampleID"]]\$mutations = x
+    new_data[["$sampleID"]]\$sample = data[["$sampleID"]]\$sample
+    saveRDS(object = new_data, file = paste0(res_dir, "annotated_drivers.rds"))
 
     """
 }
