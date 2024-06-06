@@ -51,11 +51,26 @@ process PYCLONEVI {
       
       # format the input table in order to be pyclone compliant
       python3 $moduleDir/pyclone_utils.py create_pyclone_input $joint_table $patientID $outDir/pyclone_input_all_samples.tsv
-    
-      colnames="mutation_id\tpatient_id\tsample_id\tref_counts\talt_counts\tnormal_cn\tmajor_cn\tminor_cn\ttumour_content\tdriver_label\tis_driver"
+
+      colnames=\$(head -n 1 $outDir/pyclone_input_all_samples.tsv)
+
+      column_number=\$(echo -e "\$colnames" | awk -v col_name="sample_id" 'BEGIN { FS = "\t" } {
+          for (i = 1; i <= NF; i++) {
+              if (\$i == col_name) {
+                  print i
+                  exit
+              }
+          }
+          exit 1  # Exit with error if column not found
+      }')
+
+      echo \$colnames
+      echo \$column_number
+
+      # colnames="mutation_id\tpatient_id\tsample_id\tref_counts\talt_counts\tnormal_cn\tmajor_cn\tminor_cn\ttumour_content\tdriver_label\tis_driver"
       echo -e "\$colnames" > $outDir/pyclone_input.tsv
       for i in $sampleID;
-        do awk '\$3 == "'"\$i"'"' $outDir/pyclone_input_all_samples.tsv >> $outDir/pyclone_input.tsv;
+        do awk '\$'\$column_number' == "'"\$i"'"' $outDir/pyclone_input_all_samples.tsv >> $outDir/pyclone_input.tsv;
       done
       
       pyclone-vi fit -i $outDir/pyclone_input.tsv -o $all_fits -c $n_cluster_arg -d $density_arg --num-grid-points $n_grid_point_arg --num-restarts $n_restarts_arg

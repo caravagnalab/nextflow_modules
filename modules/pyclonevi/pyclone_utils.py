@@ -19,9 +19,16 @@ def create_pyclone_input(input_data, patient_id,output_data):
     df[['major_cn', 'minor_cn']] = df['karyotype'].str.split(':', expand=True)
     df = df.drop(columns=['karyotype'])
     df = df.rename(columns={'Indiv': 'sample_id', 'NR': 'ref_counts', 'NV': 'alt_counts', 'purity': 'tumour_content'})
-    df = df.loc[:, ['mutation_id', 'patient_id','sample_id', 'ref_counts', 'alt_counts', 'normal_cn', 'major_cn','minor_cn','tumour_content','driver_label','is_driver']]
+
+
     column_names = ['mutation_id', 'patient_id','sample_id', 'ref_counts', 'alt_counts', 'normal_cn', 'major_cn','minor_cn','tumour_content','driver_label','is_driver']
-    df.to_csv(output_data, sep="\t",index=False, header=column_names)
+    column_names_red = list(set(column_names) & set(df.columns))
+
+    # df = df.loc[:, ['mutation_id', 'patient_id','sample_id', 'ref_counts', 'alt_counts', 'normal_cn', 'major_cn','minor_cn','tumour_content','driver_label','is_driver']]
+    # column_names = ['mutation_id', 'patient_id','sample_id', 'ref_counts', 'alt_counts', 'normal_cn', 'major_cn','minor_cn','tumour_content','driver_label','is_driver']
+
+    df = df.loc[:, column_names_red]
+    df.to_csv(output_data, sep="\t",index=False, header=df.columns)
     print(df)
 
 # def divide(a, b):

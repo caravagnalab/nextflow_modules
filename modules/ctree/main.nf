@@ -32,7 +32,12 @@ process CTREE {
     library(mobster)
     
     initialize_ctree_obj = function(ctree_input) {
-      driver_cluster <- unique(ctree_input[which(ctree_input["is.driver"]==TRUE),c("cluster")])
+      if (!"variantID" %in% colnames(ctree_input) | !"is.driver" %in% colnames(ctree_input)) {
+        ctree_input = ctree_input %>% dplyr::mutate(is.driver=FALSE, variantID=NA)
+        ctree_input[1, "is.driver"] = TRUE; ctree_input[1, "variantID"] = ""
+      }
+
+      driver_cluster = unique(ctree_input[which(ctree_input["is.driver"]==TRUE),c("cluster")])
       # the CCF table must report CCF values for each cluster and sample
       # cluster | nMuts | is.driver | is.clonal | sample1 | sample2 | ...
       CCF_table = ctree_input %>% 
