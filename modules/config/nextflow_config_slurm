@@ -227,8 +227,8 @@ process {
   }
 
     withName: 'SPARSE_SIGNATURES' {
-        time = '75h'
-        memory = '200 GB'
+        time = '30h'
+        memory = '300 GB'
        // container = 'https://depot.galaxyproject.org/singularity/bioconductor-sparsesignatures%3A2.12.0--r43hdfd78af_0'
         ext.args = {[
           "K" : params.sparsesignatures_K,
@@ -248,4 +248,3 @@ process {
         ]}
     }
 }
-
