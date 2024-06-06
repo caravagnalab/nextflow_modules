@@ -7,7 +7,7 @@ process SIG_PROFILER {
 
     input:
 
-      tuple val(datasetID), path($joint_table)
+      tuple val(datasetID), path(joint_table)
 
     output:
 
@@ -39,7 +39,7 @@ process SIG_PROFILER {
       def min_nmf_iterations                = args!='' && args.min_nmf_iterations           ? "$args.min_nmf_iterations" : "10000"
       def max_nmf_iterations                = args!='' && args.max_nmf_iterations           ? "$args.max_nmf_iterations" : "1000000"
       def nmf_test_conv                     = args!='' && args.nmf_test_conv                ? "$args.nmf_test_conv" : "10000"
-      def tolerance                         = args!='' && args.tolerance                    ? "$args.tolerance" : "1e-15"
+      def nmf_tolerance                     = args!='' && args.nmf_tolerance                ? "$args.nmf_tolerance" : "1e-15"
       def cpu                               = args!='' && args.cpu                          ? "$args.cpu" : "-1"
       def gpu                               = args!='' && args.gpu                          ? "$args.gpu" : "False"
       def batch_size                        = args!='' && args.batch_size                   ? "$args.batch_size" : "1"
@@ -73,7 +73,7 @@ process SIG_PROFILER {
     os.mkdir("$datasetID/SIGPROFILER")
    
     input_path = "$datasetID/"
-    output_path = "output/SBS/$datasetID.SBS96.all"
+    output_path = "output/SBS/CLL.SBS96.all"
     output_folder_sigprof = "results/SBS96/"
 
     #import input data
@@ -140,7 +140,7 @@ process SIG_PROFILER {
                              refit_denovo_signatures = bool("$refit_denovo_signatures"),
                              make_decomposition_plots = bool("$make_decomposition_plots"), 
                              collapse_to_SBS96 = bool("$collapse_to_SBS96"), 
-                             get_all_signature_matrices = bool("$get_all_signatures_matrices"),
+                             get_all_signature_matrices = bool("$get_all_signature_matrices"),
                              export_probabilities = bool("$export_probabilities")
 )
     
