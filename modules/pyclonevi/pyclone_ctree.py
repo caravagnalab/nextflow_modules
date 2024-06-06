@@ -45,7 +45,9 @@ df_output_small.loc[i,'is.clonal']="T"
 ## Merge the input information about driver genes to the clusters
 df_merged =pd.merge(df_output_small, df_input[['mutation_id','sample_id','patient_id','driver_label','is_driver']], on = ["mutation_id","sample_id"], how="inner")
 df_final = df_merged.drop_duplicates(subset=['sample_id', 'driver_label','cluster_id','is.clonal','is_driver'])
-
+df_final = df_final.rename(columns={'cellular_prevalence':'CCF','cluster_id': 'cluster','driver_label':'variantID','patient_id':'patientID','is_driver':'is.driver'})
+df_final['is.driver'] = df_final['is.driver'].replace({False: 'F', True: 'T'})
+######### OLD SCRIPT #########
 ## Find clusters with driver genes and find cluster wihtout driver genes
 ## For the ones without drivers add the 'NA' to variantID and False to is.driver
 #driver_genes_df = df_final[df_final['is_driver'] == True]
