@@ -1,5 +1,6 @@
 process GET_POSITIONS {
-    publishDir params.publish_dir, mode: 'copy'
+    publishDir params.publish_dir
+    //mode: 'copy'
 
     input:
 
@@ -7,8 +8,8 @@ process GET_POSITIONS {
 
     output:
 
-    tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/*/mpileup/*.bed"), emit: bed
-    tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/mpileup/*.bed"), emit: pos
+    tuple val(datasetID), val(patientID), val(sampleID), path("Lifter/mpileup/$datasetID/$patientID/*/*.bed"), emit: bed
+    tuple val(datasetID), val(patientID), val(sampleID), path("Lifter/mpileup/$datasetID/$patientID/*.bed"), emit: pos
 
     script:
 
@@ -32,8 +33,8 @@ process GET_POSITIONS {
     all_positions = positions %>% dplyr::bind_rows() %>% dplyr::pull(id) %>% unlist() %>% unique()
     all = positions %>% dplyr::bind_rows() %>% dplyr::distinct() %>% dplyr::select(-id)
 
-    dir.create(paste0(res_dir, "mpileup/"), recursive = TRUE)
-    write.table(file = paste0(res_dir, 'mpileup/all_positions.bed'), all, quote = F, sep = "\t", row.names = F, col.names = T)
+    dir.create(paste0("lifter/mpileup/", res_dir), recursive = T, showWarnings = F)
+    write.table(file = paste0("lifter/mpileup/", res_dir, 'all_positions.bed'), all, quote = F, sep = "\t", row.names = F, col.names = T)
 
     missed = lapply(seq(1,length(positions)), FUN = function(s){
         all_positions[!(all_positions %in% positions[[s]]\$id)]
@@ -45,8 +46,8 @@ process GET_POSITIONS {
                 tidyr::separate(id,into = c('chr', 'from', 'to'), sep = ':') %>% 
                 dplyr::filter(chr %in% c(paste0('chr', seq(1,22)), 'chrX', 'chrY'))
 
-	dir.create(paste0(res_dir, sample, "/mpileup/"), recursive = TRUE)                
-        write.table(file = paste0(res_dir, sample, "/mpileup/positions_missing", ".bed"), df, quote = F, sep = "\t", row.names = F, col.names = F)
+	dir.create(paste0("lifter/mpileup/", res_dir, sample), recursive = T, showWarnings = F)                
+        write.table(file = paste0("lifter/mpileup/", res_dir, sample, "/positions_missing.bed"), df, quote = F, sep = "\t", row.names = F, col.names = F)
     }
     """
 }

@@ -12,7 +12,7 @@ process MAFTOOLS {
 
     output:
 
-      tuple val(datasetID), path("$datasetID/MAFTOOLS/*.pdf"), path("$datasetID/MAFTOOLS/*.rds")
+      tuple val(datasetID), path("VariantAnnotation/MAFTOOLS/$datasetID/*.pdf"), path("VariantAnnotation/MAFTOOLS/$datasetID/*.rds")
 
     script:
 
@@ -23,7 +23,7 @@ process MAFTOOLS {
 
     #Create results output directory
 
-    dir.create(paste0("$datasetID","/MAFTOOLS"), recursive = TRUE)
+    dir.create(paste0("VariantAnnotation/MAFTOOLS/", "$datasetID"), recursive = TRUE)
     
     #Reading maf files
     mafs <- lapply(X = strsplit("$maf_File", " ")[[1]], FUN = maftools::read.maf)
@@ -33,19 +33,19 @@ process MAFTOOLS {
     maf_merged = maftools:::merge_mafs(maf = mafs, verbose = TRUE)
 
     #Creating a pdf file for summary output
-    pdf(file = paste0("$datasetID","/MAFTOOLS/maf_summary.pdf"))
+    pdf(file = paste0("VariantAnnotation/MAFTOOLS/","$datasetID","/maf_summary.pdf"))
     
     #Plotting MAF summary   
     plotmafSummary(maf = maf_merged, rmOutlier = TRUE, addStat = 'median', dashboard = TRUE, titvRaw = FALSE)
     dev.off()
     
     #Plotting oncoplot
-    pdf(file = paste0("$datasetID","/MAFTOOLS/oncoplot.pdf"))
+    pdf(file = paste0("VariantAnnotation/MAFTOOLS/","$datasetID","/oncoplot.pdf"))
     oncoplot(maf = maf_merged, top = 10, removeNonMutated = TRUE)
     dev.off()
     
     #Saving results object
-    saveRDS(object = maf_merged, file = paste0("$datasetID","/MAFTOOLS/maf_merged.rds"))
+    saveRDS(object = maf_merged, file = paste0("VariantAnnotation/MAFTOOLS/", "$datasetID","/maf_merged.rds"))
 
     """
 }

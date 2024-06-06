@@ -17,8 +17,8 @@ workflow LIFTER {
 
         GET_POSITIONS(rds.groupTuple(by: [0,1]))
         BCFTOOLS_MPILEUP(GET_POSITIONS.out.bed.transpose(by: [2,3]), tumor_bam)
-        tmp = rds.join(BCFTOOLS_MPILEUP.out.vcf, by: [0,1,2])
-        JOIN_POSITIONS(tmp, GET_POSITIONS.out.pos.transpose(by: 2))
+        pileup = rds.join(BCFTOOLS_MPILEUP.out.vcf, by: [0,1,2])
+        JOIN_POSITIONS(pileup, GET_POSITIONS.out.pos.transpose(by: 2))
 
     emit:
         JOIN_POSITIONS.out.rds
