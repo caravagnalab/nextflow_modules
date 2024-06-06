@@ -206,7 +206,7 @@ process {
       "min_nmf_iterations": params.sigprofiler_min_nmf_iterations,
       "max_nmf_iterations": params.sigprofiler_max_nmf_iterations,
       "nmf_test_conv": params.sigprofiler_nmf_test_conv,
-      "tolerance": params.sigprofiler_tolerance,
+      "nmf_tolerance": params.sigprofiler_nmf_tolerance,
       "cpu": params.sigprofiler_cpu,
       "gpu": params.sigprofiler_gpu,
       "batch_size": params.sigprofiler_batch_size,
@@ -227,8 +227,8 @@ process {
   }
 
     withName: 'SPARSE_SIGNATURES' {
-        time = '30h'
-        memory = '300 GB'
+        time = '72h'
+        memory = '200 GB'
        // container = 'https://depot.galaxyproject.org/singularity/bioconductor-sparsesignatures%3A2.12.0--r43hdfd78af_0'
         ext.args = {[
           "K" : params.sparsesignatures_K,
@@ -244,7 +244,9 @@ process {
           "cross_validation_iterations" : params.sparsesignatures_cross_validation_iterations,
           "lambda_values_alpha" : params.sparsesignatures_lambda_values_alpha,
           "lambda_values_beta" : params.sparsesignatures_lambda_values_beta,
-          "verbose": params.sparsesignatures_verbose
+          "lambda_rate_alpha" : params.sparsesignatures_lambda_rate_alpha,
+          "verbose": params.sparsesignatures_verbose,
+          "seed": params.sparsesignatures_seed
         ]}
     }
 }
