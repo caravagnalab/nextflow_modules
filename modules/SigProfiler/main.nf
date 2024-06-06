@@ -55,7 +55,7 @@ process SIG_PROFILER {
       def make_decomposition_plots          = args!='' && args.make_decomposition_plots     ? "$args.make_decomposition_plots" : "True"
       def collapse_to_SBS96                 = args!='' && args.collapse_to_SBS96            ? "$args.collapse_to_SBS96" : "True"
       def get_all_signature_matrices        = args!='' && args.get_all_signature_matrices   ? "$args.get_all_signature_matrices" : "False"
-      def export_probabilities              = args!='' && args.export_probabilities         ? "$args.export_probabil   
+      def export_probabilities              = args!='' && args.export_probabilities         ? "$args.export_probabilities": "True"   
 
     """
     #!/usr/bin/env python3
