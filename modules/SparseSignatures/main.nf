@@ -14,21 +14,21 @@ process SPARSE_SIGNATURES {
                             
   script:
 
-    def args                              = task.ext.args                                 ?: ''
-    def K                                 = args!='' && args.K                            ?  "$args.K" : "2:10"
-    def background_signature              = args!='' && args.background_signature         ?  "$args.background_signature" : "NULL"
-    def beta                              = args!='' && args.beta                         ?  "$args.beta" : "NULL"
-    def normalize_counts                  = args!='' && args.normalize_counts             ?  "$args.normalize_counts" : "TRUE"
-    def nmf_runs                          = args!='' && args.nmf_runs                     ?  "$args.nmf_runs" : "10"
-    def iterations                        = args!='' && args.iterations                   ?  "$args.iterations" : "30"
-    def max_iterations_lasso              = args!='' && args.max_iterations_lasso         ?  "$args.max_iterations_lasso" : "10000"
-    def num_processes                     = args!='' && args.num_processes                ?  "$args.num_processes" : "Inf"
-    def cross_validation_entries          = args!='' && args.cross_validation_entries     ?  "$args.cross_validation_entries" : "0.01"
-    def cross_validation_iterations       = args!='' && args.cross_validation_iterations  ?  "$args.cross_validation_iterations" : "5"
-    def cross_validation_repetitions      = args!='' && args.cross_validation_repetitions ?  "$args.cross_validation_repetitions" : "10"
-    def lambda_values_alpha               = args!='' && args.lambda_values_alpha          ?  "$args.lambda_values_alpha" : "0"
-    def lambda_values_beta                = args!='' && args.lambda__values_beta          ?  "$args.lambda_values_beta" : "c(0.01, 0.05, 0.10, 0.20)"
-    def verbose                           = args!='' && args.verbose                      ?  "$args.verbose" : "TRUE"
+    def args = task.ext.args ?: ""
+    def K = args!="" && args.K ? "$args.K" : ""
+    def background_signature = args!="" && args.background_signature ? "$args.background_signature" : ""
+    def beta = args!="" && args.beta ? "$args.beta" : ""
+    def normalize_counts = args!="" && args.normalize_counts ? "$args.normalize_counts" : ""
+    def nmf_runs = args!="" && args.nmf_runs ? "$args.nmf_runs" : ""
+    def iterations = args!="" && args.iterations ? "$args.iterations" : ""
+    def max_iterations_lasso = args!="" && args.max_iterations_lasso ? "$args.max_iterations_lasso" : ""
+    def num_processes = args!="" && args.num_processes ? "$args.num_processes" : ""
+    def cross_validation_entries = args!="" && args.cross_validation_entries ? "$args.cross_validation_entries" : ""
+    def cross_validation_repetitions = args!="" && args.cross_validation_repetitions ? "$args.cross_validation_repetitions" : ""
+    def cross_validation_iterations = args!="" && args.cross_validation_iterations ? "$args.cross_validation_iterations" : ""
+    def lambda_values_alpha = args!="" && args.lambda_values_alpha ? "$args.lambda_values_alpha" : ""
+    def lambda_values_beta = args!="" && args.lambda_values_beta ? "$args.lambda_values_beta" : ""
+    def verbose = args!="" && args.verbose ? "$args.verbose" : ""
 
   """
   #!/usr/bin/env Rscript
@@ -63,7 +63,7 @@ process SPARSE_SIGNATURES {
   #load a reference SBS5 background signature from COSMIC
   data(background)
 
-    #estimate the initial values of beta
+  #estimate the initial values of beta
       
   starting_betas = SparseSignatures::startingBetaEstimation(x = mut_counts, 
                                           K = eval(parse(text="$K")),
@@ -81,7 +81,7 @@ process SPARSE_SIGNATURES {
               background_signature = "$background_signature", 
               normalize_counts = as.logical("$normalize_counts"), 
               nmf_runs = as.integer("$nmf_runs"), 
-              lambda_values_alpha = as.numeric("$lambda_values_alpha"), 
+              lambda_values_alpha = as.integer("$lambda_values_alpha"), 
               lambda_values_beta = as.numeric("$lambda_values_beta"),
               cross_validation_entries = as.numeric("$cross_validation_entries"), 
               cross_validation_iterations = as.integer("$cross_validation_iterations"), 
@@ -89,7 +89,8 @@ process SPARSE_SIGNATURES {
               iterations = as.integer("$iterations"), 
               max_iterations_lasso = as.integer("$max_iterations_lasso"), 
               num_processes = "$num_processes", 
-              verbose = as.logical($verbose))
+              verbose = as.logical("$verbose")
+)
 
   saveRDS(object = cv_out, file = paste0(res_SparseSig, "cv_out.rds"))
 
@@ -120,11 +121,12 @@ process SPARSE_SIGNATURES {
                                         beta = "$beta", 
                                         background_signature = "$background_signature", 
                                         normalize_counts = as.logical("$normalize_counts"),
-                                        lambda_rate_alpha = as.numeric("$lambda_values_alpha"), 
+                                        lambda_rate_alpha = as.integer("$lambda_values_alpha"), 
                                         lambda_rate_beta = min_Lambda_beta,
                                         iterations = as.integer("$iterations"), 
                                         max_iterations_lasso = as.integer("$max_iterations_lasso"), 
-                                        verbose = as.logical($verbose))
+                                        verbose = as.logical("$verbose")
+)
 
   saveRDS(object = nmf_Lasso_out, file =  paste0(res_SparseSig, "signatures_bestConfig.rds"))
 
