@@ -9,45 +9,48 @@ nextflow.enable.dsl=2
 //include { BCFTOOLS_SPLIT_VEP } from "${baseDir}/modules/bcftools/main"
 //include { JOIN_TABLES } from "${baseDir}/modules/join_tables/main"
 //include { SEQUENZA_CNAqc } from "${baseDir}/modules/Sequenza_CNAqc/main"
+include { VARIANT_ANNOTATION } from "${baseDir}/subworkflows/variant_annotation/main"
+include { FORMATTER as FORMATTER_CNA } from "${baseDir}/subworkflows/formatter/main"
+include { FORMATTER as FORMATTER_VCF} from "${baseDir}/subworkflows/formatter/main"
 include { FORMATTER as FORMATTER_RDS} from "${baseDir}/subworkflows/formatter/main"
+include { QC } from "${baseDir}/subworkflows/QC/main"
 include { SUBCLONAL_DECONVOLUTION } from "${baseDir}/subworkflows/subclonal_deconvolution/main"
-
 
 workflow {
 
-  //input_vcf = Channel.fromPath(params.samples).
-  //    splitCsv(header: true).
-  //    map{row ->
-  //      tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.vcf))}
-  
+  input_vcf = Channel.fromPath(params.samples).
+      splitCsv(header: true).
+      map{row ->
+        tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.vcf), file(row.vcf_tbi))}
+ 
+  input_cna = Channel.fromPath(params.samples).
+    splitCsv(header: true).
+    map{row ->
+     tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.cnv_res), row.cnv_caller.toString())}
 
-  //input_sequenza = Channel.fromPath(params.samples).
-  //  splitCsv(header: true).
-  //  map{row ->
-  //   tuple(row.patient.toString(), row.sample.toString(), row.sex.toString(), file(row.seqz), file(row.vcf))
+  // normal_bam = Channel.fromPath(params.samples).
+  //   splitCsv(header: true).
+  //   map{row ->
+  //    tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.normal_bam), file(row.normal_bai))}
 
-  input_joint_table = Channel.fromPath(params.samples).
-            splitCsv(header: true).
-            map{row ->
-              tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(),file(row.joint_table))}.groupTuple(by: [0,1,3])
+  // tumor_bam = Channel.fromPath(params.samples).
+  //   splitCsv(header: true).
+  //   map{row ->
+  //    tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.tumour_bam), file(row.tumour_bai))}  
 
-  //vep_output = VEP_ANNOTATE(input_vcf) 
-  //annovar_output = ANNOVAR_ANNOTATE(input_vcf)
-  //vcf2maf_output = VCF2MAF(vep_output)
-  //maf_output = MAFTOOLS(vcf2maf_output.groupTuple(by: 0))
-  //BCFTOOLS_SPLIT_VEP(vep_output)
-  //PLATYPUS_CALL_VARIANTS(input_multisample.groupTuple(by: [0,3,4]))
-  //JOINT_TABLE()
-  //SEQUENZA_CNAqc(input_sequenza)
+  VARIANT_ANNOTATION(input_vcf) //work
+  FORMATTER_VCF(VARIANT_ANNOTATION.out.vep, "vcf")//VARIANT_ANNOTATION.out.vep
+  FORMATTER_CNA(input_cna, "cna")
 
-  // if pyclone need to run the formatter
-  // if (params.tools && params.tools.split(',').contains('pyclone-vi')){
-  //   FORMATTER_RDS(input_joint_table, "rds")
-  //   SUBCLONAL_DECONVOLUTION(FORMATTER_RDS.out)
-  // } else {
-  //   SUBCLONAL_DECONVOLUTION(input_joint_table)
-  // }
+  // // if multisample 
+  // LIFTER(FORMATTER_VCF.out, tumor_bam) // work
+  // DRIVER_ANNOTATION(LIFTER.out)
 
-  SUBCLONAL_DECONVOLUTION(input_joint_table)
+  // // if singlesample 
+  // DRIVER_ANNOTATION(FORMATTER.out.vcf)
+
+  join_CNAqc = QC(FORMATTER_CNA.out, FORMATTER_VCF.out) // work
+
+  SUBCLONAL_DECONVOLUTION(join_CNAqc)
 
 }

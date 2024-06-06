@@ -1,6 +1,9 @@
+//
+// Convert Annovar annotated file to MAF file
+//
+
 process ANNOVAR2MAF {
     publishDir params.publish_dir, mode: 'copy'
-
     
     input:
 
@@ -14,27 +17,24 @@ process ANNOVAR2MAF {
 
     """
     #!/usr/bin/env Rscript
-
     
     library(maftools)
     
+    #Create results output directory
     dir.create(paste0("$datasetID", "/", "$patientID","/","$sampleID","/annovar2maf"), recursive = TRUE)
-
-    annovar_txt <- read.delim("$vcf_File")
-    Tumor_Sample_Barcode = paste0("$patientID","_","$sampleID")
-    annovar_txt <- cbind(annovar_txt, Tumor_Sample_Barcode)
-   
+    
+    # Converting Annovar output to MAF
  
-    annovar.hg38_multianno.maf <- maftools::annovarToMaf(annovar = annovar_txt,
+    annovar_maf <- maftools::annovarToMaf(annovar = "$vcf_File",
                             Center = 'GU',
                             refBuild = "hg38",
                             tsbCol = 'Tumor_Sample_Barcode',
                             table = "refGene",
                             MAFobj = TRUE
                             ) 
-
+    #Saving results
     
-    save(annovar.hg38_multianno.maf, file=paste0("$datasetID","/","$patientID","/","$sampleID","/annovar2maf/annovar.hg38_multianno.maf"))
+    save(annovar_maf, file=paste0("$datasetID","/","$patientID","/","$sampleID","/annovar2maf/annovar.maf"))
 
     """
 }

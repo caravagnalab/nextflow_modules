@@ -1,13 +1,17 @@
+//
+// Variant Annotation using VEP
+//
+
 process VEP_ANNOTATE {
     publishDir params.publish_dir, mode: 'copy'
 
     input:
 
-      tuple val(datasetID), val(patientID), val(sampleID), path(vcf_File)  
+      tuple val(datasetID), val(patientID), val(sampleID), path(vcf_File), path(tbi_File)
 
     output:
 
-      tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/$sampleID/VEP/*.vcf.gz")
+      tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/$sampleID/VEP/*.vcf.gz"), emit: vep_output 
 
     script:
 
@@ -31,5 +35,6 @@ process VEP_ANNOTATE {
     --use_given_ref \\
     --fasta  $params.ref_genome \\
     --fork 23
+    
     """
 }
