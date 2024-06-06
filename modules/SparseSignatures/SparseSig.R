@@ -10,7 +10,7 @@ dir.create(res_SparseSig, recursive = TRUE)
 #Input dataset : vcf / tsv / csv joint-table multisample
 # sample | chrom | start | end | ref | alt
 input_data <- read.delim(file = '/orfeo/LTS/CDSLab/LT_storage/kdavydzenka/nextflow_modules/modules/SparseSignatures/mutationsTable.tsv', sep = '\t', header = TRUE)
-
+#input_data <- input_data[ (input_data[["chr"]] %in% c("chr1")), ]
 
 #Extract input data information
 input_data <- input_data[,c("Indiv","chr","from","to","ref","alt")]
