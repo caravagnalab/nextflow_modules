@@ -17,8 +17,8 @@ workflow QC {
         JOIN_CNAQC(CNAQC.out.rds.groupTuple(by: [0,1]))
     
     emit:
-        CNAQC.out.rds
-        CNAQC.out.pdf
+        rds_cnaqc = CNAQC.out.rds
+        pdf_cnaqc = CNAQC.out.pdf
 
-        JOIN_CNAQC.out.rds
+        rds_join = JOIN_CNAQC.out.rds
 }

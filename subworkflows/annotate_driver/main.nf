@@ -2,7 +2,7 @@
 // DRIVER_ANNOTATION SUB-WORKFLOW
 //
 
-include { ANNOTATE_DRIVER } from '../../modules/driver_annotation/main'
+include { ANNOTATE_DRIVER } from '../../modules/annotate_driver/main'
 
 
 workflow DRIVER_ANNOTATION {

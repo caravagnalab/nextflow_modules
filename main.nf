@@ -30,7 +30,7 @@ workflow {
   FORMATTER_CNA(input_cna, "cna")
   
   exist_bam_val = false
-  if (params.mode == 'multi_sample' && exist_bam_val){  
+  if (params.mode == 'multisample' && exist_bam_val){  
     tumor_bam = Channel.fromPath(params.samples).
       splitCsv(header: true).
        map{row ->
@@ -43,6 +43,6 @@ workflow {
    annotation = DRIVER_ANNOTATION(FORMATTER_VCF.out, cancer_type)
   }
   
-  join_CNAqc = QC(FORMATTER_CNA.out, annotation)
-  SUBCLONAL_DECONVOLUTION(join_CNAqc)
+  QC(FORMATTER_CNA.out, annotation)
+  SUBCLONAL_DECONVOLUTION(QC.out.rds_join)
 }

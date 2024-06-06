@@ -3,18 +3,17 @@ cleanup=true
 
 includeConfig "$baseDir/modules/config/params.config"
 
-
 singularity {
   enabled = true
   singularity.envWhitelist = ["SINGULARITY_TMPDIR"]
   runOptions = '--bind /orfeo:/orfeo --bind $SINGULARITY_TMPDIR:/tmp'
 }
  
- process {
+process {
    executor='slurm'
    queue='THIN'
    errorStrategy = 'finish'
- }
+}
 
 process {
   withName: 'VEP_ANNOTATE' {
@@ -178,7 +177,7 @@ process {
       "K": params.sparsesignatures_K,
       "background_signature": params.sparsesignatures_background_signature,
       "beta": params.sparsesignatures_beta,
-      "normalize_counts": params.sparsesignatures_normalize_counts
+      "normalize_counts": params.sparsesignatures_normalize_counts,
       "nmf_runs": params.sparsesignatures_nmf_runs,
       "iterations": params.sparsesignatures_iterations,
       "max_iterations_lasso": params.sparsesignatures_max_iterations_lasso,
@@ -191,7 +190,8 @@ process {
       "lambda_rate_beta": params.sparsesignatures_lambda_rate_beta,
       "seed": params.sparsesignatures_seed,
       "verbose": params.sparsesignatures_verbose,
-      "log_file": params.sparsesignatures_log_file]}
+      "log_file": params.sparsesignatures_log_file
+    ]}
   }
 
   withName: 'JOIN_POSITIONS' {
