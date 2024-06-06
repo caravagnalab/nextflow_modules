@@ -28,7 +28,9 @@ process SPARSE_SIGNATURES {
     def cross_validation_iterations = args!="" && args.cross_validation_iterations ? "$args.cross_validation_iterations" : ""
     def lambda_values_alpha = args!="" && args.lambda_values_alpha ? "$args.lambda_values_alpha" : ""
     def lambda_values_beta = args!="" && args.lambda_values_beta ? "$args.lambda_values_beta" : ""
+    def lambda_rate_alpha = args!="" && args.lambda_rate_alpha ? "$args.lambda_rate_alpha" : ""
     def verbose = args!="" && args.verbose ? "$args.verbose" : ""
+    def seed = args!="" && args.seed ? "$args.seed" : ""
 
   """
   #!/usr/bin/env Rscript
@@ -43,7 +45,7 @@ process SPARSE_SIGNATURES {
 
    
   multisample_table = read.delim("$joint_table")
-   
+  multisample_table <- multisample_table[ (multisample_table[["chr"]] %in% c("chr1")), ] 
     
   #Extract input data information
 
@@ -89,7 +91,8 @@ process SPARSE_SIGNATURES {
               iterations = as.integer("$iterations"), 
               max_iterations_lasso = as.integer("$max_iterations_lasso"), 
               num_processes = "$num_processes", 
-              verbose = as.logical("$verbose")
+              verbose = as.logical("$verbose"),
+              seed = as.integer("$seed")
 )
 
   saveRDS(object = cv_out, file = paste0(res_SparseSig, "cv_out.rds"))
@@ -121,7 +124,7 @@ process SPARSE_SIGNATURES {
                                         beta = "$beta", 
                                         background_signature = "$background_signature", 
                                         normalize_counts = as.logical("$normalize_counts"),
-                                        lambda_rate_alpha = as.integer("$lambda_values_alpha"), 
+                                        lambda_rate_alpha = as.integer("$lambda_rate_alpha"), 
                                         lambda_rate_beta = min_Lambda_beta,
                                         iterations = as.integer("$iterations"), 
                                         max_iterations_lasso = as.integer("$max_iterations_lasso"), 
