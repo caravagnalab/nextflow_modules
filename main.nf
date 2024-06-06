@@ -18,15 +18,21 @@ include { SUBCLONAL_DECONVOLUTION } from "${baseDir}/subworkflows/subclonal_deco
 
 workflow {
 
-  input_vcf = Channel.fromPath(params.samples).
+  input_joint_table = Channel.fromPath(params.samples).
       splitCsv(header: true).
       map{row ->
-        tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.vcf), file(row.vcf_tbi))}
+        tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(),file(row.joint_table))}.groupTuple(by: [0,1,3])
+
+
+  // input_vcf = Channel.fromPath(params.samples).
+  //     splitCsv(header: true).
+  //     map{row ->
+  //       tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.vcf), file(row.vcf_tbi))}
  
-  input_cna = Channel.fromPath(params.samples).
-    splitCsv(header: true).
-    map{row ->
-     tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.cnv_res), row.cnv_caller.toString())}
+  // input_cna = Channel.fromPath(params.samples).
+  //   splitCsv(header: true).
+  //   map{row ->
+  //    tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.cnv_res), row.cnv_caller.toString())}
 
   // normal_bam = Channel.fromPath(params.samples).
   //   splitCsv(header: true).
@@ -38,9 +44,9 @@ workflow {
   //   map{row ->
   //    tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.tumour_bam), file(row.tumour_bai))}  
 
-  VARIANT_ANNOTATION(input_vcf) //work
-  FORMATTER_VCF(VARIANT_ANNOTATION.out.vep, "vcf")//VARIANT_ANNOTATION.out.vep
-  FORMATTER_CNA(input_cna, "cna")
+  // VARIANT_ANNOTATION(input_vcf) //work
+  // FORMATTER_VCF(VARIANT_ANNOTATION.out.vep, "vcf")//VARIANT_ANNOTATION.out.vep
+  // FORMATTER_CNA(input_cna, "cna")
 
   // // if multisample 
   // LIFTER(FORMATTER_VCF.out, tumor_bam) // work
@@ -49,8 +55,8 @@ workflow {
   // // if singlesample 
   // DRIVER_ANNOTATION(FORMATTER.out.vcf)
 
-  join_CNAqc = QC(FORMATTER_CNA.out, FORMATTER_VCF.out) // work
+  // join_CNAqc = QC(FORMATTER_CNA.out, FORMATTER_VCF.out) // work
 
-  SUBCLONAL_DECONVOLUTION(join_CNAqc)
+  SUBCLONAL_DECONVOLUTION(input_joint_table)
 
 }
