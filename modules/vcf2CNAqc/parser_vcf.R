@@ -16,20 +16,50 @@ parse_FreeBayes = function(vcf, sample_id, filter_mutations = FALSE){
   
   samples_list = gt_field$sample %>% unique
   
-  fix_field = tb$fix %>%
-    dplyr::rename(
-      chr = CHROM,
-      from = POS,
-      ref = REF,
-      alt = ALT
-    ) %>%
-    dplyr::rowwise() %>%
-    dplyr::mutate(
-      from = as.numeric(from),
-      to = from + nchar(alt)) %>%
-    dplyr::ungroup() %>%
-    dplyr::select(chr, from, to, ref, alt, dplyr::everything(), -ChromKey, -DP) #-DP
-  
+  if ("CSQ" %in% tb$meta$ID){
+      # VEP specific field extraction
+      # Take CSQ field names and split by |
+      
+      vep_field = tb$meta %>% 
+                dplyr::filter(ID == "CSQ") %>% 
+                dplyr::select(Description) %>% 
+                dplyr::pull() 
+
+    vep_field = strsplit(vep_field, split = "|", fixed = TRUE)[[1]]
+    vep_field = vep_field[2:length(vep_field)-1]
+
+    # Tranform the fix field by splittig the CSQ and select the columns needed
+    fix_field = tb$fix %>%
+      dplyr::rename(
+        chr = CHROM,
+        from = POS,
+        ref = REF,
+        alt = ALT) %>%
+      dplyr::rowwise() %>%
+      dplyr::mutate(
+        from = as.numeric(from),
+        to = from + nchar(alt)) %>%
+      dplyr::ungroup() %>%
+      dplyr::select(chr, from, to, ref, alt, CSQ, dplyr::everything(),  -ChromKey, -DP) %>% 
+      tidyr::separate(CSQ, vep_field, sep = "\\|") %>% 
+      dplyr::select(chr, from, to, ref, alt, IMPACT, SYMBOL, Gene, dplyr::everything()) 
+    
+    } else {
+      fix_field = tb$fix %>%
+        dplyr::rename(
+          chr = CHROM,
+          from = POS,
+          ref = REF,
+          alt = ALT
+        ) %>%
+        dplyr::rowwise() %>%
+        dplyr::mutate(
+          from = as.numeric(from),
+          to = from + nchar(alt)) %>%
+        dplyr::ungroup() %>%
+        dplyr::select(chr, from, to, ref, alt, dplyr::everything(), -ChromKey, -DP)
+    }
+
   # if have to filter mutations
   if (filter_mutations){ 
     filter = c('PASS')
@@ -54,9 +84,8 @@ parse_FreeBayes = function(vcf, sample_id, filter_mutations = FALSE){
       }) 
   
   names(calls) = samples_list
-  normal = names(calls)[length(calls)]
-  calls = calls[c(sample_id, normal)]
-  
+  # normal = names(calls)[length(calls)]
+  # calls = calls[c(sample_id, normal)]
   return(calls)
 }
 
@@ -147,9 +176,8 @@ parse_Mutect = function(vcf, sample_id, filter_mutations = FALSE){
             })
 
     names(calls) = samples_list
-    normal = names(calls)[length(calls)] 
-    calls = calls[c(sample_id, normal)]
-
+    # normal = names(calls)[length(calls)] 
+    # calls = calls[c(sample_id, normal)]
     return(calls)
 }
 
@@ -170,24 +198,55 @@ retrieve_ref_alt = function(row){
   ref_alt
 }
 
-# to add VEP
 parse_Strelka = function(vcf, sample_id, filter_mutations = FALSE){
   tb = vcfR::vcfR2tidy(vcf)
-  gt_field = tb$gt %>% rename(sample = Indiv)
-  
-  fix_field = tb$fix  %>% 
-    dplyr::rename(chr = CHROM, 
-                  from = POS,
-                  ref = REF, 
-                  alt = ALT) %>% 
-    dplyr::rowwise() %>% 
-    dplyr::mutate(from = as.numeric(from),
-                  to = from + nchar(alt)) %>% 
-    dplyr::ungroup() %>% 
-    dplyr::select(chr, from, to, ref, alt, dplyr::everything(), -ChromKey)
-  
+  gt_field = tb$gt %>% rename(sample = Indiv)  
   samples_list = gt_field$sample %>% unique
-  
+
+  if ("CSQ" %in% tb$meta$ID){
+      # VEP specific field extraction
+      # Take CSQ field names and split by |
+      
+      vep_field = tb$meta %>% 
+                dplyr::filter(ID == "CSQ") %>% 
+                dplyr::select(Description) %>% 
+                dplyr::pull() 
+
+    vep_field = strsplit(vep_field, split = "|", fixed = TRUE)[[1]]
+    vep_field = vep_field[2:length(vep_field)-1]
+
+    # Tranform the fix field by splittig the CSQ and select the columns needed
+    fix_field = tb$fix %>%
+      dplyr::rename(
+        chr = CHROM,
+        from = POS,
+        ref = REF,
+        alt = ALT) %>%
+      dplyr::rowwise() %>%
+      dplyr::mutate(
+        from = as.numeric(from),
+        to = from + nchar(alt)) %>%
+      dplyr::ungroup() %>%
+      dplyr::select(chr, from, to, ref, alt, CSQ, dplyr::everything(), -ChromKey) %>% 
+      tidyr::separate(CSQ, vep_field, sep = "\\|") %>% 
+      dplyr::select(chr, from, to, ref, alt, IMPACT, SYMBOL, Gene, dplyr::everything()) #can add other thing, CSQ, HGSP
+    
+    } else {
+        # Take from fix field some columns
+        fix_field = tb$fix %>%
+          dplyr::rename(
+            chr = CHROM,
+            from = POS,
+            ref = REF,
+            alt = ALT) %>%
+          dplyr::rowwise() %>%
+          dplyr::mutate(
+            from = as.numeric(from),
+            to = from + nchar(alt)) %>%
+          dplyr::ungroup() %>%
+          dplyr::select(chr, from, to, ref, alt, dplyr::everything(), -ChromKey) #-DP
+    }
+
   if (filter_mutations){ 
     filter = c('PASS')
   } else {
@@ -201,9 +260,7 @@ parse_Strelka = function(vcf, sample_id, filter_mutations = FALSE){
       
       fits = list()
       fits$sample = s
-      
       mutations = dplyr::bind_cols(fix_field, gt_field_s) 
-      
       ref_alt = lapply(1:nrow(mutations), function(r){
         retrieve_ref_alt(mutations[r,])
       })
@@ -212,9 +269,9 @@ parse_Strelka = function(vcf, sample_id, filter_mutations = FALSE){
       mutations$ref_alt = ref_alt
       mutations = mutations %>% 
         tidyr::separate(ref_alt, into = c('NR', 'NV')) %>%
-        dplyr::mutate(NR= as.integer(NR), 
-                      NV= as.integer(NV)) %>%
-        dplyr::mutate(DP= NR+NV) %>% 
+        dplyr::mutate(NR = as.integer(NR), 
+                      NV = as.integer(NV)) %>%
+        dplyr::mutate(DP = NR+NV) %>% 
         dplyr::mutate(VAF = NV/DP) %>% 
         dplyr::select(chr, from, to, ref, alt, NV, DP, VAF, everything()) %>% 
         dplyr::filter(FILTER %in% filter)
@@ -224,8 +281,6 @@ parse_Strelka = function(vcf, sample_id, filter_mutations = FALSE){
     })
   
   names(calls) = samples_list
-  # normal = names(calls)[length(calls)] 
-  # calls = calls[c(sample_id, normal)]
   return(calls)
 }
 
@@ -268,11 +323,12 @@ parse_Platypus = function(vcf, sample_id, filter_mutations = FALSE){
         from = as.numeric(from),
         to = from + nchar(alt)) %>%
       dplyr::ungroup() %>%
-      dplyr::select(chr, from, to, ref, alt, CSQ, dplyr::everything()) %>% 
+      dplyr::select(chr, from, to, ref, alt, CSQ, dplyr::everything(),  -ChromKey) %>% 
       tidyr::separate(CSQ, vep_field, sep = "\\|") %>% 
       dplyr::select(chr, from, to, ref, alt, IMPACT, SYMBOL, Gene, dplyr::everything())
     
     } else {
+      
       fix_field = tb$fix %>%
         dplyr::rename(
           chr = CHROM,
@@ -311,7 +367,7 @@ parse_Platypus = function(vcf, sample_id, filter_mutations = FALSE){
         })
 
     names(calls) = samples_list
-    normal = names(calls)[length(calls)] 
-    calls = calls[c(sample_id, normal)]
+    # normal = names(calls)[length(calls)] 
+    # calls = calls[c(sample_id, normal)]
     return(calls)
 }

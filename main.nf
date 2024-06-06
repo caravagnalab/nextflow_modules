@@ -11,14 +11,6 @@ include { QC } from "${baseDir}/subworkflows/QC/main"
 
 
 workflow {  
-  
-  // tumour_bam should be in sample sheet
-  check_tumor_bam = Channel.fromPath(params.samples).
-        splitCsv(header: true).
-        map{row -> row.tumour_bam}.
-        ifEmpty('').
-        first()
-
   input_vcf = Channel.fromPath(params.samples).
       splitCsv(header: true).
       map{row ->
@@ -28,34 +20,29 @@ workflow {
       splitCsv(header: true).
       map{row -> row.cancer_type.toString()}
  
-
   input_cna = Channel.fromPath(params.samples).
     splitCsv(header: true).
     map{row ->
      tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.cnv_res), row.cnv_caller.toString())}
 
-  // normal_bam = Channel.fromPath(params.samples).
-  //   splitCsv(header: true).
-  //   map{row ->
-  //    tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.normal_bam), file(row.normal_bai))}
-
   VARIANT_ANNOTATION(input_vcf) 
   FORMATTER_VCF(VARIANT_ANNOTATION.out.vep, "vcf")
   FORMATTER_CNA(input_cna, "cna")
-
-  if (params.mode == 'multi_sample' && !check_tumor_bam.isEmpty()){
+  
+  exist_bam_val = false
+  if (params.mode == 'multi_sample' && exist_bam_val){  
     tumor_bam = Channel.fromPath(params.samples).
-        splitCsv(header: true).
-        map{row ->
-         tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.tumour_bam), file(row.tumour_bai))}  
-
+      splitCsv(header: true).
+       map{row ->
+       tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.tumour_bam), file(row.tumour_bai))}
+    
     LIFTER(FORMATTER_VCF.out, tumor_bam)
     annotation = DRIVER_ANNOTATION(LIFTER.out, cancer_type)
 
   } else {
-    annotation = DRIVER_ANNOTATION(FORMATTER_VCF.out, cancer_type)
+   annotation = DRIVER_ANNOTATION(FORMATTER_VCF.out, cancer_type)
   }
   
   join_CNAqc = QC(FORMATTER_CNA.out, annotation)
-  //SUBCLONAL_DECONVOLUTION(join_CNAqc)
+  // SUBCLONAL_DECONVOLUTION(join_CNAqc)
 }

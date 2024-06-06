@@ -32,7 +32,7 @@ process VCF_PROCESSING {
     if (grepl(pattern = 'Mutect', x = source)){
         calls = parse_Mutect(vcf, sample_id = "$sampleID", filter_mutations = as.logical("$filter_mutations"))
         
-    } else if (grepl(pattern = 'Strelka', x = source)){
+    } else if (grepl(pattern = 'strelka', x = source)){
         calls = parse_Strelka(vcf, sample_id = "$sampleID", filter_mutations = as.logical("$filter_mutations"))
     
     } else if (grepl(pattern = 'Platypus', x = source)){
