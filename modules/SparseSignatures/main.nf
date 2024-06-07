@@ -4,13 +4,16 @@
 
 process SPARSE_SIGNATURES {
   publishDir params.publish_dir, mode: 'copy'
+  
+  maxForks 10 
 
   input:
     tuple val(datasetID), path(joint_table)
 
   output:
-    tuple val(datasetID), path("$datasetID/SparseSig/*.rds"), emit: rds
-                          path("$datasetID/SparseSig/*.pdf"), emit: pdf
+    tuple val(datasetID), path("signature_deconvolution/SparseSig/$datasetID/cv_out.rds"), emit: sparsesig_cv_rds
+                          path("signature_deconvolution/SparseSig/$datasetID/signatures_bestConfig.rds"), emit: sparsesig_bestConfig_rds
+                          path("signature_deconvolution/SparseSig/$datasetID/plot_signatures.pdf"), emit: sparsesig_plot_pdf
                             
   script:
 
@@ -40,8 +43,8 @@ process SPARSE_SIGNATURES {
   library(stringr)
   library(BSgenome.Hsapiens.1000genomes.hs37d5)
     
-  res_SparseSig = paste0("SparseSig/")
-  dir.create(res_SparseSig, recursive = TRUE)
+  res_dir = paste0("signature_deconvolution/SparseSig/", "$datasetID", "/")
+  dir.create(res_dir, recursive = TRUE)
 
    
   multisample_table = read.delim("$joint_table")
@@ -83,19 +86,19 @@ process SPARSE_SIGNATURES {
               background_signature = "$background_signature", 
               normalize_counts = as.logical("$normalize_counts"), 
               nmf_runs = as.integer("$nmf_runs"), 
-              lambda_values_alpha = as.integer("$lambda_values_alpha"), 
-              lambda_values_beta = as.numeric("$lambda_values_beta"),
+              lambda_values_alpha = eval(parse(text="$lambda_values_alpha")), 
+              lambda_values_beta = eval(parse(text="$lambda_values_beta")),
               cross_validation_entries = as.numeric("$cross_validation_entries"), 
               cross_validation_iterations = as.integer("$cross_validation_iterations"), 
               cross_validation_repetitions = as.integer("$cross_validation_repetitions"), 
               iterations = as.integer("$iterations"), 
               max_iterations_lasso = as.integer("$max_iterations_lasso"), 
-              num_processes = "$num_processes", 
+              num_processes = eval(parse(text="$num_processes")), 
               verbose = as.logical("$verbose"),
               seed = as.integer("$seed")
 )
 
-  saveRDS(object = cv_out, file = paste0(res_SparseSig, "cv_out.rds"))
+  saveRDS(object = cv_out, file = paste0(res_dir, "cv_out.rds"))
 
   #Analyze the mean squared error results averaging over cross-validation repetitions
  
@@ -113,7 +116,8 @@ process SPARSE_SIGNATURES {
   min_Lambda_beta <- as.numeric(gsub("_Lambda_Beta", "", min_Lambda_beta))
   min_K <- colnames(cv_means_mse)[min_ii[2]] 
   min_K <- as.numeric(gsub("_Signatures", "", min_K))
-
+  print(min_K)
+  print(min_Lambda_beta)
 
   #Discovering the signatures within the dataset: NMF Lasso
   #compute the signatures for the best configuration.
@@ -121,24 +125,24 @@ process SPARSE_SIGNATURES {
   nmf_Lasso_out = SparseSignatures::nmfLasso(
                                         x = mut_counts,
                                         K = min_K,
-                                        beta = "$beta", 
-                                        background_signature = "$background_signature", 
+                                        beta = eval(parse(text="$beta")), 
+                                        background_signature = eval(parse(text="$background_signature")), 
                                         normalize_counts = as.logical("$normalize_counts"),
-                                        lambda_rate_alpha = as.integer("$lambda_rate_alpha"), 
+                                        lambda_rate_alpha = eval(parse(text="$lambda_rate_alpha")), 
                                         lambda_rate_beta = min_Lambda_beta,
                                         iterations = as.integer("$iterations"), 
                                         max_iterations_lasso = as.integer("$max_iterations_lasso"), 
                                         verbose = as.logical("$verbose")
 )
 
-  saveRDS(object = nmf_Lasso_out, file =  paste0(res_SparseSig, "signatures_bestConfig.rds"))
+  saveRDS(object = nmf_Lasso_out, file =  paste0(res_dir, "signatures_bestConfig.rds"))
 
   #signature visualization
 
   signatures = nmf_Lasso_out[["beta"]]
   plot_signatures <- SparseSignatures::signatures.plot(beta=signatures, xlabels=FALSE)
 
-  ggplot2::ggsave(plot = plot_signatures, filename = paste0(res_SparseSig, "disc_signatures.pdf"), width = 12, height = 18, units = 'in', dpi = 200)
+  ggplot2::ggsave(plot = plot_signatures, filename = paste0(res_dir, "plot_signatures.pdf"), width = 12, height = 18, units = 'in', dpi = 200)
 
   """ 
 }
