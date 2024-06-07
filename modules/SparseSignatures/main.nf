@@ -1,11 +1,10 @@
 //
 // Mutational signature extraction with SparseSignatures
 //
-
+i
 process SPARSE_SIGNATURES {
   publishDir params.publish_dir, mode: 'copy'
   
-  maxForks 10 
 
   input:
     tuple val(datasetID), path(joint_table)
@@ -83,7 +82,7 @@ process SPARSE_SIGNATURES {
               x = mut_counts,
               K = eval(parse(text="$K")),  
               starting_beta = starting_betas,
-              background_signature = "$background_signature", 
+              background_signature = eval(parse(text="$background_signature")), 
               normalize_counts = as.logical("$normalize_counts"), 
               nmf_runs = as.integer("$nmf_runs"), 
               lambda_values_alpha = eval(parse(text="$lambda_values_alpha")), 

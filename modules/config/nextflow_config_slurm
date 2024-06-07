@@ -233,6 +233,7 @@ process {
         time = '72h'
         memory = '200 GB'
         cpus = 24
+        maxForks = 20
             
        // container = 'https://depot.galaxyproject.org/singularity/bioconductor-sparsesignatures%3A2.12.0--r43hdfd78af_0'
         ext.args = {[
