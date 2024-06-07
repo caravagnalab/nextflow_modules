@@ -14,6 +14,8 @@ process {
    executor='slurm'
    queue='THIN'
    errorStrategy = 'finish'
+   queueSize = 5
+   pollInterval = '30 sec'
 }
 
 
@@ -183,7 +185,8 @@ process {
   withName: 'SIG_PROFILER' {
     time='5h'
     memory='100 GB'
-    container = "docker://lculibrk/sigprofiler:latest"
+    //container = "docker://lculibrk/sigprofiler:latest"
+    container = "docker://dceoy/sigprofiler"
     ext.args   = {[
       "reference_genome": params.sigprofiler_reference_genome,
       "exome": params.sigprofiler_exome,
@@ -229,6 +232,8 @@ process {
     withName: 'SPARSE_SIGNATURES' {
         time = '72h'
         memory = '200 GB'
+        cpus = 24
+            
        // container = 'https://depot.galaxyproject.org/singularity/bioconductor-sparsesignatures%3A2.12.0--r43hdfd78af_0'
         ext.args = {[
           "K" : params.sparsesignatures_K,
