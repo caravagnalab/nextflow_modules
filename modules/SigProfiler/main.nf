@@ -67,7 +67,7 @@ process SIG_PROFILER {
   
     
     #if os.path.exists(output_path):
-       # shutil.rmtree(output_path)
+       #shutil.rmtree(output_path)
     
     os.mkdir("$datasetID")
     os.mkdir("$datasetID/SIGPROFILER")
@@ -77,7 +77,7 @@ process SIG_PROFILER {
     output_folder_sigprof = "results/SBS96/"
 
     #import input data
-    input_data = pd.read_csv("$joint_table", sep = '\t')
+    input_data = pd.read_csv("$joint_table", sep = "\t")
     
     #input data preprocessing
     def input_processing(data):
@@ -92,7 +92,7 @@ process SIG_PROFILER {
     input_data = input_processing(input_data)
 
     #saving input matrix to txt
-    input_data.to_csv("input_path/input_data.txt", sep='\t', index=False, header=True)
+    input_data.to_csv("input_path/input_data.txt", sep="\t", index=False, header=True)
 
     #mutation's counts matrix generation
     input_matrix = matGen.SigProfilerMatrixGeneratorFunc(
