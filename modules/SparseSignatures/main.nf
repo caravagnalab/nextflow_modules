@@ -1,18 +1,18 @@
 //
 // Mutational signature extraction with SparseSignatures
 //
-i
+
 process SPARSE_SIGNATURES {
   publishDir params.publish_dir, mode: 'copy'
   
 
   input:
-    tuple val(datasetID), path(joint_table)
+    tuple val(datasetID), val(patientID), path(joint_table)
 
   output:
-    tuple val(datasetID), path("signature_deconvolution/SparseSig/$datasetID/cv_out.rds"), emit: sparsesig_cv_rds
-                          path("signature_deconvolution/SparseSig/$datasetID/signatures_bestConfig.rds"), emit: sparsesig_bestConfig_rds
-                          path("signature_deconvolution/SparseSig/$datasetID/plot_signatures.pdf"), emit: sparsesig_plot_pdf
+    tuple val(datasetID), path("signature_deconvolution/SparseSig/$datasetID/cv_out.rds"), emit: signatures_cv_rds
+                          path("signature_deconvolution/SparseSig/$datasetID/signatures_bestConfig.rds"), emit: signatures_bestConf_rds
+                          path("signature_deconvolution/SparseSig/$datasetID/plot_signatures.pdf"), emit: signatures_plot_pdf
                             
   script:
 
@@ -40,14 +40,13 @@ process SPARSE_SIGNATURES {
   library(SparseSignatures)
   library(ggplot2)
   library(stringr)
-  library(BSgenome.Hsapiens.1000genomes.hs37d5)
+  #library(BSgenome.Hsapiens.1000genomes.hs37d5)
     
   res_dir = paste0("signature_deconvolution/SparseSig/", "$datasetID", "/")
   dir.create(res_dir, recursive = TRUE)
 
    
-  multisample_table = read.delim("$joint_table")
-  multisample_table <- multisample_table[ (multisample_table[["chr"]] %in% c("chr1")), ] 
+  multisample_table = read.delim("$joint_table", sep = "\t", header=T)
     
   #Extract input data information
 
@@ -61,7 +60,10 @@ process SPARSE_SIGNATURES {
   #The user must select, among the available choices, the reference genome consistent with the mutation dataset.
 
   
-  bsg = BSgenome.Hsapiens.1000genomes.hs37d5::hs37d5
+  #bsg = BSgenome.Hsapiens.1000genomes.hs37d5::hs37d5
+  bsg_hs37 = "/orfeo/LTS/CDSLab/LT_storage/kdavydzenka/BS_genome/bsg_hs37d5.rds"
+  bsg = readRDS(bsg_hs37)
+
   mut_counts = SparseSignatures::import.trinucleotides.counts(data=input_data, reference=bsg)
 
   #load a reference SBS5 background signature from COSMIC

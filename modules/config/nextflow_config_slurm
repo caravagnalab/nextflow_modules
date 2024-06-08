@@ -103,7 +103,7 @@ process {
   withName: 'RDS_PROCESSING' {
     memory='50 GB'
     time='1h'
-    container = 'docker://lvaleriani/cnaqc:v5'
+   //container = 'docker://lvaleriani/cnaqc:v5'
   }
 
   withName: 'VIBER' {
@@ -179,7 +179,7 @@ process {
   withName: 'RDS_PROCESSING' {
      memory='50 GB'
      time='1h'
-     container = 'docker://lvaleriani/cnaqc:v5'
+    //container = 'docker://lvaleriani/cnaqc:v5'
   }
    
   withName: 'SIG_PROFILER' {
@@ -235,7 +235,7 @@ process {
         cpus = 24
         maxForks = 20
             
-       // container = 'https://depot.galaxyproject.org/singularity/bioconductor-sparsesignatures%3A2.12.0--r43hdfd78af_0'
+        container = 'https://depot.galaxyproject.org/singularity/bioconductor-sparsesignatures%3A2.12.0--r43hdfd78af_0'
         ext.args = {[
           "K" : params.sparsesignatures_K,
           "background_signature" : params.sparsesignatures_background_signature,
