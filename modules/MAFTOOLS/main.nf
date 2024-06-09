@@ -19,9 +19,9 @@ process MAFTOOLS {
       def args                              = task.ext.args                                 ?: ''
       def rmOutlier                         = args!='' && args.rmOutlier                    ? "$args.rmOutlier" : ""
       def addStat                           = args!='' && args.addStat                      ? "$args.addStat" : ""
-      def dashboard                         = args!='' && args.dashboard                    ? "$args.dashboard" : ""
       def titvRaw                           = args!='' && args.titvRaw                      ? "$args.titvRaw" : ""
-      def showBarcodes                      = args!='' && args.showBarcodes                 ? "$args.showBarcodes" : ""     
+      def showBarcodes                      = args!='' && args.showBarcodes                 ? "$args.showBarcodes" : "" 
+      def dashboard                         = args!='' && args.dashboard                    ? "$args.dashboard" : ""    
       def top                               = args!='' && args.top                          ? "$args.top" : "" 
       def minMut                            = args!='' && args.minMut                       ? "$args.minMut" : ""
       def genes                             = args!='' && args.genes                        ? "$args.genes" : ""
@@ -50,21 +50,23 @@ process MAFTOOLS {
 
     plotmafSummary(maf = maf_merged,
                    rmOutlier = as.logical("$rmOutlier"), 
-                   addStat = eval(parse(text="$addStat")), 
+                   addStat = eval(parse(text="$addStat")),
                    dashboard = as.logical("$dashboard"), 
                    titvRaw = as.logical("$titvRaw"),
                    showBarcodes = as.logical("$showBarcodes"),
-                   top = as.integer("$top"))
+                   top = as.integer("$top")
+    )
     dev.off()
 
-    pdf(file = paste0("$datasetID","/MAFTOOLS/oncoplot.pdf"))
+    pdf(file = paste0("VariantAnnotation/MAFTOOLS/","$datasetID","/oncoplot.pdf"))
 
     oncoplot(maf = maf_merged,
              minMut = eval(parse(text="$minMut")),
              genes = eval(parse(text="$genes")),
              altered = as.logical("$altered"),
              top = as.integer("$top"),
-             removeNonMutated = as.logical("$removeNonMutated"))
+             removeNonMutated = as.logical("$removeNonMutated")
+    )
 
     dev.off()
 
