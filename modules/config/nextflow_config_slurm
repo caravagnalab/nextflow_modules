@@ -36,7 +36,7 @@ process {
         "dashboard": params.maftools_dashboard,
         "titvRaw": params.maftools_titvRaw,
         "showBarcodes": params.maftools_showBarcodes,
-        "top": params_maftools.top,
+        "top": params_maftools_top,
         "minMut": params.maftools_minMut,
         "genes": params.maftools_genes,
         "altered": params.maftools_altered,
@@ -142,7 +142,7 @@ process {
     time='2h'
     container='file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
   }
-}
+
 
   withName: 'SIG_PROFILER' {
     time='5h'
