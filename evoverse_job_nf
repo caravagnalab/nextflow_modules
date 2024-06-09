@@ -24,11 +24,12 @@ RESULTS_PATH=$evoverse/results/single_sample/
     --samples $evoverse/evoverse_input.csv \
     --publish_dir $RESULTS_PATH \
     --mode "singlesample" \
-    --tools "pyclone-vi,mobster,viber" \
+    --tools "pyclone-vi,mobster,viber,sparsesignatures" \
     --pyclonevi_n_cluster 5 \
     --pyclonevi_n_restarts 10 \
     --mobster_samples 1 \
     --mobster_K 2 \
     --viber_K 4 \
     --viber_samples 1 \
-    --viber_maxIter 50
+    --viber_maxIter 50 \
+    --sparsesignatures_cross_validation_repetitions 10
