@@ -39,7 +39,7 @@ process {
         "dashboard": params.maftools_dashboard,
         "titvRaw": params.maftools_titvRaw,
         "showBarcodes": params.maftools_showBarcodes,
-        "top": params.top,
+        "top": params_maftools.top,
         "minMut": params.maftools_minMut,
         "genes": params.maftools_genes,
         "altered": params.maftools_altered,

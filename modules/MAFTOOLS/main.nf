@@ -8,21 +8,21 @@ process MAFTOOLS {
 
     output:
 
-      tuple val(datasetID), path("$datasetID/MAFTOOLS/*.pdf"), path("$datasetID/MAFTOOLS/*.rds")
+      tuple val(datasetID), path("VariantAnnotation/MAFTOOLS/$datasetID/*.pdf"), path("VariantAnnotation/MAFTOOLS/$datasetID/*.rds")
 
     script:
 
       def args                              = task.ext.args                                 ?: ''
-      def rmOutlier                         = args!='' && args.rmOutlier                    ? "$args.K" : "TRUE"
-      def addStat                           = args!='' && args.addStat                      ? "$args.addStat" : "median"
-      def dashboard                         = args!='' && args.dashboard                    ? "$args.dashboard" : "TRUE"
-      def titvRaw                           = args!='' && args.titvRaw                      ? "$args.titvRaw" : "FALSE"
-      def showBarcodes                      = args!='' && args.showBarcodes                 ? "$args.showBarcodes" : "FALSE"     
-      def top                               = args!='' && args.top                          ? "$args.top" : "10" 
-      def minMut                            = args!='' && args.minMiut                      ? "$args.top" : "NULL"
-      def genes                             = args!='' && args.genes                        ? "$args.genes" : "NULL"
-      def altered                           = args!='' && args.altered                      ? "$args.altered" : "FALSE"
-      def removeNonMutated                  = args!='' && args.removeNonMutated             ? "$args.removeNonMutated" : "TRUE"
+      def rmOutlier                         = args!='' && args.rmOutlier                    ? "$args.rmOutlier" : ""
+      def addStat                           = args!='' && args.addStat                      ? "$args.addStat" : ""
+      def dashboard                         = args!='' && args.dashboard                    ? "$args.dashboard" : ""
+      def titvRaw                           = args!='' && args.titvRaw                      ? "$args.titvRaw" : ""
+      def showBarcodes                      = args!='' && args.showBarcodes                 ? "$args.showBarcodes" : ""     
+      def top                               = args!='' && args.top                          ? "$args.top" : "" 
+      def minMut                            = args!='' && args.minMut                       ? "$args.minMut" : ""
+      def genes                             = args!='' && args.genes                        ? "$args.genes" : ""
+      def altered                           = args!='' && args.altered                      ? "$args.altered" : ""
+      def removeNonMutated                  = args!='' && args.removeNonMutated             ? "$args.removeNonMutated" : ""
 
 
    
@@ -31,37 +31,36 @@ process MAFTOOLS {
 
     library(maftools)
 
-    dir.create(paste0("$datasetID","/MAFTOOLS"), recursive = TRUE)
-
+    dir.create(paste0("VariantAnnotation/MAFTOOLS/", "$datasetID"), recursive = TRUE)
 
 
     mafs <- lapply(X = strsplit("$maf_File", " ")[[1]], FUN = maftools::read.maf)
 
     maf_merged = maftools:::merge_mafs(maf = mafs, verbose = TRUE)
 
-    pdf(file = paste0("$datasetID","/MAFTOOLS/maf_summary.pdf"))
+    pdf(file = paste0("VariantAnnotation/MAFTOOLS/","$datasetID","/maf_summary.pdf"))
 
     plotmafSummary(maf = maf_merged,
-                   rmOutlier = "$rmOutlier", 
-                   addStat = "$addStat", 
-                   dashboard = "$dashboard", 
-                   titvRaw = "$titvRaw",
-                   showBarcodes = "$showBarcodes"
-                   top = "$top")
+                   rmOutlier = as.logical("$rmOutlier"), 
+                   addStat = eval(parse(text="$addStat")), 
+                   dashboard = as.logical("$dashboard"), 
+                   titvRaw = as.logical("$titvRaw"),
+                   showBarcodes = as.logical("$showBarcodes"),
+                   top = as.integer("$top"))
     dev.off()
 
     pdf(file = paste0("$datasetID","/MAFTOOLS/oncoplot.pdf"))
 
     oncoplot(maf = maf_merged,
-             minMut = "$minMut",
-             genes = "$genes",
-             altered = "$altered",
-             top = "$top",
-             removeNonMutated = "$removeNonMutated")
+             minMut = eval(parse(text="$minMut")),
+             genes = eval(parse(text="$genes")),
+             altered = as.logical("$altered"),
+             top = as.integer("$top"),
+             removeNonMutated = as.logical("$removeNonMutated"))
 
     dev.off()
 
-    saveRDS(object = maf_merged, file = paste0("$datasetID","/MAFTOOLS/maf_merged.rds"))
+    saveRDS(object = maf_merged, file = paste0("VariantAnnotation/MAFTOOLS/", "$datasetID","/maf_merged.rds"))
 
     """
 }
