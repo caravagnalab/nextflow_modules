@@ -176,14 +176,8 @@ process {
 
 
 process {
-  withName: 'RDS_PROCESSING' {
-     memory='50 GB'
-     time='1h'
-    //container = 'docker://lvaleriani/cnaqc:v5'
-  }
-   
   withName: 'SIG_PROFILER' {
-    time='5h'
+    time='2h'
     memory='100 GB'
     //container = "docker://lculibrk/sigprofiler:latest"
     container = "docker://dceoy/sigprofiler"
@@ -225,13 +219,13 @@ process {
       "make_decomposition_plots": params.sigprofiler_make_decomposition_plots,
       "collapse_to_SBS96": params.sigprofiler_collapse_to_SBS96,
       "get_all_signature_matrices": params.sigprofiler_get_all_signature_matrices,
-      "export_probabilities": params.sigprofiler_export_probabilities,
+      "export_probabilities": params.sigprofiler_export_probabilities
     ]}
   }
 
     withName: 'SPARSE_SIGNATURES' {
-        time = '72h'
-        memory = '200 GB'
+        time = '5h'
+        memory = '100 GB'
         cpus = 24
         maxForks = 20
             

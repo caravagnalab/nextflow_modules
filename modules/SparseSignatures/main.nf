@@ -7,7 +7,7 @@ process SPARSE_SIGNATURES {
   
 
   input:
-    tuple val(datasetID), val(patientID), path(joint_table)
+    tuple val(datasetID), val(patientID), val(sampleID), path(joint_table) //from formatter output
 
   output:
     tuple val(datasetID), path("signature_deconvolution/SparseSig/$datasetID/cv_out.rds"), emit: signatures_cv_rds
@@ -61,7 +61,7 @@ process SPARSE_SIGNATURES {
 
   
   #bsg = BSgenome.Hsapiens.1000genomes.hs37d5::hs37d5
-  bsg_hs37 = "/orfeo/LTS/CDSLab/LT_storage/kdavydzenka/BS_genome/bsg_hs37d5.rds"
+  bsg_hs37 = "/orfeo/LTS/CDSLab/LT_storage/shared/BS_genome/bsg_hs37d5.rds"
   bsg = readRDS(bsg_hs37)
 
   mut_counts = SparseSignatures::import.trinucleotides.counts(data=input_data, reference=bsg)
@@ -145,5 +145,5 @@ process SPARSE_SIGNATURES {
 
   ggplot2::ggsave(plot = plot_signatures, filename = paste0(res_dir, "plot_signatures.pdf"), width = 12, height = 18, units = 'in', dpi = 200)
 
-  """ 
+ """ 
 }
