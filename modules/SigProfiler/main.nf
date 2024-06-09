@@ -6,14 +6,12 @@ process SIG_PROFILER {
     publishDir params.publish_dir, mode: 'copy'
 
     input:
-
-      tuple val(datasetID), val(patientID), val(sampleID), path(joint_table) //from formatter output
+       tuple val(datasetID), val(patientID), val(sampleID), path(joint_table) //from formatter output
 
     output:
-
-      tuple val(datasetID), path("signature_deconvolution/Sigprofiler/$datasetID/results/SBS96/SBS96_selection_plot.pdf"),
-      path("signature_deconvolution/Sigprofiler/$datasetID/results/SBS96/Suggested_Solution/"), 
-      path("signature_deconvolution/Sigprofiler/$datasetID/results/SBS96/Samples.txt")
+       tuple val(datasetID), path("signature_deconvolution/Sigprofiler/$datasetID/results/SBS96/SBS96_selection_plot.pdf"),
+       path("signature_deconvolution/Sigprofiler/$datasetID/results/SBS96/Suggested_Solution/"), 
+       path("signature_deconvolution/Sigprofiler/$datasetID/results/SBS96/Samples.txt")
       
     script:
     
@@ -150,6 +148,4 @@ process SIG_PROFILER {
       source_dir = "output_folder_sigprof"
       dest_dir = "signature_deconvolution/Sigprofiler/$datasetID/"
       shutil.copytree(source_dir, dest_dir)
-
-      """
 }

@@ -13,7 +13,8 @@ include { SUBCLONAL_DECONVOLUTION } from "${baseDir}/subworkflows/subclonal_deco
 include { MUTATIONAL_SIGNATURES } from "${baseDir}/subworkflows/mutational_signatures/main"
 
 
- workflow {  
+workflow {  
+
   input_vcf = Channel.fromPath(params.samples).
       splitCsv(header: true).
       map{row ->

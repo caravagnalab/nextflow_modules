@@ -5,6 +5,7 @@ library("tidyverse")
 library("ggplot2")
 
 res_SparseSig = paste0("SparseSig_test/")
+
 dir.create(res_SparseSig, recursive = TRUE)
 
 #Input dataset : vcf / tsv / csv joint-table multisample
@@ -57,7 +58,6 @@ cv_out = nmfLassoCV(x = mut_counts,
 		 num_processes = Inf, #number of requested NMF worker subprocesses to spawn. If Inf (an adaptive maximum number is automatically chosen); if NA or NULL, the function is run as a single process
 		 seed = NULL, verbose = TRUE, log_file = "")
 
-
 saveRDS(object = cv_out, file = "SparseSig_test/cv_out.rds")
 
 
@@ -66,7 +66,6 @@ cv_mses <- cv_out$grid_search_mse[1, , ]
 cv_means_mse <- matrix(sapply(cv_mses, FUN = mean),
 		       nrow = dim(cv_mses)[1]
 )
-
 dimnames(cv_means_mse) <- dimnames(cv_mses)
 
 #Find the combination of parameters that yields the lowest MSE
@@ -75,8 +74,8 @@ min_Lambda_beta <- rownames(cv_means_mse)[min_ii[1]]
 min_Lambda_beta <- as.numeric(gsub("_Lambda_Beta", "", min_Lambda_beta))
 min_K <- colnames(cv_means_mse)[min_ii[2]]
 min_K <- as.numeric(gsub("_Signatures", "", min_K))
-cat("Minimum MSE at:", min_Lambda_beta, "and", min_K, "\n")
 
+cat("Minimum MSE at:", min_Lambda_beta, "and", min_K, "\n")
 
 #Discovering the signatures within the dataset: NMF Lasso
 #compute the signatures for the best configuration.
@@ -97,6 +96,5 @@ saveRDS(object = nmf_Lasso_out, file = "SparseSig_test/signatures_bestConfig.rds
 #signature visualization
 signatures = nmf_Lasso_out$beta
 plot_signatures <- signatures.plot(beta=signatures, xlabels=FALSE)
-
 ggplot2::ggsave(plot = plot_signatures, filename = paste0(res_SparseSig, "disc_signatures.pdf"), width = 12, height = 18, units = 'in', dpi = 200)
                                                                                                                                       

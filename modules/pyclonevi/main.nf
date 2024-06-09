@@ -1,52 +1,82 @@
-// nextflow.enable.moduleBinaries = true
-
 process PYCLONEVI {
     publishDir (
       params.publish_dir,
-      mode: "copy",
-      pattern: "$patientID/pyclonevi/*"
+      mode: "copy"
     )
                
     input:
 
-      tuple val(patientID), path(joint_table)
+      tuple val(datasetID), val(patientID), val(sampleID), path(joint_table) // from the formatter output
 
     output:
-      tuple val(patientID), path("$patientID/ctree/ctree_input_pyclonevi.csv"), emit: ctree_input
-      tuple val(patientID), path("$patientID/pyclonevi/all_fits.h5"),  emit: pyclone_all_fits
-      tuple val(patientID), path("$patientID/pyclonevi/best_fit.tsv"), emit: pyclone_best_fit
-      // tuple val(patientID), path("$patientID/pyclonevi/pyclone_report.pdf"), emit: pyclone_report
-
+      tuple val(datasetID), val(patientID), val(sampleID), path("${outDir_ctree}/ctree_input_pyclonevi.csv"), emit: ctree_input
+      tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/all_fits.h5"), emit: pyclone_all_fits
+      tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/best_fit.txt"), emit: pyclone_best_fit
+      // tuple val(patientID), val(sampleID), path("${outDir}/pyclone_joint.tsv"), emit: pyclone_anno_joint
+    
     script:
       def args = task.ext.args ?: ''
       def n_cluster_arg                    = args.n_cluster                     ?  "$args.n_cluster" : ""
       def density_arg                    = args.density                     ?  "$args.density" : ""
       def n_grid_point_arg                    = args.n_grid_point                     ?  "$args.n_grid_point" : ""
       def n_restarts_arg                    = args.n_restarts                     ?  "$args.n_restarts" : ""
+      def mode                    = args.mode                     ?  "$args.mode" : ""
 
+      if (mode == "singlesample") {
+        outDir = "subclonal_deconvolution/pyclonevi/$datasetID/$patientID/$sampleID"
+        outDir_ctree = "subclonal_deconvolution/ctree/$datasetID/$patientID/$sampleID"
+        // all_fits = "subclonal_deconvolution/pyclonevi/$datasetID/$patientID/$sampleID/all_fits.h5"
+        // best_fit = "subclonal_deconvolution/pyclonevi/$datasetID/$patientID/$sampleID/best_fit.txt"
+        // path_ctree = "$datasetID/$patientID/$sampleID/ctree/ctree_input_pyclonevi.csv"
+        // pyclone_joint = "subclonal_deconvolution/pyclonevi/$datasetID/$patientID/$sampleID/pyclone_joint.tsv"
+      } else if (mode == "multisample"){
+        sampleID = sampleID.join(" ")
+        outDir = "subclonal_deconvolution/pyclonevi/$datasetID/$patientID"
+        outDir_ctree = "subclonal_deconvolution/ctree/$datasetID/$patientID"
+        // all_fits = "subclonal_deconvolution/pyclonevi/$datasetID/$patientID/all_fits.h5"
+        // best_fit = "subclonal_deconvolution/pyclonevi/$datasetID/$patientID/best_fit.txt"
+        // path_ctree = "$datasetID/$patientID/ctree/ctree_input_pyclonevi.csv"
+        // pyclone_joint = "subclonal_deconvolution/pyclonevi/$datasetID/$patientID/pyclone_joint.tsv"
+      }
+
+      all_fits = "${outDir}/all_fits.h5"
+      best_fit = "${outDir}/best_fit.txt"
+      path_ctree = "${outDir_ctree}/ctree_input_pyclonevi.csv"
+      pyclone_joint = "${outDir}/pyclone_joint.tsv"
 
       """
-      mkdir -p $patientID/pyclonevi
-      mkdir -p $patientID/ctree
 
-      pyclone-vi fit -i $joint_table \\
-      -o $patientID/pyclonevi/all_fits.h5 -c $n_cluster_arg \\
-      -d $density_arg \\
-      --num-grid-points $n_grid_point_arg \\
-      --num-restarts $n_restarts_arg
-
-      pyclone-vi write-results-file -i $patientID/pyclonevi/all_fits.h5  \\
-      -o $patientID/pyclonevi/best_fit.tsv
-
-      #python3 /orfeo/cephfs/scratch/cdslab/ggandolfi/nextflow_modules/modules/pyclonevi/pyclone_ctree.py $joint_table \\
-      python3 $moduleDir/pyclone_ctree.py $joint_table \\
-      $patientID/pyclonevi/best_fit.tsv \\
-      $patientID/ctree/ctree_input_pyclonevi.csv
+      mkdir -p $outDir
+      mkdir -p $outDir_ctree
       
-      #python3 /orfeo/cephfs/scratch/cdslab/ggandolfi/nextflow_modules/modules/pyclonevi/pyclone_plot.py $joint_table \\
-      #$patientID/pyclonevi/best_fit.tsv \\
-      #$patientID/pyclonevi/pyclone_report.pdf
+      # format the input table in order to be pyclone compliant
+      python3 $moduleDir/pyclone_utils.py create_pyclone_input $joint_table $patientID $outDir/pyclone_input_all_samples.tsv
 
+      colnames=\$(head -n 1 $outDir/pyclone_input_all_samples.tsv)
+
+      column_number=\$(echo -e "\$colnames" | awk -v col_name="sample_id" 'BEGIN { FS = "\t" } {
+          for (i = 1; i <= NF; i++) {
+              if (\$i == col_name) {
+                  print i
+                  exit
+              }
+          }
+          exit 1  # Exit with error if column not found
+      }')
+
+      echo \$colnames
+      echo \$column_number
+
+      # colnames="mutation_id\tpatient_id\tsample_id\tref_counts\talt_counts\tnormal_cn\tmajor_cn\tminor_cn\ttumour_content\tdriver_label\tis_driver"
+      echo -e "\$colnames" > $outDir/pyclone_input.tsv
+      for i in $sampleID;
+        do awk '\$'\$column_number' == "'"\$i"'"' $outDir/pyclone_input_all_samples.tsv >> $outDir/pyclone_input.tsv;
+      done
+      
+      pyclone-vi fit -i $outDir/pyclone_input.tsv -o $all_fits -c $n_cluster_arg -d $density_arg --num-grid-points $n_grid_point_arg --num-restarts $n_restarts_arg
+      pyclone-vi write-results-file -i $all_fits -o $best_fit
+
+      python3 $moduleDir/pyclone_ctree.py --joint $outDir/pyclone_input.tsv --best_fit $best_fit --ctree_input $path_ctree
 
       """
 }

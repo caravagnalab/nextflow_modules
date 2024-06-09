@@ -146,4 +146,4 @@ process SPARSE_SIGNATURES {
   ggplot2::ggsave(plot = plot_signatures, filename = paste0(res_dir, "plot_signatures.pdf"), width = 12, height = 18, units = 'in', dpi = 200)
 
  """ 
-}
+ }

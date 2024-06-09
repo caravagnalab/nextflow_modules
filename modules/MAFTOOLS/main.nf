@@ -1,3 +1,7 @@
+//
+// Summarize and visualize MAF files
+//
+
 process MAFTOOLS {
     
     publishDir params.publish_dir, mode: 'copy'
@@ -31,11 +35,15 @@ process MAFTOOLS {
 
     library(maftools)
 
+    #Create results output directory
+
     dir.create(paste0("VariantAnnotation/MAFTOOLS/", "$datasetID"), recursive = TRUE)
-
-
+    
+    #Reading maf files
     mafs <- lapply(X = strsplit("$maf_File", " ")[[1]], FUN = maftools::read.maf)
 
+    #Create a maf multisample object, merge multiple maf files.
+    #MAF object contains main maf file, summarized data and an oncomatrix which is useful to plot oncoplots.
     maf_merged = maftools:::merge_mafs(maf = mafs, verbose = TRUE)
 
     pdf(file = paste0("VariantAnnotation/MAFTOOLS/","$datasetID","/maf_summary.pdf"))
@@ -59,6 +67,8 @@ process MAFTOOLS {
              removeNonMutated = as.logical("$removeNonMutated"))
 
     dev.off()
+
+    #Saving results object
 
     saveRDS(object = maf_merged, file = paste0("VariantAnnotation/MAFTOOLS/", "$datasetID","/maf_merged.rds"))
 

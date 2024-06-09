@@ -11,8 +11,7 @@ workflow MUTATIONAL_SIGNATURES {
     take: 
     joint_table
 
-    main:
-   
+    main:   
     
     if (params.tools && params.tools.split(',').contains('sparsesignatures')) {
         out = FORMATTER_RDS(joint_table, "rds")

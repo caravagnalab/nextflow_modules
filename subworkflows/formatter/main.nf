@@ -4,7 +4,7 @@
 
 include { RDS_PROCESSING } from '../../modules/CNAqc2tsv/main'
 include { CNA_PROCESSING } from '../../modules/cna2CNAqc/main'
-include { VCF_PROCESSING } from '../../modules/vcf2CNAqc/main"
+include { VCF_PROCESSING } from '../../modules/vcf2CNAqc/main'
 
 
 workflow FORMATTER {

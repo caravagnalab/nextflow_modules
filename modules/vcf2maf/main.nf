@@ -1,3 +1,7 @@
+//
+// Convert VCF annotated file to MAF
+//
+
 process VCF2MAF {
     publishDir params.publish_dir, mode: 'copy'
 
@@ -7,20 +11,21 @@ process VCF2MAF {
 
     output:
 
-      tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/$sampleID/VCF2MAF/*.maf"), emit: vcf2maf_out
+      tuple val(datasetID), val(patientID), val(sampleID), path("VariantAnnotation/VCF2MAF/$datasetID/$patientID/$sampleID/*.maf"), emit: vcf2maf_out
 
     script:
 
     """
 
-    mkdir -p $datasetID/$patientID/$sampleID/VCF2MAF
+    mkdir -p VariantAnnotation/VCF2MAF/$datasetID/$patientID/$sampleID/
+
 
     gunzip -c $vep_output > data_vep.vcf
 
 
     vcf2maf.pl \\
     --input-vcf data_vep.vcf \\
-    --output-maf $datasetID/$patientID/$sampleID/VCF2MAF/data_vep.maf \\
+    --output-maf VariantAnnotation/VCF2MAF/$datasetID/$patientID/$sampleID/data_vep.maf \\
     --tumor-id ${patientID}_${sampleID} \\
     --ref-fasta $params.ref_genome \\
     --vep-data $params.vep_cache_version \\

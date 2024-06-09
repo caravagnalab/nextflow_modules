@@ -6,10 +6,10 @@ process RDS_PROCESSING {
     publishDir params.publish_dir, mode: 'copy'
 
     input:
-      tuple val(datasetID), val(patientID),  path(join_cnaqc)
+      tuple val(datasetID), val(patientID),  val(sampleID), path(join_cnaqc)
 
     output:
-      tuple val(datasetID), val(patientID), path("CNAqc2tsv/$datasetID/$patientID/joint_table.tsv")
+      tuple val(datasetID), val(patientID), val(sampleID), path("CNAqc2tsv/$datasetID/$patientID/joint_table.tsv"), emit: tsv
     
     script:
 
@@ -25,7 +25,7 @@ process RDS_PROCESSING {
 
     source("$moduleDir/utils.R")
     
-    res_dir = paste0("CNAqc2tsv/", "$datasetID", "/", "$patientID/")
+    res_dir = paste0("CNAqc2tsv/","$datasetID", "/", "$patientID/")
     dir.create(res_dir, recursive = TRUE)
  
     multi_cnaqc = readRDS(file = "$join_cnaqc")
@@ -41,7 +41,7 @@ process RDS_PROCESSING {
     
     joint_table <- bind_rows(multisample_jointTable)
 
-    write.table(joint_table, file = paste0(res_dir,"joint_table.tsv"), append = F, quote = F, sep = '\t', row.names = FALSE)
-
+    write.table(joint_table, file = paste0(res_dir,"joint_table.tsv"), append = F, quote = F, sep = "\t", row.names = FALSE)
+    
     """
 }

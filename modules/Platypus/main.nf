@@ -4,32 +4,22 @@ process PLATYPUS_CALL_VARIANTS {
 
     input:
 
-    tuple val(patientID), path(tumor_bamFile), path(tumor_baiFile), path(normal_bamFile), path(normal_baiFile), path(snv_vcfFile), path(snv_tbiFile), path(indel_vcfFile), path(indel_tbiFile) 
+    tuple val(datasetID), val(patientID), val(sampleID), path(vcf_list, stageAs: '*.vcf.gz'), path(tbi_list, stageAs: '*.vcf.gz.tbi') 
+    tuple val(datasetID), val(patientID), val(sampleID), path(normal_bam_list, stageAs: 'normal.bam'), path(normal_bai_list, stageAs: 'normal.bam.bai')
+    tuple val(datasetID), val(patientID), val(sampleID), path(tumor_bam_list, stageAs: '*.bam'), path(tumor_bai_list, stageAs: '*.bam.bai')
 
     output:
 
-    path("$patientID/Platypus/*.vcf")
+    tuple val(datasetID), val(patientID), val(sampleID), path("$datasetID/$patientID/Platypus/*.vcf"), emit: vcf
 
     script:
 
     """
     #!/bin/bash
 
-    mkdir -p $patientID/Platypus
+    out_dir=$datasetID/$patientID/Platypus
+    mkdir -p \$out_dir
 
-    vcfs=\$(echo $snv_vcfFile,$indel_vcfFile | tr ' ' ',')
-    bams=\$(echo $tumor_bamFile,$normal_bamFile | tr ' ' ',')
-    
-    platypus callVariants \\
-    --refFile=$params.ref_genome \\
-    --bamFiles=\$bams \\
-    --output=$patientID/Platypus/Platypus_${patientID}_joint.vcf \\
-    --source=\$vcfs \\
-    --filterReadPairsWithSmallInserts=0 \\
-    --maxReads=100000000 \\
-    --maxVariants=100 \\
-    --minPosterior=0 \\
-    --nCPU=23 \\
-    --getVariantsFromBAMs=0
+
     """
 }
