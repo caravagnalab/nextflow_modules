@@ -24,7 +24,7 @@ process RDS_PROCESSING {
     library(tidyr)
 
     source("$moduleDir/utils.R")
-
+    
     res_dir = paste0("CNAqc2tsv/","$datasetID", "/", "$patientID/")
     dir.create(res_dir, recursive = TRUE)
  
@@ -42,5 +42,6 @@ process RDS_PROCESSING {
     joint_table <- bind_rows(multisample_jointTable)
 
     write.table(joint_table, file = paste0(res_dir,"joint_table.tsv"), append = F, quote = F, sep = "\t", row.names = FALSE)
+    
     """
 }

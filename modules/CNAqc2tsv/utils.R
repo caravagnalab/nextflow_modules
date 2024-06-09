@@ -82,4 +82,3 @@ get_mCNAqc_stats <- function(m_cnaqc_obj){
     stats = m_cnaqc_obj[["m_cnaqc_stats"]]
     return(stats)
 }
-
