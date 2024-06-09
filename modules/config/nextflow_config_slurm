@@ -33,10 +33,10 @@ process {
     ext.args   = {[
         "rmOutlier": params.maftools_rmOutlier,
         "addStat": params.maftools_addStat,
-        "dashboard": params.maftools_dashboard,
         "titvRaw": params.maftools_titvRaw,
         "showBarcodes": params.maftools_showBarcodes,
-        "top": params_maftools_top,
+        "dashboard": params.maftools_dashboard,
+        "top": params.maftools_top,
         "minMut": params.maftools_minMut,
         "genes": params.maftools_genes,
         "altered": params.maftools_altered,
