@@ -58,8 +58,10 @@ workflow SUBCLONAL_DECONVOLUTION {
             joint_table_singlesample = joint_table.transpose(by: [2])
             // tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/*/mobsterh_st_best_fit.rds"), emit: mobster_best_rds
             MOBSTERh_MULTI(joint_table_singlesample)
+
+            input_joint_fit = joint_table.join((MOBSTERh_MULTI.out.mobster_best_rds).groupTuple(by: [0,1]), by: [0,1,2])  // join joint_table and mobster_fits
             // collect all results and group by patient
-            joint_table = JOINT_FIT( (MOBSTERh_MULTI.out.mobster_best_rds).groupTuple(by: [1]) )
+            joint_table = JOINT_FIT(input_joint_fit)
         }
 
         if (params.tools && params.tools.split(",").contains("viber")) {
