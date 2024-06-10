@@ -5,55 +5,80 @@ process JOINT_FIT {
   )
 
   input:
-    tuple val(datasetID), val(patientID), val(sampleID), path(mobster_fits)
+    tuple val(datasetID), val(patientID), val(sampleID), path(mobster_best_fits), path(joint_table)
 
   output:
-    tuple val(datasetID), val(patientID), val(sampleID), path("$outDir/annotated_joint_table.tsv"), emit: annotated_joint
+    tuple val(datasetID), val(patientID), val(sampleID), path("$outDir/mCNAqc_filtered.rds"), emit: annotated_joint
 
   script:
     def args = task.ext.args ?: ""
-    def K = args!="" && args.K ? "$args.K" : ""
-    def samples = args!="" && args.samples ? "$args.samples" : ""
-    def init = args!="" && args.init ? "$args.init" : ""
-    def tail = args!="" && args.tail ? "$args.tail" : ""
-    def epsilon = args!="" && args.epsilon ? "$args.epsilon" : ""
-    def maxIter = args!="" && args.maxIter ? "$args.maxIter" : ""
-    def fit_type = args!="" && args.fit_type ? "$args.fit_type" : ""
-    def seed = args!="" && args.seed ? "$args.seed" : ""
-    def model_selection = args!="" && args.model_selection ? "$args.model_selection" : ""
-    def trace = args!="" && args.trace ? "$args.trace" : ""
-    def parallel = args!="" && args.parallel ? "$args.parallel" : ""
-    def pi_cutoff = args!="" && args.pi_cutoff ? "$args.pi_cutoff" : ""
-    def n_cutoff = args!="" && args.n_cutoff ? "$args.n_cutoff" : ""
-    def auto_setup = args!="" && args.auto_setup ? "$args.auto_setup" : ""
-    def silent = args!="" && args.silent ? "$args.silent" : ""
-    def tools = args!="" && args.tools ? "$args.tools" : ""
 
     outDir = "subclonal_deconvolution/mobster/$datasetID/$patientID"
+
+    if (!(sampleID instanceof String)) {
+      sampleID = sampleID.join(",")
+    }
+
+    if (!(mobster_best_fits instanceof String)) {
+      mobster_best_fits = mobster_best_fits.join(",")
+    }
 
     """
     #!/usr/bin/env Rscript
 
     # Sys.setenv("VROOM_CONNECTION_SIZE"=99999999)
 
-    library(plyr)
     library(dplyr)
-    
-    patientID = "$patientID"
-    description = patientID
 
-    dir.create("$outDir", recursive = TRUE) 
-    tsv_files = strsplit("$mobster_fits", " ")[[1]]
-    tsvs <- list()
-    for (i in seq_along(tsv_files)){
-       tsvs[[i]] <- read.table(file=tsv_files[i], header=T, sep="\t")
+    patientID = "$patientID"
+    # samples = strsplit(x="$sampleID", ",") %>% unlist()  # list of samples
+    fits = strsplit(x="$mobster_best_fits", ",") %>% unlist()  # list of mobster fitnames
+
+    muts_to_discard = lappply(fits, function(fit_name) {
+      fit_i = readRDS(fit_name)
+      fit_i[["data"]] %>% 
+        dplyr::filter(cluster=="Tail") %>% 
+        dplyr::mutate(sample_id=fit_name) %>% 
+        dplyr::select(mutation_id, cluster, sample_id)
+    }) %>% dplyr::bind_rows() %>% 
+      dplyr::group_by(mutation_id) %>% 
+      dplyr::summarise(n_samples=dplyr::n()) %>% 
+      dplyr::filter(n_samples == length(fits)) %>%
+      dplyr::pull(mutation_id)
+
+    # Function to discard mutations from the mCNAqc objects
+    discard_mutations_from_mCNAqc = function(obj, mutations_list) {
+      sample_names = obj[["original_cnaqc_objc"]] %>% names()
+      
+      get_mCNAqc_types = function(x) {
+        names(x) %>% purrr::discard(function(i) i == "m_cnaqc_stats")
+      }
+      
+      types = get_mCNAqc_types(obj)
+      
+      for (tid in types) {
+        sample_names = names(obj[[tid]])
+        for (sample_id in sample_names) {
+          obj[[tid]][[sample_id]][["mutations"]] = CNAqc::Mutations(obj[[tid]][[sample_id]]) %>% 
+            # dplyr::mutate(unique_id=paste(chr, from, to, ref, alt, sep="_")) %>% 
+            dplyr::filter(!mutation_id %in% mutations_list)
+        }
+      }
+      
+      return(obj)
     }
-    
-    t = plyr::ldply(tsvs, rbind)
-    t["cluster"] %>% 
-     apply(MARGIN=1, FUN = function(w) {any(w=="Tail", na.rm=TRUE)}) %>% table()
-    non_tail = t %>% filter(cluster!="Tail") %>% rename(mobster_cluster_id = cluster)
-    write.table(x = non_tail,file = "$patientID/mobster/annotated_joint_table.tsv",append = F,quote = F,sep = "\t",row.names = F)
-    
+
+    if ( grepl(".rds\$", tolower("$joint_table")) ) {
+      obj = readRDS("$joint_table")
+      if (class(obj) == "m_cnaqc") {
+        obj_filtered = discard_mutations_from_mCNAqc(obj, muts_to_discard)
+
+        saveRDS(obj_filtered, "$outDir/mCNAqc_filtered.rds")
+      } else {
+        cli::cli_alert_warning("Object of class {class($joint_table)} not supported. Saving the original object.")
+        saveRDS(obj, "$outDir/mCNAqc_filtered.rds")
+      }
+    }
+
     """
 }
