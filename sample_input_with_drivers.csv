@@ -1,0 +1,3 @@
+dataset,patient,sample,joint_table
+TEST,MSeq_Set06,Set6_42,/orfeo/cephfs/scratch/cdslab/shared/nextflow_results/new_version/QC/join_CNAqc/TEST/MSeq_Set06/multi_cnaqc.rds
+TEST,MSeq_Set06,Set6_44,/orfeo/cephfs/scratch/cdslab/shared/nextflow_results/new_version/QC/join_CNAqc/TEST/MSeq_Set06/multi_cnaqc.rds

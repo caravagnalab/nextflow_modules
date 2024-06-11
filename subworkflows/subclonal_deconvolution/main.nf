@@ -58,19 +58,25 @@ workflow SUBCLONAL_DECONVOLUTION {
             joint_table_singlesample = joint_table.transpose(by: [2])
             // tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/*/mobsterh_st_best_fit.rds"), emit: mobster_best_rds
             MOBSTERh_MULTI(joint_table_singlesample)
+
+            input_joint_fit = joint_table_singlesample.join(MOBSTERh_MULTI.out.mobster_best_rds, by: [0,1,2]).groupTuple(by: [0,1,3]) // group by datasetID, patientID, joint_table
             // collect all results and group by patient
-            joint_table = JOINT_FIT( (MOBSTERh_MULTI.out.mobster_best_rds).groupTuple(by: [1]) )
+            input_joint_table = JOINT_FIT(input_joint_fit)
+
+        } else {
+            input_joint_table = joint_table
         }
 
         if (params.tools && params.tools.split(",").contains("viber")) {
-            t = VIBER_MULTI(joint_table)
+            t = VIBER_MULTI(input_joint_table)
             CTREE_VIBER(VIBER_MULTI.out.viber_rds)
             emit:
             t
         }
         if (params.tools && params.tools.split(",").contains("pyclone-vi")) {
             // CNAQC_TO_TSV(joint_table) // list of patient and sample ids
-            FORMATTER_RDS_MULTI(joint_table, "rds")
+            FORMATTER_RDS_MULTI(input_joint_table, "rds")
+
             t = PYCLONEVI_MULTI(FORMATTER_RDS_MULTI.out)
             CTREE_PYCLONEVI(PYCLONEVI_MULTI.out.ctree_input)
             emit:

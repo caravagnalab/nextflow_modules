@@ -19,7 +19,6 @@ process CTREE {
     if (mode == "singlesample") {
       outDir = "subclonal_deconvolution/ctree/$datasetID/$patientID/$sampleID"
     } else if (mode == "multisample") {
-      sampleID = sampleID.join(" ")
       outDir = "subclonal_deconvolution/ctree/$datasetID/$patientID"
     }
 
@@ -51,20 +50,10 @@ process CTREE {
         dplyr::ungroup() %>%
         unique() %>%
         tidyr::pivot_wider(names_from = "sample_id", values_from = "CCF", values_fill = 0)
-
-      #  dplyr::select(sampleID, cluster, nMuts, is.driver, is.clonal, CCF) %>% 
-      #  dplyr::filter(cluster != "Tail") %>% 
-      #  mutate(cluster = as.character(cluster)) %>%
-      #  unique() %>% 
-      #  tidyr::pivot_wider(names_from="sampleID", values_from="CCF",values_fill = 0)
       
       # the driver table must contain patient and variant IDs and report clonality and driver status
       # patientID | variantID | is.driver | is.clonal | cluster | sample1 | sample2 | ...
       drivers_table = ctree_input %>% 
-      #  dplyr::select(patientID, sampleID, variantID, cluster, is.driver, is.clonal, CCF) %>% 
-      #  dplyr::filter(is.driver) %>% 
-      #  dplyr::mutate(cluster = as.character(cluster)) %>%
-      #  tidyr::pivot_wider(names_from="sampleID", values_from="CCF",values_fill = 0)
          dplyr::select(patientID, sample_id, variantID, cluster, is.driver, is.clonal, CCF) %>%
          dplyr::filter(is.driver==TRUE) %>%
          mutate(is.driver = as.logical(is.driver)) %>%

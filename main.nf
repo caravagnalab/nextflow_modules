@@ -9,12 +9,19 @@ include { DRIVER_ANNOTATION } from "${baseDir}/subworkflows/annotate_driver/main
 include { FORMATTER as FORMATTER_RDS} from "${baseDir}/subworkflows/formatter/main"
 include { QC } from "${baseDir}/subworkflows/QC/main"
 include { SUBCLONAL_DECONVOLUTION } from "${baseDir}/subworkflows/subclonal_deconvolution/main"
+include { MUTATIONAL_SIGNATURES } from "${baseDir}/subworkflows/mutational_signatures/main"
 
-workflow {  
-  input_vcf = Channel.fromPath(params.samples).
+workflow {
+
+  input_joint_table = Channel.fromPath(params.samples).
       splitCsv(header: true).
       map{row ->
-        tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.vcf), file(row.vcf_tbi))}
+        tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(),file(row.joint_table))}.groupTuple(by: [0,1,3])
+
+  // input_vcf = Channel.fromPath(params.samples).
+  //     splitCsv(header: true).
+  //     map{row ->
+  //       tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.vcf), file(row.vcf_tbi))}
  
   cancer_type = Channel.fromPath(params.samples).
       splitCsv(header: true).
@@ -45,4 +52,6 @@ workflow {
   
   QC(FORMATTER_CNA.out, annotation)
   SUBCLONAL_DECONVOLUTION(QC.out.rds_join)
+  MUTATIONAL_SIGNATURES(QC.out.rds_join)
 }
+
