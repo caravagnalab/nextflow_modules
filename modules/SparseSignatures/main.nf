@@ -118,7 +118,7 @@ process SPARSE_SIGNATURES {
   min_Lambda_beta <- as.numeric(gsub("_Lambda_Beta", "", min_Lambda_beta))
   min_K <- colnames(cv_means_mse)[min_ii[2]] 
   min_K <- as.numeric(gsub("_Signatures", "", min_K))
-  best_params_config <- tibble(min_K, min_Lambda_beta)
+  best_params_config <- data.frame(min_K, min_Lambda_beta)
 
   saveRDS(object = cv_means_mse, file = paste0(res_dir, "cv_means_mse.rds"))
   saveRDS(object = best_params_config, file = paste0(res_dir, "best_params_config.rds")) 
