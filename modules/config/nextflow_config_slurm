@@ -189,7 +189,7 @@ process {
   withName: "JOINT_FIT" {
     memory='50 GB'
     time='2h'
-    container='file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
+    container='file:///fast/cdslab/ebusca00/singularity/cdslab.sif'
   }
 }
 
