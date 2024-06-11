@@ -1,7 +1,7 @@
 nextflow.enable.dsl=2
 cleanup=true
 
-includeConfig "$baseDir/nextflow_modules/modules/config/params.config"
+includeConfig "$baseDir/modules/config/params.config"
 
 singularity {
   enabled = true
