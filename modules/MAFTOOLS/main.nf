@@ -46,33 +46,36 @@ process MAFTOOLS {
     #MAF object contains main maf file, summarized data and an oncomatrix which is useful to plot oncoplots.
     maf_merged = maftools:::merge_mafs(maf = mafs, verbose = TRUE)
 
-    pdf(file = paste0("VariantAnnotation/MAFTOOLS/","$datasetID","/maf_summary.pdf"))
+    pdf(file = paste0("VariantAnnotation/MAFTOOLS/","$datasetID","/plot_maf_summary.pdf"))
 
-    plotmafSummary(maf = maf_merged,
-                   rmOutlier = as.logical("$rmOutlier"), 
-                   addStat = eval(parse(text="$addStat")),
-                   dashboard = as.logical("$dashboard"), 
-                   titvRaw = as.logical("$titvRaw"),
-                   showBarcodes = as.logical("$showBarcodes"),
-                   top = as.integer("$top")
+    plot_maf_summary <- plotmafSummary(maf = maf_merged,
+                                       rmOutlier = as.logical("$rmOutlier"), 
+                                       addStat = eval(parse(text="$addStat")),
+                                       dashboard = as.logical("$dashboard"), 
+                                       titvRaw = as.logical("$titvRaw"),
+                                       showBarcodes = as.logical("$showBarcodes"),
+                                       top = as.integer("$top")
     )
+    p_maf_summary
     dev.off()
 
     pdf(file = paste0("VariantAnnotation/MAFTOOLS/","$datasetID","/oncoplot.pdf"))
 
-    oncoplot(maf = maf_merged,
-             minMut = eval(parse(text="$minMut")),
-             genes = eval(parse(text="$genes")),
-             altered = as.logical("$altered"),
-             top = as.integer("$top"),
-             removeNonMutated = as.logical("$removeNonMutated")
+    oncoplot <- oncoplot(maf = maf_merged,
+                         minMut = eval(parse(text="$minMut")),
+                         genes = eval(parse(text="$genes")),
+                         altered = as.logical("$altered"),
+                         top = as.integer("$top"),
+                         removeNonMutated = as.logical("$removeNonMutated")
     )
-
+    oncoplot
     dev.off()
 
     #Saving results object
 
     saveRDS(object = maf_merged, file = paste0("VariantAnnotation/MAFTOOLS/", "$datasetID","/maf_merged.rds"))
+    saveRDS(object = plot_maf_summary, file = paste0("VariantAnnotation/MAFTOOLS/", "$datasetID","/plot_maf_summary.rds"))
+    saveRDS(object = oncoplot, file = paste0("VariantAnnotation/MAFTOOLS/", "$datasetID","/oncoplot.rds"))
 
     """
 }
