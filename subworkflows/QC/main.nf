@@ -14,11 +14,11 @@ workflow QC {
     main:
 
         CNAQC(cna, vcf)
-        JOIN_CNAQC(CNAQC.out.rds.groupTuple(by: [0,1]))
+        JOIN_CNAQC(CNAQC.out.qc_rds.groupTuple(by: [0,1]))
     
     emit:
-        rds_cnaqc = CNAQC.out.rds
-        pdf_cnaqc = CNAQC.out.pdf
+        rds_cnaqc = CNAQC.out.qc_rds
+        plot_cnaqc = CNAQC.out.plot_rds
 
         rds_join = JOIN_CNAQC.out.rds
 }

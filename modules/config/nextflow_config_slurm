@@ -1,5 +1,5 @@
 nextflow.enable.dsl=2
-cleanup=true
+cleanup=false
 
 includeConfig "$baseDir/modules/config/params.config"
 
@@ -29,12 +29,6 @@ process {
   withName: 'MAFTOOLS' {
     memory = '5 GB'
     container = 'https://depot.galaxyproject.org/singularity/bioconductor-maftools%3A2.8.0--r41hd029910_0'
-  }
-
-  withName: 'RDS_PROCESSING' {
-    memory='50 GB'
-    time='1h'
-    container = 'docker://lvaleriani/cnaqc:v5'
   }
   
   withName: 'VIBER' {
@@ -161,13 +155,6 @@ process {
     ]}
   }
 
-  withName: 'GET_POSITIONS' {
-      container = 'docker://lvaleriani/cnaqc:v5'
-      memory = '50 GB'
-      time = '1h'
-      errorStrategy = 'finish'
-  }
-
   withName: 'SPARSE_SIGNATURES' {
     time='75h'
     memory='200 GB'
@@ -194,7 +181,27 @@ process {
     ]}
   }
 
+  withName: 'RDS_PROCESSING' {
+    memory='50 GB'
+    time='1h'
+    container = 'docker://lvaleriani/cnaqc:v5'
+  }
+  
   withName: 'JOIN_POSITIONS' {
+      container = 'docker://lvaleriani/cnaqc:v5'
+      memory = '50 GB'
+      time = '1h'
+      errorStrategy = 'finish'
+  }
+  
+  withName: 'GET_POSITIONS' {
+      container = 'docker://lvaleriani/cnaqc:v5'
+      memory = '50 GB'
+      time = '1h'
+      errorStrategy = 'finish'
+  }
+  
+  withName: 'ANNOTATE_DRIVER' {
       container = 'docker://lvaleriani/cnaqc:v5'
       memory = '50 GB'
       time = '1h'
@@ -219,23 +226,27 @@ process {
   }
 
   withName: 'CNA_PROCESSING' {
-    container = 'docker://lvaleriani/cnaqc:v5'
+    container = 'docker://lvaleriani/cnaqc:dev'
     memory = '50 GB'
     time = '1h'
     errorStrategy = 'finish'
   }
 
   withName: 'JOIN_CNAQC' {
-    container = 'docker://lvaleriani/cnaqc:v5'
+    container = 'docker://lvaleriani/cnaqc:dev'
     memory = '50 GB'
-    time = '2h'
+    time = '1h'
     errorStrategy = 'finish'
+    ext.args = {[
+      "qc_filter": params.joincnaqc_qc_filter,
+      "keep_original": params.joincnaqc_keep_original
+    ]}
   }
 
   withName: 'CNAQC' {
-    container = 'docker://lvaleriani/cnaqc:v5'
+    container = 'docker://lvaleriani/cnaqc:dev'
     memory = '100 GB'
-    time = '2h'
+    time = '1h'
     errorStrategy = 'finish'
     ext.args = {[
       "matching_strategy": params.cnaqc_matching_strategy,

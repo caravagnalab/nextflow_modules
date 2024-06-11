@@ -8,8 +8,9 @@ process CNAQC {
   
   output:
 
-    tuple val(datasetID), val(patientID), val(sampleID), path("QC/CNAqc/$datasetID/$patientID/$sampleID/*.rds"), emit: rds
-    tuple val(datasetID), val(patientID), val(sampleID), path("QC/CNAqc/$datasetID/$patientID/$sampleID/*.pdf"), emit: pdf
+    tuple val(datasetID), val(patientID), val(sampleID), path("QC/CNAqc/$datasetID/$patientID/$sampleID/qc.rds"), emit: qc_rds
+    tuple val(datasetID), val(patientID), val(sampleID), path("QC/CNAqc/$datasetID/$patientID/$sampleID/plot_data.rds"), path("QC/CNAqc/$datasetID/$patientID/$sampleID/plot_qc.rds"), emit: plot_rds
+    //tuple val(datasetID), val(patientID), val(sampleID), path("QC/CNAqc/$datasetID/$patientID/$sampleID/*.pdf"), emit: pdf
     
   script:
 
@@ -44,7 +45,8 @@ process CNAQC {
 
     SNV = readRDS("$snv_RDS")
     SNV = SNV[["$sampleID"]]
-    SNV = SNV\$mutations
+    SNV = SNV\$mutations 
+    SNV = SNV %>% dplyr::mutate(mutation_id = paste(chr,from,to,ref,alt,sep = ':'))
 
     CNA = readRDS("$cna_RDS")
     x = CNAqc::init(
@@ -52,8 +54,6 @@ process CNAQC {
         cna = CNA\$segments,
         purity = CNA\$purity ,
         ref = "$params.assembly")
-    
-    x\$mutations = x\$mutations %>% filter(VAF > 0)
 
     x = CNAqc::analyze_peaks(x, 
       matching_strategy = "$matching_strategy",
@@ -68,7 +68,8 @@ process CNAQC {
       kernel_adjust = as.numeric("$kernel_adjust"),
       KDE = eval(parse(text = "$kde")),
       starting_state_subclonal_evolution = "$starting_state_subclonal_evolution",
-      cluster_subclonal_CCF = as.logical("$cluster_subclonal_CCF")
+      cluster_subclonal_CCF = as.logical("$cluster_subclonal_CCF"),
+      min_VAF = 0
       )
 
     x = CNAqc::compute_CCF(
@@ -112,8 +113,10 @@ process CNAQC {
     )
 
     saveRDS(object = x, file = paste0(res_dir, "qc.rds"))
+    saveRDS(object = pl_exp, file = paste0(res_dir, "plot_data.rds"))
+    saveRDS(object = pl_qc, file = paste0(res_dir, "plot_qc.rds"))
 
-    ggplot2::ggsave(plot = pl_exp, filename = paste0(res_dir, "data.pdf"), width = 12, height = 18, units = 'in', dpi = 200)
-    ggplot2::ggsave(plot = pl_qc, filename = paste0(res_dir, "qc.pdf"), width = 12, height = 18, units = 'in', dpi = 200)
+    #ggplot2::ggsave(plot = pl_exp, filename = paste0(res_dir, "data.pdf"), width = 12, height = 18, units = 'in', dpi = 200)
+    #ggplot2::ggsave(plot = pl_qc, filename = paste0(res_dir, "qc.pdf"), width = 12, height = 18, units = 'in', dpi = 200)
     """
 }

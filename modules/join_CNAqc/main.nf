@@ -10,6 +10,11 @@ process JOIN_CNAQC {
     tuple val(datasetID), val(patientID), val (sampleID), path("QC/join_CNAqc/$datasetID/$patientID/*.rds"), emit: rds
 
   script:
+
+    def args                                    = task.ext.args                                             ?: ''
+    def qc_filter                               = args!='' && args.qc_filter                                ?  "$args.qc_filter" : ""
+    def keep_original                           = args!='' && args.keep_original                            ?  "$args.keep_original" : ""
+
     """
     #!/usr/bin/env Rscript
 
@@ -22,7 +27,7 @@ process JOIN_CNAQC {
     samples = substr("$sampleID", 2, nchar("$sampleID")-1)
     samples = strsplit(samples, ", ")[[1]]
 
-    source(paste0("$moduleDir", '/join_CNAqc.R'))
+    #source(paste0("$moduleDir", '/join_CNAqc.R'))
 
     result = lapply(strsplit("$rds_list", " ")[[1]], FUN = function(file){
              readRDS(file)
@@ -33,7 +38,10 @@ process JOIN_CNAQC {
       result[[name]]\$mutations = result[[name]]\$mutations %>% dplyr::rename(Indiv = sample)
     }
     
-    out = multisample_init(result)
+    out = CNAqc::multisample_init(result, 
+                            QC_filter = as.logical("$qc_filter"), 
+                            keep_original = as.logical("$keep_original"), 
+                            discard_private = FALSE)
     saveRDS(object = out, file = paste0(res_dir, "multi_cnaqc.rds"))
     """
 }
