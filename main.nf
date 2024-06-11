@@ -1,7 +1,6 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 
-
 include { VARIANT_ANNOTATION } from "${baseDir}/subworkflows/variant_annotation/main"
 include { FORMATTER as FORMATTER_CNA } from "${baseDir}/subworkflows/formatter/main"
 include { FORMATTER as FORMATTER_VCF} from "${baseDir}/subworkflows/formatter/main"
@@ -12,13 +11,17 @@ include { QC } from "${baseDir}/subworkflows/QC/main"
 include { SUBCLONAL_DECONVOLUTION } from "${baseDir}/subworkflows/subclonal_deconvolution/main"
 include { MUTATIONAL_SIGNATURES } from "${baseDir}/subworkflows/mutational_signatures/main"
 
+workflow {
 
-workflow {  
-
-  input_vcf = Channel.fromPath(params.samples).
+  input_joint_table = Channel.fromPath(params.samples).
       splitCsv(header: true).
       map{row ->
-        tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.vcf), file(row.vcf_tbi))}
+        tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(),file(row.joint_table))}.groupTuple(by: [0,1,3])
+
+  // input_vcf = Channel.fromPath(params.samples).
+  //     splitCsv(header: true).
+  //     map{row ->
+  //       tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.vcf), file(row.vcf_tbi))}
  
   cancer_type = Channel.fromPath(params.samples).
       splitCsv(header: true).

@@ -35,11 +35,12 @@ process VIBER {
     def mode = args.mode ?  "$args.mode" : ""
 
     if (mode == "singlesample") {
+      sampleID_string = sampleID
       outDir = "subclonal_deconvolution/viber/$datasetID/$patientID/$sampleID/"
       plot1 = "viber_best_st_mixing_plots.rds"
       plot2 = "viber_best_st_heuristic_mixing_plots.rds"
     } else if (mode == "multisample"){
-      sampleID = sampleID.join(" ")
+      sampleID_string = sampleID.join(" ")
       outDir = "subclonal_deconvolution/viber/$datasetID/$patientID/"
       plot1 = "viber_best_st_fit_plots.rds"
       plot2 = "viber_best_st_heuristic_fit_plots.rds"
@@ -57,9 +58,9 @@ process VIBER {
     dir.create("$outDir", recursive = TRUE)
 
     patientID = "$patientID"
-    samples = strsplit(x = "$sampleID", " ")%>% unlist()
+    samples = strsplit(x = "$sampleID_string", " ")%>% unlist()
 
-    print("$sampleID")
+    print("$sampleID_string")
     print("$joint_table")
     print(samples)
 
