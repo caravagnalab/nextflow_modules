@@ -12,7 +12,6 @@ process PYCLONEVI {
       tuple val(datasetID), val(patientID), val(sampleID), path("${outDir_ctree}/ctree_input_pyclonevi.csv"), emit: ctree_input
       tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/all_fits.h5"), emit: pyclone_all_fits
       tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/best_fit.txt"), emit: pyclone_best_fit
-      // tuple val(patientID), val(sampleID), path("${outDir}/pyclone_joint.tsv"), emit: pyclone_anno_joint
     
     script:
       def args = task.ext.args ?: ''
@@ -23,20 +22,17 @@ process PYCLONEVI {
       def mode                    = args.mode                     ?  "$args.mode" : ""
 
       if (mode == "singlesample") {
+        sampleID_string = sampleID
         outDir = "subclonal_deconvolution/pyclonevi/$datasetID/$patientID/$sampleID"
         outDir_ctree = "subclonal_deconvolution/ctree/$datasetID/$patientID/$sampleID"
-        // all_fits = "subclonal_deconvolution/pyclonevi/$datasetID/$patientID/$sampleID/all_fits.h5"
-        // best_fit = "subclonal_deconvolution/pyclonevi/$datasetID/$patientID/$sampleID/best_fit.txt"
-        // path_ctree = "$datasetID/$patientID/$sampleID/ctree/ctree_input_pyclonevi.csv"
-        // pyclone_joint = "subclonal_deconvolution/pyclonevi/$datasetID/$patientID/$sampleID/pyclone_joint.tsv"
       } else if (mode == "multisample"){
-        sampleID = sampleID.join(" ")
+        if (!(sampleID instanceof String)) {
+          sampleID_string = sampleID.join(" ")
+        } else {
+          sampleID_string = sampleID
+        }
         outDir = "subclonal_deconvolution/pyclonevi/$datasetID/$patientID"
         outDir_ctree = "subclonal_deconvolution/ctree/$datasetID/$patientID"
-        // all_fits = "subclonal_deconvolution/pyclonevi/$datasetID/$patientID/all_fits.h5"
-        // best_fit = "subclonal_deconvolution/pyclonevi/$datasetID/$patientID/best_fit.txt"
-        // path_ctree = "$datasetID/$patientID/ctree/ctree_input_pyclonevi.csv"
-        // pyclone_joint = "subclonal_deconvolution/pyclonevi/$datasetID/$patientID/pyclone_joint.tsv"
       }
 
       all_fits = "${outDir}/all_fits.h5"
@@ -64,12 +60,8 @@ process PYCLONEVI {
           exit 1  # Exit with error if column not found
       }')
 
-      echo \$colnames
-      echo \$column_number
-
-      # colnames="mutation_id\tpatient_id\tsample_id\tref_counts\talt_counts\tnormal_cn\tmajor_cn\tminor_cn\ttumour_content\tdriver_label\tis_driver"
       echo -e "\$colnames" > $outDir/pyclone_input.tsv
-      for i in $sampleID;
+      for i in $sampleID_string;
         do awk '\$'\$column_number' == "'"\$i"'"' $outDir/pyclone_input_all_samples.tsv >> $outDir/pyclone_input.tsv;
       done
       
