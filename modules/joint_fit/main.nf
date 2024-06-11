@@ -5,19 +5,15 @@ process JOINT_FIT {
   )
 
   input:
-    tuple val(datasetID), val(patientID), val(sampleID), path(mobster_best_fits), path(joint_table)
+    tuple val(datasetID), val(patientID), val(sampleID), path(joint_table), path(mobster_best_fits, stageAs:"?/best_fit.rds")
 
   output:
-    tuple val(datasetID), val(patientID), val(sampleID), path("$outDir/mCNAqc_filtered.rds"), emit: annotated_joint
+    tuple val(datasetID), val(patientID), val(sampleID), path("$outDir/mCNAqc_filtered.rds")
 
   script:
     def args = task.ext.args ?: ""
 
-    outDir = "subclonal_deconvolution/mobster/$datasetID/$patientID"
-
-    if (!(sampleID instanceof String)) {
-      sampleID = sampleID.join(",")
-    }
+    outDir = "subclonal_deconvolution/$datasetID/$patientID"
 
     if (!(mobster_best_fits instanceof String)) {
       mobster_best_fits = mobster_best_fits.join(",")
@@ -31,12 +27,20 @@ process JOINT_FIT {
     library(dplyr)
 
     patientID = "$patientID"
-    # samples = strsplit(x="$sampleID", ",") %>% unlist()  # list of samples
     fits = strsplit(x="$mobster_best_fits", ",") %>% unlist()  # list of mobster fitnames
 
-    muts_to_discard = lappply(fits, function(fit_name) {
+    check_mutation_id = function(mutations_table) {
+      if (!"mutation_id" %in% colnames(mutations_table))
+        mutations_table = mutations_table %>% dplyr::mutate(mutation_id=paste(chr,from,to,alt,ref, sep="_"))
+      return(mutations_table)
+    }
+
+    muts_to_discard = lapply(fits, function(fit_name) {
       fit_i = readRDS(fit_name)
-      fit_i[["data"]] %>% 
+
+      data_i = check_mutation_id(fit_i[["data"]])
+
+      data_i %>% 
         dplyr::filter(cluster=="Tail") %>% 
         dplyr::mutate(sample_id=fit_name) %>% 
         dplyr::select(mutation_id, cluster, sample_id)
@@ -60,6 +64,7 @@ process JOINT_FIT {
         sample_names = names(obj[[tid]])
         for (sample_id in sample_names) {
           obj[[tid]][[sample_id]][["mutations"]] = CNAqc::Mutations(obj[[tid]][[sample_id]]) %>% 
+            check_mutation_id() %>%
             # dplyr::mutate(unique_id=paste(chr, from, to, ref, alt, sep="_")) %>% 
             dplyr::filter(!mutation_id %in% mutations_list)
         }
@@ -67,6 +72,8 @@ process JOINT_FIT {
       
       return(obj)
     }
+
+    dir.create("$outDir", recursive=TRUE)
 
     if ( grepl(".rds\$", tolower("$joint_table")) ) {
       obj = readRDS("$joint_table")
