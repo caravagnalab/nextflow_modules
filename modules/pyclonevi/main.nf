@@ -67,7 +67,7 @@ process PYCLONEVI {
       
       pyclone-vi fit -i $outDir/pyclone_input.tsv -o $all_fits -c $n_cluster_arg -d $density_arg --num-grid-points $n_grid_point_arg --num-restarts $n_restarts_arg
       pyclone-vi write-results-file -i $all_fits -o $best_fit
-
+      python3 $moduleDir/pyclone_utils.py update_hd5_file_with_csv $all_fits $outDir/pyclone_input.tsv
       python3 $moduleDir/pyclone_ctree.py --joint $outDir/pyclone_input.tsv --best_fit $best_fit --ctree_input $path_ctree
 
       """
