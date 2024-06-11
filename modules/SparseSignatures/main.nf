@@ -130,7 +130,7 @@ process SPARSE_SIGNATURES {
                                         x = mut_counts,
                                         K = min_K,
                                         beta = eval(parse(text="$beta")), 
-                                        background_signature = eval(parse(text="$background_signature")), 
+                                        background_signature = background, 
                                         normalize_counts = as.logical("$normalize_counts"),
                                         lambda_rate_alpha = eval(parse(text="$lambda_rate_alpha")), 
                                         lambda_rate_beta = min_Lambda_beta,
