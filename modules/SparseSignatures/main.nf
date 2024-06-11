@@ -10,8 +10,10 @@ process SPARSE_SIGNATURES {
     tuple val(datasetID), val(patientID), val(sampleID), path(joint_table) //from formatter output
 
   output:
-    tuple val(datasetID), path("signature_deconvolution/SparseSig/$datasetID/cv_out.rds"), emit: signatures_cv_rds
-                          path("signature_deconvolution/SparseSig/$datasetID/signatures_bestConfig.rds"), emit: signatures_bestConf_rds
+    tuple val(datasetID), path("signature_deconvolution/SparseSig/$datasetID/cv_means_mse.rds"), emit: signatures_cv_rds
+                          path("signature_deconvolution/SparseSig/$datasetID/best_params_config.rds"), emit: signatures_bestConf_rds
+                          path("signature_deconvolution/SparseSig/$datasetID/nmf_Lasso_out.rds"), emit: signatures_nmfOut_rds
+                          path("signature_deconvolution/SparseSig/$datasetID/plot_signatures.rds"), emit: signatures_plot_rds
                           path("signature_deconvolution/SparseSig/$datasetID/plot_signatures.pdf"), emit: signatures_plot_pdf
                             
   script:
@@ -97,9 +99,8 @@ process SPARSE_SIGNATURES {
               num_processes = eval(parse(text="$num_processes")), 
               verbose = as.logical("$verbose"),
               seed = as.integer("$seed")
-)
+  )
 
-  saveRDS(object = cv_out, file = paste0(res_dir, "cv_out.rds"))
 
   #Analyze the mean squared error results averaging over cross-validation repetitions
  
@@ -117,9 +118,11 @@ process SPARSE_SIGNATURES {
   min_Lambda_beta <- as.numeric(gsub("_Lambda_Beta", "", min_Lambda_beta))
   min_K <- colnames(cv_means_mse)[min_ii[2]] 
   min_K <- as.numeric(gsub("_Signatures", "", min_K))
-  print(min_K)
-  print(min_Lambda_beta)
+  best_params_config <- tibble(min_K, min_Lambda_beta)
 
+  saveRDS(object = cv_means_mse, file = paste0(res_dir, "cv_means_mse.rds"))
+  saveRDS(object = best_params_config, file = paste0(res_dir, "best_params_config.rds")) 
+ 
   #Discovering the signatures within the dataset: NMF Lasso
   #compute the signatures for the best configuration.
 
@@ -134,9 +137,9 @@ process SPARSE_SIGNATURES {
                                         iterations = as.integer("$iterations"), 
                                         max_iterations_lasso = as.integer("$max_iterations_lasso"), 
                                         verbose = as.logical("$verbose")
-)
+  )
 
-  saveRDS(object = nmf_Lasso_out, file =  paste0(res_dir, "signatures_bestConfig.rds"))
+  saveRDS(object = nmf_Lasso_out, file =  paste0(res_dir, "nmf_Lasso_out.rds"))
 
   #signature visualization
 
@@ -144,6 +147,7 @@ process SPARSE_SIGNATURES {
   plot_signatures <- SparseSignatures::signatures.plot(beta=signatures, xlabels=FALSE)
 
   ggplot2::ggsave(plot = plot_signatures, filename = paste0(res_dir, "plot_signatures.pdf"), width = 12, height = 18, units = 'in', dpi = 200)
-
+  saveRDS(object = plot_signatures, file = paste0(res_dir, "plot_signatures.rds"))
+  
  """ 
  }
