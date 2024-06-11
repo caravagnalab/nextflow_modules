@@ -109,7 +109,7 @@ checking_input <- function(cnaqc_objs) {
 multisample_init <- function(cnaqc_objs, 
                              # cna_type = "clonal",
                              QC_filter = TRUE, 
-                             keep_original = FALSE) {
+                             keep_original = TRUE) {
   
   cli::cli_h1("mCNAqcqc - Defining common segments")
   cat('\n')

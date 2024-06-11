@@ -1,19 +1,18 @@
 nextflow.enable.dsl=2
 cleanup=true
 
-includeConfig "$baseDir/modules/config/params.config"
-
+includeConfig "$baseDir/nextflow_modules/modules/config/params.config"
 
 singularity {
   enabled = true
   singularity.envWhitelist = ["SINGULARITY_TMPDIR"]
   runOptions = '--bind /orfeo:/orfeo --bind $SINGULARITY_TMPDIR:/tmp'
 }
- 
+
 process {
-  executor='slurm'
-  queue='EPYC'
-  errorStrategy = 'finish'
+   executor='slurm'
+   queue='THIN'
+   errorStrategy = 'finish'
 }
 
 process {
@@ -30,73 +29,22 @@ process {
   withName: 'MAFTOOLS' {
     memory = '5 GB'
     container = 'https://depot.galaxyproject.org/singularity/bioconductor-maftools%3A2.8.0--r41hd029910_0'
+    ext.args   = {[
+        "rmOutlier": params.maftools_rmOutlier,
+        "addStat": params.maftools_addStat,
+        "titvRaw": params.maftools_titvRaw,
+        "showBarcodes": params.maftools_showBarcodes,
+        "dashboard": params.maftools_dashboard,
+        "top": params.maftools_top,
+        "minMut": params.maftools_minMut,
+        "genes": params.maftools_genes,
+        "altered": params.maftools_altered,
+        "removeNonMutated": params.maftools_removeNonMutated
+    ]}
   }
 }
-
+ 
 process {
-  withName: 'ANNOVAR_ANNOTATE' {
-    time='12h'
-    container = 'shub://IARCbioinfo/table_annovar-nf:v1.1'
-    memory='10 GB'
-  }
-
-  withName: 'ANNOVAR2MAF' {
-    time='24h'
-    memory='5 GB'
-  }
-}
-
-
-process {
-  withName: 'SNPEFF_ANNOTATE' {
-    time='24h'
-    container = 'https://depot.galaxyproject.org/singularity/snpeff:5.1--hdfd78af_2'
-    memory='16 GB'
-  }
-}
-
-process {
-  withName: 'PLATYPUS_CALL_VARIANTS' {
-    time='24h'
-    container = 'https://depot.galaxyproject.org/singularity/platypus-variant%3A0.8.1.1--htslib1.5_0'
-  }
-}
-
-process {
-   withName: 'BCFTOOLS_SPLIT_VEP' {
-   container = 'https://depot.galaxyproject.org/singularity/bcftools%3A1.14--hde04aa1_1'
-  }
-}
-
-process {
-  withName: 'SEQUENZA_CNAqc' {
-    memory = '300 GB'
-    time = '3h'
-    
-    errorStrategy = 'finish'
-    container = 'file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
-
-    ext.args = {[
-      "norm_method": params.seqcna_norm_method,
-      "window": params.seqcna_window,
-      "gamma": params.seqcna_gamma,
-      "kmin": params.seqcna_kmin,
-      "min_reads_baf": params.seqcna_min_reads_baf,
-      "min_reads": params.seqcna_min_reads,
-      "min_reads_normal": params.seqcna_reads_normal,
-      "max_mut_types": params.seqcna_max_mut_types,
-
-      "low_cell": params.seqcna_low_cell,
-      "up_cell": params.seqcna_up_cell,
-      "low_ploidy": params.seqcna_low_ploidy,
-      "up_ploidy": params.seqcna_up_ploidy,
-      "delta_cellularity": params.seqcna_delta_cellularity,
-      "delta_ploidy": params.seqcna_delta_ploidy,
-
-      "matching_strategy": params.seqcna_matching_strategy
-      ]}
-  }
-
   withName: 'VARTRIX' {
     memory='50 GB'
     time='2h'
@@ -106,8 +54,10 @@ process {
         "padding": params.vartrix_padding,
         "umi": params.vartrix_umi
     ]}
-  }
+  } 
+}
 
+process {
   withName: 'RDS_PROCESSING' {
     memory='50 GB'
     time='1h'
@@ -118,7 +68,6 @@ process {
     memory='128 GB'
     time='2h'
     container='file:///fast/cdslab/ebusca00/singularity/cdslab.sif'
-    // container='file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
     ext.args = {[
       "K" : params.viber_K,
       "samples" : params.viber_samples,
@@ -141,7 +90,7 @@ process {
     memory='50 GB'
     time='2h'
     container = 'https://depot.galaxyproject.org/singularity/pyclone-vi%3A0.1.3--pyhca03a8a_0'
-    ext.args   = { [
+    ext.args   = {[
       "n_cluster": params.pyclonevi_n_cluster,
       "density": params.pyclonevi_density,
       "n_grid_point": params.pyclonevi_n_grid_point,
@@ -154,7 +103,6 @@ process {
     memory='128 GB'
     time='2h'
     container='file:///fast/cdslab/ebusca00/singularity/cdslab.sif'
-    //container='file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
     ext.args = {[
       "K" : params.mobster_K,
       "samples" : params.mobster_samples,
@@ -191,13 +139,12 @@ process {
     time='2h'
     container='file:///fast/cdslab/ebusca00/singularity/cdslab.sif'
   }
-}
 
-process {
   withName: 'SIG_PROFILER' {
     time='5h'
     memory='100 GB'
-    container = "docker://fauzul/sigprofiler:1.0"
+    //container = "docker://lculibrk/sigprofiler:latest"
+    container = "docker://dceoy/sigprofiler"
     ext.args   = {[
       "reference_genome": params.sigprofiler_reference_genome,
       "exome": params.sigprofiler_exome,
@@ -220,7 +167,7 @@ process {
       "min_nmf_iterations": params.sigprofiler_min_nmf_iterations,
       "max_nmf_iterations": params.sigprofiler_max_nmf_iterations,
       "nmf_test_conv": params.sigprofiler_nmf_test_conv,
-      "tolerance": params.sigprofiler_tolerance,
+      "nmf_tolerance": params.sigprofiler_nmf_tolerance,
       "cpu": params.sigprofiler_cpu,
       "gpu": params.sigprofiler_gpu,
       "batch_size": params.sigprofiler_batch_size,
@@ -236,54 +183,68 @@ process {
       "make_decomposition_plots": params.sigprofiler_make_decomposition_plots,
       "collapse_to_SBS96": params.sigprofiler_collapse_to_SBS96,
       "get_all_signature_matrices": params.sigprofiler_get_all_signature_matrices,
-      "export_probabilities": params.sigprofiler_export_probabilities,
+      "export_probabilities": params.sigprofiler_export_probabilities
     ]}
   }
-}
 
-process {
   withName: 'SPARSE_SIGNATURES' {
-    time='75h'
-    memory='200 GB'
-    container = 'https://depot.galaxyproject.org/singularity/bioconductor-sparsesignatures%3A2.8.0--r42hdfd78af_0'
-    
-    ext.args   = {[
-      "K": params.sparsesignatures_K,
-      "background_signature": params.sparsesignatures_background_signature,
-      "beta": params.sparsesignatures_beta,
-      "normalize_counts": params.sparsesignatures_normalize_counts,
-      "nmf_runs": params.sparsesignatures_nmf_runs,
-      "iterations": params.sparsesignatures_iterations,
-      "max_iterations_lasso": params.sparsesignatures_max_iterations_lasso,
-      "num_processes": params.sparsesignatures_num_processes,
-      "starting_beta": params.sparsesignatures_starting_beta,
-      "cross_validation_entries": params.sparsesignatures_cross_validation_entries,
-      "cross_validation_repetitions": params.sparsesignatures_cross_validation_repetitions,
-      "cross_validation_iterations": params.sparsesignatures_cross_validation_iterations,
-      "lambda_rate_alpha": params.sparsesignatures_lambda_rate_alpha,
-      "lambda_rate_beta": params.sparsesignatures_lambda_rate_beta,
-      "seed": params.sparsesignatures_seed,
+    time = '5h'
+    memory = '100 GB'
+    cpus = 24
+    maxForks = 20
+
+    container = 'https://depot.galaxyproject.org/singularity/bioconductor-sparsesignatures%3A2.12.0--r43hdfd78af_0'
+    ext.args = {[
+      "K" : params.sparsesignatures_K,
+      "background_signature" : params.sparsesignatures_background_signature,
+      "beta" : params.sparsesignatures_beta,
+      "normalize_counts" : params.sparsesignatures_normalize_counts,
+      "nmf_runs" : params.sparsesignatures_nmf_runs,
+      "iterations" : params.sparsesignatures_iterations,
+      "max_iterations_lasso" : params.sparsesignatures_max_iterations_lasso,
+      "num_processes" : params.sparsesignatures_num_processes,
+      "cross_validation_entries" : params.sparsesignatures_cross_validation_entries,
+      "cross_validation_repetitions" : params.sparsesignatures_cross_validation_repetitions,
+      "cross_validation_iterations" : params.sparsesignatures_cross_validation_iterations,
+      "lambda_values_alpha" : params.sparsesignatures_lambda_values_alpha,
+      "lambda_values_beta" : params.sparsesignatures_lambda_values_beta,
+      "lambda_rate_alpha" : params.sparsesignatures_lambda_rate_alpha,
       "verbose": params.sparsesignatures_verbose,
-      "log_file": params.sparsesignatures_log_file]}
+      "seed": params.sparsesignatures_seed
+    ]}
   }
-}
 
-withName: 'GET_POSITIONS' {
+  withName: 'GET_POSITIONS' {
     container = 'docker://lvaleriani/cnaqc:v5'
     memory = '50 GB'
     time = '1h'
     errorStrategy = 'finish'
-}
+  }
 
-withName: 'JOIN_POSITIONS' {
+  withName: 'JOIN_POSITIONS' {
     container = 'docker://lvaleriani/cnaqc:v5'
     memory = '50 GB'
     time = '1h'
     errorStrategy = 'finish'
-}
+  }
 
+  withName: 'BCFTOOLS_MPILEUP' {
+    container = 'https://depot.galaxyproject.org/singularity/bcftools%3A1.9--ha228f0b_4'
+    memory = '50 GB'
+    time = '1h'
+    errorStrategy = 'finish'
+  }
 
-process {
+  withName: 'VCF_PROCESSING' {
+    container = 'docker://lvaleriani/cnaqc:v5'
+    memory = '50 GB'
+    time = '1h'
+    errorStrategy = 'finish'
+    ext.args = {[
+      "filter_mutations": params.vcf_filter_mutations
+    ]}
+  }
+
   withName: 'CNA_PROCESSING' {
     container = 'docker://lvaleriani/cnaqc:v5'
     memory = '50 GB'
@@ -298,21 +259,29 @@ process {
     errorStrategy = 'finish'
   }
 
-  withName: 'VCF_PROCESSING' {
-    container = 'docker://lvaleriani/cnaqc:v5'
-    memory = '50 GB'
-    time = '1h'
-    errorStrategy = 'finish'
-  }
-
   withName: 'CNAQC' {
     container = 'docker://lvaleriani/cnaqc:v5'
     memory = '100 GB'
     time = '2h'
     errorStrategy = 'finish'
-
     ext.args = {[
-      "matching_strategy": params.cna_matching_strategy
+      "matching_strategy": params.cnaqc_matching_strategy,
+      "karyotypes": params.cnaqc_karyotypes,
+      "min_karyotype_size":params.cnaqc_min_karyotype_size,
+      "min_absolute_karyotype_mutations":params.cnaqc_min_absolute_karyotype_mutations,
+      "p_binsize_peaks":params.cnaqc_p_binsize_peaks,
+      "matching_epsilon":params.cnaqc_matching_epsilon,
+      "purity_error":params.cnaqc_purity_error,
+      "vaf_tolerance":params.cnaqc_vaf_tolerance,
+      "n_bootstrap":params.cnaqc_n_bootstrap,
+      "kernel_adjust":params.cnaqc_kernel_adjust,
+      "kde":params.cnaqc_kde,
+      "starting_state_subclonal_evolution":params.cnaqc_starting_state_subclonal_evolution,
+      "cluster_subclonal_CCF":params.cnaqc_cluster_subclonal_CCF,
+      "muts_per_karyotype":params.cnaqc_muts_per_karyotype,
+      "cutoff_QC_PASS":params.cnaqc_cutoff_QC_PASS,
+      "method":params.cnaqc_method,
+      "plot_cn":params.cnaqc_plot_cn
     ]}
   }
 }

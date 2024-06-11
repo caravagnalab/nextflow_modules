@@ -7,7 +7,7 @@ process JOIN_CNAQC {
   
   output:
 
-    tuple val(datasetID), val(patientID), path("$datasetID/$patientID/join_CNAqc/*.rds"), emit: rds
+    tuple val(datasetID), val(patientID), val (sampleID), path("QC/join_CNAqc/$datasetID/$patientID/*.rds"), emit: rds
 
   script:
     """
@@ -16,7 +16,7 @@ process JOIN_CNAQC {
     library(tidyverse)
     library(CNAqc)
     
-    res_dir = paste0("$datasetID", "/", "$patientID", "/join_CNAqc/")
+    res_dir = paste0("QC/join_CNAqc/", "$datasetID", "/", "$patientID", "/")
     dir.create(res_dir, recursive = TRUE)
     
     samples = substr("$sampleID", 2, nchar("$sampleID")-1)
@@ -34,6 +34,6 @@ process JOIN_CNAQC {
     }
     
     out = multisample_init(result)
-    saveRDS(object = out, file = paste0(res_dir, "prova_multi_cnaqc.rds"))
+    saveRDS(object = out, file = paste0(res_dir, "multi_cnaqc.rds"))
     """
 }
