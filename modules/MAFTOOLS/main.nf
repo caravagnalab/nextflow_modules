@@ -56,7 +56,7 @@ process MAFTOOLS {
                                        showBarcodes = as.logical("$showBarcodes"),
                                        top = as.integer("$top")
     )
-    p_maf_summary
+    plot_maf_summary
     dev.off()
 
     pdf(file = paste0("VariantAnnotation/MAFTOOLS/","$datasetID","/oncoplot.pdf"))
