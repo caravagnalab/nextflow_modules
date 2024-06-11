@@ -13,15 +13,10 @@ include { MUTATIONAL_SIGNATURES } from "${baseDir}/subworkflows/mutational_signa
 
 workflow {
 
-  input_joint_table = Channel.fromPath(params.samples).
+  input_vcf = Channel.fromPath(params.samples).
       splitCsv(header: true).
       map{row ->
-        tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(),file(row.joint_table))}.groupTuple(by: [0,1,3])
-
-  // input_vcf = Channel.fromPath(params.samples).
-  //     splitCsv(header: true).
-  //     map{row ->
-  //       tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.vcf), file(row.vcf_tbi))}
+        tuple(row.dataset.toString(), row.patient.toString(), row.sample.toString(), file(row.vcf), file(row.vcf_tbi))}
  
   cancer_type = Channel.fromPath(params.samples).
       splitCsv(header: true).

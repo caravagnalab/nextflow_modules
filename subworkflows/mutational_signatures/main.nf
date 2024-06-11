@@ -2,16 +2,16 @@
 // MUTATIONAL SIGNATURES DECONVOLUTION WORKFLOW
 //
 
-include { FORMATTER as FORMATTER_RDS} from '../../subworkflows/formatter/main"
-include { SPARSE_SIGNATURES } from '../../modules/SparseSignatures/main"
-//include { SIGPROFILER } from '../../modules/SigProfiler/main"
+include { FORMATTER as FORMATTER_RDS} from "../../subworkflows/formatter/main"
+include { SPARSE_SIGNATURES } from "../../modules/SparseSignatures/main"
+//include { SIGPROFILER } from "../../modules/SigProfiler/main"
 
 
 workflow MUTATIONAL_SIGNATURES {
     take: 
     joint_table
 
-    main:   
+    main:
     
     if (params.tools && params.tools.split(',').contains('sparsesignatures')) {
         out = FORMATTER_RDS(joint_table, "rds")
