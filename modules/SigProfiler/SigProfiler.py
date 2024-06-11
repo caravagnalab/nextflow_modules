@@ -32,10 +32,9 @@ input_data = input_processing(input_data)
 input_data.to_csv('CLL/input_multisample/input_data.txt', sep='\t', index=False, header=True)
 
 #mutation's counts matrix generation
-input_matrix = matGen.SigProfilerMatrixGeneratorFunc(
-        project = "CLL", 
-        reference_genome = "GRCh37", 
-        path_to_input_files = input_path)
+input_matrix = matGen.SigProfilerMatrixGeneratorFunc(project = "CLL", 
+                                                     reference_genome = "GRCh37", 
+                                                     path_to_input_files = input_path_sigprof)
 
 #chose the data type that you would like to import: "vcf" or "matrix"
 #data = sig.importdata("matrix")
