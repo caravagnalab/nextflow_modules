@@ -75,8 +75,8 @@ process MAFTOOLS {
     #Saving results object
 
     saveRDS(object = maf_merged, file = paste0("VariantAnnotation/MAFTOOLS/", "$datasetID","/maf_merged.rds"))
-    saveRDS(object = plot_maf_summary, file = paste0("VariantAnnotation/MAFTOOLS/", "$datasetID","/plot_maf_summary.rds"))
-    saveRDS(object = oncoplot, file = paste0("VariantAnnotation/MAFTOOLS/", "$datasetID","/oncoplot.rds"))
+    #saveRDS(object = plot_maf_summary, file = paste0("VariantAnnotation/MAFTOOLS/", "$datasetID","/plot_maf_summary.rds"))
+    #saveRDS(object = oncoplot, file = paste0("VariantAnnotation/MAFTOOLS/", "$datasetID","/oncoplot.rds"))
 
     """
 }
