@@ -31,10 +31,11 @@ process MOBSTERh {
     def silent = args!="" && args.silent ? "$args.silent" : ""
 
     outDir = "subclonal_deconvolution/mobster/$datasetID/$patientID"
-    // sampleID = sampleID.join(" ")
     
     if (!(sampleID instanceof String)) {
-      sampleID = sampleID.join(",")
+      sampleID_string = sampleID.join(",")
+    } else {
+      sampleID_string = sampleID
     }
 
     """
@@ -48,7 +49,7 @@ process MOBSTERh {
     source("$moduleDir/getters.R")
 
     patientID = description = "$patientID"
-    samples = strsplit(x = "$sampleID", ",") %>% unlist()  # list of samples
+    samples = strsplit(x = "$sampleID_string", ",") %>% unlist()  # list of samples
     dir.create("$outDir", recursive = TRUE)
 
     ## read mCNAqc object
