@@ -2,7 +2,7 @@
 // QC SUB-WORKFLOW
 //
 
-include { TINC } from '../../modules/TINC/main'
+//include { TINC } from '../../modules/TINC/main'
 include { CNAQC } from '../../modules/CNAqc/main'
 include { JOIN_CNAQC } from '../../modules/join_CNAqc/main'
 
@@ -16,7 +16,7 @@ workflow QC {
 
         //TINC(cna, vcf)
         CNAQC(cna, vcf)
-        JOIN_CNAQC(CNAQC.out.rds.groupTuple(by: [0,1]))
+        JOIN_CNAQC(CNAQC.out.qc_rds.groupTuple(by: [0,1]))
     
     emit:
         rds_cnaqc = CNAQC.out.qc_rds
