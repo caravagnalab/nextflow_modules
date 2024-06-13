@@ -61,6 +61,7 @@ process SIG_PROFILER {
      
       import os
       import shutil
+      import pandas as pd
       from SigProfilerExtractor import sigpro as sig
       from SigProfilerMatrixGenerator.scripts import SigProfilerMatrixGeneratorFunc as matGen
   
@@ -75,18 +76,18 @@ process SIG_PROFILER {
       output_path = "output/SBS/CLL.SBS96.all"
       output_folder_sigprof = "results/SBS96/"
 
-      #import input data
       input_data = pd.read_csv("$joint_table", sep = "\t")
+      #'/orfeo/LTS/LADE/LT_storage/lvaleriani/nextflow_modules/work/28/a52d0fb3d52c3a96126331f9b9226c/joint_table.tsv'
     
       #input data preprocessing
       def input_processing(data):
-          new_columns = {'Project': "$datasetID", 'Genome': '$reference_genome', 'Type': "SOMATIC", 'mut_type': "SNP"}
-          df = data.assign(**new_columns)
-          df['chr'] = df['chr'].astype(str).str[3:]
-          df = df.rename(columns={'Indiv': 'Sample', 'chr': 'chrom', 'from': 'pos_start', 'to': 'pos_end'})
-          df["ID"] = df["Sample"]
-          df = df.loc[:, ['Project', 'Sample', 'ID', 'Genome', 'mut_type', 'chrom', 'pos_start', 'pos_end', 'ref', 'alt', 'Type']]
-          return df
+         new_columns = {'Project': "$datasetID", 'Genome': '$reference_genome', 'Type': "SOMATIC", 'mut_type': "SNP"}
+         df = data.assign(**new_columns)
+         df['chr'] = df['chr'].astype(str).str[3:]
+         df = df.rename(columns={'Indiv': 'Sample', 'chr': 'chrom', 'from': 'pos_start', 'to': 'pos_end'})
+         df["ID"] = df["Sample"]
+         df = df.loc[:, ['Project', 'Sample', 'ID', 'Genome', 'mut_type', 'chrom', 'pos_start', 'pos_end', 'ref', 'alt', 'Type']]
+         return df
     
       input_data = input_processing(input_data)
 
@@ -97,15 +98,14 @@ process SIG_PROFILER {
       input_matrix = matGen.SigProfilerMatrixGeneratorFunc(
               project = "$datasetID", 
               reference_genome = "$reference_genome", 
-              path_to_input_file = input_path,
+              path_to_input_files = input_path,
               exome = bool("$exome"),
-              bed_file = "$bed_file",
+              bed_file = eval("$bed_file"),
               chrom_based = bool("$chrom_based"),
               plot = bool("$plot"),
               tsb_stat = bool("$tsb_stat"),
               seqInfo = bool("$seqInfo),
-              cushion = int("$cushion),
-              volume = "$volume")
+              cushion = int("$cushion))
 
       # Perform model fitting
       sig.sigProfilerExtractor(input_type = "$input_type", 
@@ -148,4 +148,5 @@ process SIG_PROFILER {
       source_dir = "output_folder_sigprof"
       dest_dir = "signature_deconvolution/Sigprofiler/$datasetID/"
       shutil.copytree(source_dir, dest_dir)
+   """
 }

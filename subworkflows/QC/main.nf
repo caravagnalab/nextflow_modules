@@ -18,7 +18,8 @@ workflow QC {
     
     emit:
         rds_cnaqc = CNAQC.out.qc_rds
-        plot_cnaqc = CNAQC.out.plot_rds
+        plot_cnaqc_rds = CNAQC.out.plot_rds
+        plot_cnaqc_pdf = CNAQC.out.plot_pdf
 
         rds_join = JOIN_CNAQC.out.rds
 }

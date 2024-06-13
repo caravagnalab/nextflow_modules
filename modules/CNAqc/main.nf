@@ -10,8 +10,8 @@ process CNAQC {
 
     tuple val(datasetID), val(patientID), val(sampleID), path("QC/CNAqc/$datasetID/$patientID/$sampleID/qc.rds"), emit: qc_rds
     tuple val(datasetID), val(patientID), val(sampleID), path("QC/CNAqc/$datasetID/$patientID/$sampleID/plot_data.rds"), path("QC/CNAqc/$datasetID/$patientID/$sampleID/plot_qc.rds"), emit: plot_rds
-    //tuple val(datasetID), val(patientID), val(sampleID), path("QC/CNAqc/$datasetID/$patientID/$sampleID/*.pdf"), emit: pdf
-    
+    tuple val(datasetID), val(patientID), val(sampleID), path("QC/CNAqc/$datasetID/$patientID/$sampleID/data.pdf"), path("QC/CNAqc/$datasetID/$patientID/$sampleID/qc.pdf"), emit: plot_pdf
+
   script:
 
     def args                                = task.ext.args                                         ?: ''
@@ -116,7 +116,7 @@ process CNAQC {
     saveRDS(object = pl_exp, file = paste0(res_dir, "plot_data.rds"))
     saveRDS(object = pl_qc, file = paste0(res_dir, "plot_qc.rds"))
 
-    #ggplot2::ggsave(plot = pl_exp, filename = paste0(res_dir, "data.pdf"), width = 12, height = 18, units = 'in', dpi = 200)
-    #ggplot2::ggsave(plot = pl_qc, filename = paste0(res_dir, "qc.pdf"), width = 12, height = 18, units = 'in', dpi = 200)
+    ggplot2::ggsave(plot = pl_exp, filename = paste0(res_dir, "data.pdf"), width = 12, height = 18, units = 'in', dpi = 200)
+    ggplot2::ggsave(plot = pl_qc, filename = paste0(res_dir, "qc.pdf"), width = 12, height = 18, units = 'in', dpi = 200)
     """
 }

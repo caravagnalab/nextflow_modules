@@ -1,0 +1,34 @@
+#!/bin/sh
+#### Cluster specific arguments ####
+
+#SBATCH --job-name=NF_MASTER
+####SBATCH --output=logs/nf_%j.out
+#SBATCH --error=err
+#SBATCH --partition=THIN
+#SBATCH --nodes=1
+#SBATCH --ntasks=2
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=10G
+#SBATCH --time=12:00:00
+#SBATCH -A lade
+#SBATCH --output=log_multisample
+
+module load singularity/3.10.4
+module load java/1.8.0
+module load R/4.2.3
+
+RESULTS_PATH=$evoverse/results/LAST_multi_sample/
+
+/orfeo/LTS/CDSLab/LT_storage/ncalonaci/nextflow/nextflow run $evoverse/main.nf \
+    -c $evoverse/modules/config/nextflow_config_slurm \
+    --samples $evoverse/evoverse_input.csv \
+    --publish_dir $RESULTS_PATH \
+    --mode "multisample" \
+    --tools "pyclone-vi,mobster,viber,sparsesignatures"
+    #--pyclonevi_n_cluster 5 \
+    #--pyclonevi_n_restarts 10 \
+    #--mobster_samples 1 \
+    #--mobster_K 2 \
+    #--viber_K 4 \
+    #--viber_samples 1 \
+    #--viber_maxIter 50

@@ -4,7 +4,7 @@
 
 include { FORMATTER as FORMATTER_RDS} from "../../subworkflows/formatter/main"
 include { SPARSE_SIGNATURES } from "../../modules/SparseSignatures/main"
-//include { SIGPROFILER } from "../../modules/SigProfiler/main"
+include { SIG_PROFILER } from "../../modules/SigProfiler/main"
 
 
 workflow MUTATIONAL_SIGNATURES {

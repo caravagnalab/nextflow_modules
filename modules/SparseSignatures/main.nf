@@ -42,7 +42,6 @@ process SPARSE_SIGNATURES {
   library(SparseSignatures)
   library(ggplot2)
   library(stringr)
-  #library(BSgenome.Hsapiens.1000genomes.hs37d5)
     
   res_dir = paste0("signature_deconvolution/SparseSig/", "$datasetID", "/")
   dir.create(res_dir, recursive = TRUE)
@@ -62,10 +61,7 @@ process SPARSE_SIGNATURES {
   #The user must select, among the available choices, the reference genome consistent with the mutation dataset.
 
   
-  #bsg = BSgenome.Hsapiens.1000genomes.hs37d5::hs37d5
-  bsg_hs37 = "/orfeo/LTS/CDSLab/LT_storage/shared/BS_genome/bsg_hs37d5.rds"
-  bsg = readRDS(bsg_hs37)
-
+  bsg = BSgenome.Hsapiens.1000genomes.hs37d5::hs37d5
   mut_counts = SparseSignatures::import.trinucleotides.counts(data=input_data, reference=bsg)
 
   #load a reference SBS5 background signature from COSMIC
@@ -79,14 +75,13 @@ process SPARSE_SIGNATURES {
 
     
   #Find the optimal number of signatures and sparsity level: rely on cross-validation
-  # 1 h per repetition
-  #higher number of CV repetitions corresponds to more accurate parameter estimates
+  # higher number of CV repetitions corresponds to more accurate parameter estimates
       
   cv_out = SparseSignatures::nmfLassoCV(
               x = mut_counts,
               K = eval(parse(text="$K")),  
               starting_beta = starting_betas,
-              background_signature = eval(parse(text="$background_signature")), 
+              background_signature = background, 
               normalize_counts = as.logical("$normalize_counts"), 
               nmf_runs = as.integer("$nmf_runs"), 
               lambda_values_alpha = eval(parse(text="$lambda_values_alpha")), 

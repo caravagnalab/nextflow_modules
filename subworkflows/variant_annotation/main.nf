@@ -12,13 +12,16 @@ workflow VARIANT_ANNOTATION {
         vcf
 
     main:
-        vep_out = VEP_ANNOTATE(vcf)
-        vcf2maf_out = VCF2MAF(VEP_ANNOTATE.out.vep_output)
-        maf_out = MAFTOOLS(VCF2MAF.out.vcf2maf_out.groupTuple(by: 0))
+        VEP_ANNOTATE(vcf)
+        VCF2MAF(VEP_ANNOTATE.out.vep_output)
+        MAFTOOLS(VCF2MAF.out.vcf2maf_out.groupTuple(by: 0))
 
     emit:
-        vep = vep_out 
-        vcf2maf = vcf2maf_out
-        maf = maf_out
+        vep = VEP_ANNOTATE.out.vep_output 
+        vcf2maf = VCF2MAF.out.vcf2maf_out
+        
+        maf_rds = MAFTOOLS.out.maf_results
+        maf_oncoplot = MAFTOOLS.out.oncoplot
+        maf_summary = MAFTOOLS.out.summary_plot
 
 }

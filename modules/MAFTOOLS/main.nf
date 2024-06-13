@@ -12,7 +12,10 @@ process MAFTOOLS {
 
     output:
 
-      tuple val(datasetID), path("VariantAnnotation/MAFTOOLS/$datasetID/*.rds")
+      tuple val(datasetID), path("VariantAnnotation/MAFTOOLS/$datasetID/*.rds"), emit: maf_results
+      tuple val(datasetID), path("VariantAnnotation/MAFTOOLS/$datasetID/maf_summary.pdf"), emit: summary_plot
+      tuple val(datasetID), path("VariantAnnotation/MAFTOOLS/$datasetID/oncoplot.pdf"), emit: oncoplot
+
 
     script:
 
@@ -47,36 +50,32 @@ process MAFTOOLS {
     maf_merged = maftools:::merge_mafs(maf = mafs, verbose = TRUE)
 
     #Creating a pdf file for summary output    
-    #pdf(file = paste0("VariantAnnotation/MAFTOOLS/","$datasetID","/plot_maf_summary.pdf"))
+    pdf(file = paste0("VariantAnnotation/MAFTOOLS/","$datasetID","/maf_summary.pdf"))
 
-    #plot_maf_summary <- plotmafSummary(maf = maf_merged,
-    #                                   rmOutlier = as.logical("$rmOutlier"), 
-    #                                   addStat = eval(parse(text="$addStat")),
-    #                                   dashboard = as.logical("$dashboard"), 
-    #                                   titvRaw = as.logical("$titvRaw"),
-    #                                   showBarcodes = as.logical("$showBarcodes"),
-    #                                   top = as.integer("$top")
-    #)
-    #plot_maf_summary
-    #dev.off()
+    plot_maf_summary <- plotmafSummary(maf = maf_merged,
+                                       rmOutlier = as.logical("$rmOutlier"), 
+                                       addStat = eval(parse(text="$addStat")),
+                                       dashboard = as.logical("$dashboard"), 
+                                       titvRaw = as.logical("$titvRaw"),
+                                       showBarcodes = as.logical("$showBarcodes"),
+                                       top = as.integer("$top")
+    )
+    plot_maf_summary
+    dev.off()
 
-    #pdf(file = paste0("VariantAnnotation/MAFTOOLS/","$datasetID","/oncoplot.pdf"))
+    pdf(file = paste0("VariantAnnotation/MAFTOOLS/","$datasetID","/oncoplot.pdf"))
 
-    #oncoplot <- oncoplot(maf = maf_merged,
-    #                     minMut = eval(parse(text="$minMut")),
-    #                     genes = eval(parse(text="$genes")),
-    #                     altered = as.logical("$altered"),
-    #                     top = as.integer("$top"),
-    #                     removeNonMutated = as.logical("$removeNonMutated")
-    #)
-    #oncoplot
-    #dev.off()
+    oncoplot <- oncoplot(maf = maf_merged,
+                         minMut = eval(parse(text="$minMut")),
+                         genes = eval(parse(text="$genes")),
+                         altered = as.logical("$altered"),
+                         top = as.integer("$top"),
+                         removeNonMutated = as.logical("$removeNonMutated")
+    )
+    oncoplot
+    dev.off()
 
     #Saving results object
-
     saveRDS(object = maf_merged, file = paste0("VariantAnnotation/MAFTOOLS/", "$datasetID","/maf_merged.rds"))
-    #saveRDS(object = plot_maf_summary, file = paste0("VariantAnnotation/MAFTOOLS/", "$datasetID","/plot_maf_summary.rds"))
-    #saveRDS(object = oncoplot, file = paste0("VariantAnnotation/MAFTOOLS/", "$datasetID","/oncoplot.rds"))
-
     """
 }
