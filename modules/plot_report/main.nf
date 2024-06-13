@@ -29,6 +29,7 @@ process PLOT_REPORT_SINGLE_SAMPLE {
     library(tidyverse)
     library(ggplot2)
     library(magick)
+    library(rhdf5)
 
     format_list = function(nf_list) {
       stringr::str_replace_all(nf_list, pattern="^\\[|\\]\$", replacement="") %>% 

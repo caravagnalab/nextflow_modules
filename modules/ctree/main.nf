@@ -142,17 +142,17 @@ process CTREE {
       saveRDS(object=plot_tree, file=paste0("$outDir/", ctree_output, "_plots.rds"))
 
       # Save report plot
-      top_phylo = plot(trees[[1]])
-      phylos = ggplot()
-      if (length(trees) > 1) phylos = lapply(trees[2:min(length(trees), 3)], plot) %>% patchwork::wrap_plots(nrow=1)
-      ccf = plot_CCF_clusters(trees[[1]])
-      info_transfer = plot_information_transfer(trees[[1]])
-      clone_size = plot_clone_size(trees[[1]])
+      #top_phylo = plot(trees[[1]])
+      #phylos = ggplot()
+      #if (length(trees) > 1) phylos = lapply(trees[2:min(length(trees), 3)], plot) %>% patchwork::wrap_plots(nrow=1)
+      #ccf = plot_CCF_clusters(trees[[1]])
+      #info_transfer = plot_information_transfer(trees[[1]])
+      #clone_size = plot_clone_size(trees[[1]])
 
-      report_fig = patchwork::wrap_plots(ccf, info_transfer, top_phylo, clone_size, phylos, design="A#BB\nD#CC\nEEEE")
-      saveRDS(object=report_fig, file=paste0("$outDir/REPORT_plots_", ctree_output, ".rds"))
-      ggsave(plot=report_fig, filename=paste0("$outDir/REPORT_plots_", ctree_output, ".pdf"), height=297, width=210, units="mm")
-      ggsave(plot=report_fig, filename=paste0("$outDir/REPORT_plots_", ctree_output, ".png"), height=297, width=210, units="mm")
+      #report_fig = patchwork::wrap_plots(ccf, info_transfer, top_phylo, clone_size, phylos, design="A#BB\nD#CC\nEEEE")
+      #saveRDS(object=report_fig, file=paste0("$outDir/REPORT_plots_", ctree_output, ".rds"))
+      #ggsave(plot=report_fig, filename=paste0("$outDir/REPORT_plots_", ctree_output, ".pdf"), height=297, width=210, units="mm")
+      #ggsave(plot=report_fig, filename=paste0("$outDir/REPORT_plots_", ctree_output, ".png"), height=297, width=210, units="mm")
     }
 
     """

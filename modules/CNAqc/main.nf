@@ -117,7 +117,7 @@ process CNAQC {
     saveRDS(object = pl_exp, file = paste0(res_dir, "plot_data.rds"))
     saveRDS(object = pl_qc, file = paste0(res_dir, "plot_qc.rds"))
 
-    ggplot2::ggsave(plot = pl_exp, filename = paste0(res_dir, "data.pdf"), width = 12, height = 18, units = 'in', dpi = 200)
-    ggplot2::ggsave(plot = pl_qc, filename = paste0(res_dir, "qc.pdf"), width = 12, height = 18, units = 'in', dpi = 200)
+    ggplot2::ggsave(plot = pl_exp, filename = paste0(res_dir, "data.pdf"), width = 210, height = 297, units="mm", dpi = 200)
+    ggplot2::ggsave(plot = pl_qc, filename = paste0(res_dir, "qc.pdf"), width = 210, height = 297, units="mm", dpi = 200)
     """
 }

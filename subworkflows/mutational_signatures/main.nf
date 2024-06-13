@@ -18,7 +18,10 @@ workflow MUTATIONAL_SIGNATURES {
     SPARSE_SIGNATURES(out) // run SparseSignatures
     
     emit:
-    plot_pdf = SPARSE_SIGNATURES.out.signatures_plot_pdf
+    //plot_pdf = SPARSE_SIGNATURES.out.signatures_plot_pdf
+    sig_pdf = SPARSE_SIGNATURES.out.signatures_plot_pdf
+    exp_pdf = SPARSE_SIGNATURES.out.exposure_plot_pdf
+
     signatures_nmfOut = SPARSE_SIGNATURES.out.signatures_nmfOut_rds
     plot_rds = SPARSE_SIGNATURES.out.signatures_plot_rds
     bestConf = SPARSE_SIGNATURES.out.signatures_bestConf_rds
