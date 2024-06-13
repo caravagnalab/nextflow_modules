@@ -121,6 +121,20 @@ process {
     time='2h'
     container='file:///fast/cdslab/ebusca00/singularity/cdslab.sif'
   }
+  
+  withName: "PLOT_REPORT_SINGLE_SAMPLE" {
+    memory='50 GB'
+    time='2h'
+    container="docker://lvaleriani/plot:v1"
+    
+  }
+  
+  withName: "PLOT_REPORT_MULTI_SAMPLE" {
+    memory='50 GB'
+    time='2h'
+    container="docker://lvaleriani/plot:v1"
+    
+  }
 
   withName: 'SIG_PROFILER' {
     time='5h'

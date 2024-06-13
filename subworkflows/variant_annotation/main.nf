@@ -22,6 +22,6 @@ workflow VARIANT_ANNOTATION {
         
         maf_rds = MAFTOOLS.out.maf_results
         maf_oncoplot = MAFTOOLS.out.oncoplot
-        maf_summary = MAFTOOLS.out.summary_plot
+        maf_summary_plot = MAFTOOLS.out.summary_plot
 
 }

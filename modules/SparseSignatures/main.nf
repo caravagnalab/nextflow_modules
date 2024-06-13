@@ -10,11 +10,11 @@ process SPARSE_SIGNATURES {
     tuple val(datasetID), val(patientID), val(sampleID), path(joint_table) //from formatter output
 
   output:
-    tuple val(datasetID), path("signature_deconvolution/SparseSig/$datasetID/cv_means_mse.rds"), emit: signatures_cv_rds
-                          path("signature_deconvolution/SparseSig/$datasetID/best_params_config.rds"), emit: signatures_bestConf_rds
-                          path("signature_deconvolution/SparseSig/$datasetID/nmf_Lasso_out.rds"), emit: signatures_nmfOut_rds
-                          path("signature_deconvolution/SparseSig/$datasetID/plot_signatures.rds"), emit: signatures_plot_rds
-                          path("signature_deconvolution/SparseSig/$datasetID/plot_signatures.pdf"), emit: signatures_plot_pdf
+  tuple val(datasetID), val(patientID), val(sampleID), path("signature_deconvolution/SparseSig/$datasetID/cv_means_mse.rds"), emit: signatures_cv_rds
+  tuple val(datasetID), val(patientID), val(sampleID), path("signature_deconvolution/SparseSig/$datasetID/best_params_config.rds"), emit: signatures_bestConf_rds
+  tuple val(datasetID), val(patientID), val(sampleID), path("signature_deconvolution/SparseSig/$datasetID/nmf_Lasso_out.rds"), emit: signatures_nmfOut_rds
+  tuple val(datasetID), val(patientID), val(sampleID), path("signature_deconvolution/SparseSig/$datasetID/plot_all.rds"), emit: signatures_plot_rds
+  tuple val(datasetID), val(patientID), val(sampleID), path("signature_deconvolution/SparseSig/$datasetID/plot_all.pdf"), emit: signatures_plot_pdf
                             
   script:
 
@@ -140,9 +140,26 @@ process SPARSE_SIGNATURES {
 
   signatures = nmf_Lasso_out[["beta"]]
   plot_signatures <- SparseSignatures::signatures.plot(beta=signatures, xlabels=FALSE)
+  #ggplot2::ggsave(plot = plot_signatures, filename = paste0(res_dir, "plot_signatures.pdf"), width = 12, height = 18, units = 'in', dpi = 200)
+  #saveRDS(object = plot_signatures, file = paste0(res_dir, "plot_signatures.rds"))
 
-  ggplot2::ggsave(plot = plot_signatures, filename = paste0(res_dir, "plot_signatures.pdf"), width = 12, height = 18, units = 'in', dpi = 200)
-  saveRDS(object = plot_signatures, file = paste0(res_dir, "plot_signatures.rds"))
+
+  plot_exposure = nmf_Lasso_out\$alpha %>% 
+    as.data.frame() %>% 
+    tibble::rownames_to_column(var="PatientID") %>% 
+    tidyr::pivot_longer(cols=!"PatientID", names_to="Signatures", values_to="Exposures") %>% 
+    
+    ggplot() +
+    geom_bar(aes(x=PatientID, y=Exposures, fill=Signatures), 
+            position="stack", stat="identity") +
+    theme(axis.text.x=element_text(angle=90,hjust=1),
+          panel.background=element_blank(),
+          axis.line=element_line(colour="black"))
+  plt_all = ggpubr::ggarrange(plot_exposure, plot_signatures, ncol=2)
+  
+  
+  ggplot2::ggsave(plot = plt_all, filename = paste0(res_dir, "plot_all.pdf"), width = 12, height = 18, units = 'in', dpi = 200)
+  saveRDS(object = plt_all, file = paste0(res_dir, "plt_all.rds"))
   
  """ 
  }

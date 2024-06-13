@@ -10,7 +10,8 @@ process CNAQC {
 
     tuple val(datasetID), val(patientID), val(sampleID), path("QC/CNAqc/$datasetID/$patientID/$sampleID/qc.rds"), emit: qc_rds
     tuple val(datasetID), val(patientID), val(sampleID), path("QC/CNAqc/$datasetID/$patientID/$sampleID/plot_data.rds"), path("QC/CNAqc/$datasetID/$patientID/$sampleID/plot_qc.rds"), emit: plot_rds
-    tuple val(datasetID), val(patientID), val(sampleID), path("QC/CNAqc/$datasetID/$patientID/$sampleID/data.pdf"), path("QC/CNAqc/$datasetID/$patientID/$sampleID/qc.pdf"), emit: plot_pdf
+    tuple val(datasetID), val(patientID), val(sampleID), path("QC/CNAqc/$datasetID/$patientID/$sampleID/data.pdf"), emit: plot_pdf_data
+    tuple val(datasetID), val(patientID), val(sampleID), path("QC/CNAqc/$datasetID/$patientID/$sampleID/qc.pdf"), emit: plot_pdf_qc
 
   script:
 

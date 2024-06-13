@@ -10,6 +10,9 @@ include { FORMATTER as FORMATTER_RDS} from "${baseDir}/subworkflows/formatter/ma
 include { QC } from "${baseDir}/subworkflows/QC/main"
 include { SUBCLONAL_DECONVOLUTION } from "${baseDir}/subworkflows/subclonal_deconvolution/main"
 include { MUTATIONAL_SIGNATURES } from "${baseDir}/subworkflows/mutational_signatures/main"
+include { PLOT_REPORT_SINGLE_SAMPLE } from "${baseDir}/modules/plot_report/main"
+include { PLOT_REPORT_MULTI_SAMPLE } from "${baseDir}/modules/plot_report/plot_report_multi"
+
 
 workflow {
 
@@ -31,7 +34,7 @@ workflow {
   FORMATTER_VCF(VARIANT_ANNOTATION.out.vep, "vcf")
   FORMATTER_CNA(input_cna, "cna")
   
-  exist_bam_val = false
+  exist_bam_val = false //placeholder
   if (params.mode == 'multisample' && exist_bam_val){  
     tumor_bam = Channel.fromPath(params.samples).
       splitCsv(header: true).
@@ -48,5 +51,32 @@ workflow {
   QC(FORMATTER_CNA.out, annotation)
   SUBCLONAL_DECONVOLUTION(QC.out.rds_join)
   MUTATIONAL_SIGNATURES(QC.out.rds_join)
+
+  if (params.mode == 'singlesample'){
+      PLOT_REPORT_SINGLE_SAMPLE(VARIANT_ANNOTATION.out.maf_oncoplot, 
+              VARIANT_ANNOTATION.out.maf_summary_plot,
+              QC.out.plot_cnaqc_data.groupTuple(by: [0]), 
+              QC.out.plot_cnaqc_qc.groupTuple(by: [0]),
+              MUTATIONAL_SIGNATURES.out.plot_pdf,
+              SUBCLONAL_DECONVOLUTION.out.viber_pdf.groupTuple(by: [0]),
+              SUBCLONAL_DECONVOLUTION.out.pyclone_fits.groupTuple(by: [0]),
+              SUBCLONAL_DECONVOLUTION.out.pyclone_best.groupTuple(by: [0]),
+              SUBCLONAL_DECONVOLUTION.out.mobster_pdf.groupTuple(by: [0]),
+              SUBCLONAL_DECONVOLUTION.out.ctree_mobster_pdf.groupTuple(by: [0])
+              )
+
+  } else if  (params.mode == 'multisample') {
+       PLOT_REPORT_MULTI_SAMPLE(VARIANT_ANNOTATION.out.maf_oncoplot, 
+              VARIANT_ANNOTATION.out.maf_summary_plot,
+              QC.out.plot_cnaqc_data.groupTuple(by: [0]), 
+              QC.out.plot_cnaqc_qc.groupTuple(by: [0]),
+              MUTATIONAL_SIGNATURES.out.plot_pdf.groupTuple(by: [0]),
+              SUBCLONAL_DECONVOLUTION.out.viber_pdf.groupTuple(by: [0]),
+              SUBCLONAL_DECONVOLUTION.out.ctree_viber_pdf.groupTuple(by: [0]),
+              SUBCLONAL_DECONVOLUTION.out.pyclone_fits.groupTuple(by: [0]),
+              SUBCLONAL_DECONVOLUTION.out.pyclone_best.groupTuple(by: [0]),
+              SUBCLONAL_DECONVOLUTION.out.ctree_pyclone_pdf.groupTuple(by: [0])
+              )
+  }
 }
 

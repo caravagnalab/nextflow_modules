@@ -12,9 +12,9 @@ process MAFTOOLS {
 
     output:
 
-      tuple val(datasetID), path("VariantAnnotation/MAFTOOLS/$datasetID/*.rds"), emit: maf_results
-      tuple val(datasetID), path("VariantAnnotation/MAFTOOLS/$datasetID/maf_summary.pdf"), emit: summary_plot
-      tuple val(datasetID), path("VariantAnnotation/MAFTOOLS/$datasetID/oncoplot.pdf"), emit: oncoplot
+      tuple val(datasetID), val(patientID), val(sampleID), path("VariantAnnotation/MAFTOOLS/$datasetID/*.rds"), emit: maf_results
+      tuple val(datasetID), val(patientID), val(sampleID), path("VariantAnnotation/MAFTOOLS/$datasetID/maf_summary.pdf"), emit: summary_plot
+      tuple val(datasetID), val(patientID), val(sampleID), path("VariantAnnotation/MAFTOOLS/$datasetID/oncoplot.pdf"), emit: oncoplot
 
 
     script:
