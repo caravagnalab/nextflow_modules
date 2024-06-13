@@ -1,6 +1,7 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 
+
 include { VARIANT_ANNOTATION } from "${baseDir}/subworkflows/variant_annotation/main"
 include { FORMATTER as FORMATTER_CNA } from "${baseDir}/subworkflows/formatter/main"
 include { FORMATTER as FORMATTER_VCF} from "${baseDir}/subworkflows/formatter/main"
@@ -14,7 +15,8 @@ include { PLOT_REPORT_SINGLE_SAMPLE } from "${baseDir}/modules/plot_report/main"
 include { PLOT_REPORT_MULTI_SAMPLE } from "${baseDir}/modules/plot_report/plot_report_multi"
 
 
-workflow {
+
+workflow {  
 
   input_vcf = Channel.fromPath(params.samples).
       splitCsv(header: true).
