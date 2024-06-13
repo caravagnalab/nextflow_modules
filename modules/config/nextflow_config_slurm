@@ -123,8 +123,8 @@ process {
   withName: 'SIG_PROFILER' {
     time='5h'
     memory='100 GB'
-    //container = "docker://lculibrk/sigprofiler:latest"
-    container = "docker://dceoy/sigprofiler"
+    container = "docker://lculibrk/sigprofiler:latest"
+    //container = "docker://dceoy/sigprofiler"
     ext.args   = {[
       "reference_genome": params.sigprofiler_reference_genome,
       "exome": params.sigprofiler_exome,

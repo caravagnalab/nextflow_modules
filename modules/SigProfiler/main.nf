@@ -148,4 +148,6 @@ process SIG_PROFILER {
       source_dir = "output_folder_sigprof"
       dest_dir = "signature_deconvolution/Sigprofiler/$datasetID/"
       shutil.copytree(source_dir, dest_dir)
+     
+      """
 }
