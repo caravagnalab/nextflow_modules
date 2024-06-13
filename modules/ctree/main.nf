@@ -7,6 +7,9 @@ process CTREE {
   output:
     tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/ctree_{VIBER,MOBSTERh,pyclonevi}.rds"), emit: ctree_rds, optional: true 
     tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/ctree_{VIBER,MOBSTERh,pyclonevi}_plots.rds"), emit: ctree_plots_rds, optional: true
+    tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/REPORT_plots_ctree_{VIBER,MOBSTERh,pyclonevi}.rds"), emit: ctree_report_rds, optional: true
+    tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/REPORT_plots_ctree_{VIBER,MOBSTERh,pyclonevi}.pdf"), emit: ctree_report_pdf, optional: true
+    tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/REPORT_plots_ctree_{VIBER,MOBSTERh,pyclonevi}.png"), emit: ctree_report_png, optional: true
 
   script:
 
@@ -137,7 +140,19 @@ process CTREE {
       dir.create("$outDir/", recursive = TRUE)
       saveRDS(object=trees, file=paste0("$outDir/", ctree_output, ".rds"))
       saveRDS(object=plot_tree, file=paste0("$outDir/", ctree_output, "_plots.rds"))
+
+      # Save report plot
+      top_phylo = plot(trees[[1]])
+      phylos = lapply(trees[2:min(length(trees), 3)], plot) %>% patchwork::wrap_plots(nrow=1)
+      ccf = plot_CCF_clusters(trees[[1]])
+      info_transfer = plot_information_transfer(trees[[1]])
+      clone_size = plot_clone_size(trees[[1]])
+
+      report_fig = patchwork::wrap_plots(ccf, info_transfer, top_phylo, clone_size, phylos, design="A#BB\nD#CC\nEEEE")
+      saveRDS(object=report_fig, file=paste0("$outDir/REPORT_plots_", ctree_output, ".rds"))
+      ggsave(plot=report_fig, filename=paste0("$outDir/REPORT_plots_", ctree_output, ".pdf"), height=297, width=210, units="mm")
+      ggsave(plot=report_fig, filename=paste0("$outDir/REPORT_plots_", ctree_output, ".png"), height=297, width=210, units="mm")
     }
- 
+
     """
 }

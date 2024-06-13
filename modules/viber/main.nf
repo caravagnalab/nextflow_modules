@@ -10,10 +10,13 @@ process VIBER {
 
   output:
     
-    tuple val(datasetID), val(patientID), val(sampleID), path("$outDir/viber_best_st_fit.rds"), emit: viber_rds
-    tuple val(datasetID), val(patientID), val(sampleID), path("$outDir/viber_best_st_heuristic_fit.rds"), emit: viber_heuristic_rds
-    tuple val(datasetID), val(patientID), val(sampleID), path("$outDir/$plot1"), emit: viber_plots_rds
-    tuple val(datasetID), val(patientID), val(sampleID), path("$outDir/$plot2"), emit: viber_heuristic_plots_rds
+    tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/viber_best_st_fit.rds"), emit: viber_rds
+    tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/viber_best_st_heuristic_fit.rds"), emit: viber_heuristic_rds
+    tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/${plot1}"), emit: viber_plots_rds
+    tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/${plot2}"), emit: viber_heuristic_plots_rds
+    tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/REPORT_plots_viber.rds"), emit: viber_report_rds
+    tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/REPORT_plots_viber.pdf"), emit: viber_report_pdf
+    tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/REPORT_plots_viber.png"), emit: viber_report_png
 
   script:
     // viber fit params
@@ -162,5 +165,25 @@ process VIBER {
       saveRDS(plot_fit_mixing, file=paste0("$outDir", "viber_best_st_mixing_plots.rds"))
       saveRDS(plot_fit_mixing_heuristic, file=paste0("$outDir", "viber_best_st_heuristic_mixing_plots.rds"))
     }
+
+    # Save report plot
+
+    n_samples = ncol(best_fit[["x"]]) - 1
+    marginals = ggplot()
+
+    try(expr = {marginals <<- VIBER::plot_1D(best_fit)} )
+    multivariate = plot(best_fit) %>% patchwork::wrap_plots()
+    top_p = patchwork::wrap_plots(marginals, multivariate, design=ifelse(n_samples>2, "A\nB\nB", "AAB"))
+
+    mix_p = VIBER::plot_mixing_proportions(best_fit)
+    binom = VIBER::plot_peaks(best_fit)
+    elbo = VIBER::plot_ELBO(best_fit)
+    bottom_p = patchwork::wrap_plots(mix_p, binom, elbo, design="ABBBC")
+
+    report_fig = patchwork::wrap_plots(top_p, bottom_p, design=ifelse(n_samples>2, "A\nA\nA\nB", "A\nA\nB"))
+    saveRDS(report_fig, file=paste0("$outDir", "REPORT_plots_viber.rds"))
+    ggsave(plot=report_fig, filename=paste0("$outDir", "REPORT_plots_viber.pdf"), height=210, width=210, units="mm")
+    ggsave(plot=report_fig, filename=paste0("$outDir", "REPORT_plots_viber.png"), height=210, width=210, units="mm")
+
     """
 }

@@ -11,6 +11,9 @@ process MOBSTERh {
     tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/*/mobsterh_st_fit.rds"), emit: mobster_rds
     tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/*/mobsterh_st_best_fit.rds"), emit: mobster_best_rds
     tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/*/*plots.rds"), emit: mobster_plots_rds
+    tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/*/REPORT_plots_mobster.rds"), emit: mobster_report_rds
+    tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/*/REPORT_plots_mobster.pdf"), emit: mobster_report_pdf
+    tuple val(datasetID), val(patientID), val(sampleID), path("${outDir}/*/REPORT_plots_mobster.png"), emit: mobster_report_png
 
   script:
     def args = task.ext.args ?: ""
@@ -114,6 +117,12 @@ process MOBSTERh {
       saveRDS(object=fit, file=paste0(outDir_sample, "mobsterh_st_fit.rds"))
       saveRDS(object=best_fit, file=paste0(outDir_sample, "mobsterh_st_best_fit.rds"))
       saveRDS(object=plot_fit, file=paste0(outDir_sample, "mobsterh_st_best_fit_plots.rds"))
+
+      # save report plots
+      report_fig = mobster::plot_model_selection(fit)
+      saveRDS(report_fig, file=paste0("$outDir", "REPORT_plots_mobster.rds"))
+      ggsave(plot=report_fig, filename=paste0("$outDir", "REPORT_plots_mobster.pdf"), height=210, width=210, units="mm")
+      ggsave(plot=report_fig, filename=paste0("$outDir", "REPORT_plots_mobster.png"), height=210, width=210, units="mm")
     })
 
     """
