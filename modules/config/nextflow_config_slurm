@@ -1,5 +1,5 @@
 nextflow.enable.dsl=2
-cleanup=false
+cleanup=true
 
 includeConfig "$baseDir/modules/config/params.config"
 
@@ -8,12 +8,13 @@ singularity {
   singularity.envWhitelist = ["SINGULARITY_TMPDIR"]
   runOptions = '--bind /orfeo:/orfeo --bind $SINGULARITY_TMPDIR:/tmp'
 }
-
+ 
 process {
    executor='slurm'
    queue='THIN'
    errorStrategy = 'finish'
 }
+
 
 process {
   withName: 'VEP_ANNOTATE' {
@@ -23,7 +24,6 @@ process {
   }
 
   withName: 'VCF2MAF' {
-    memory = '10 GB'
     container = 'https://depot.galaxyproject.org/singularity/vcf2maf%3A1.6.20--0'
   }
 
@@ -43,12 +43,33 @@ process {
         "removeNonMutated": params.maftools_removeNonMutated
     ]}
   }
+}
+ 
+process {
+  withName: 'VARTRIX' {
+    memory='50 GB'
+    time='2h'
+    container = 'https://depot.galaxyproject.org/singularity/vartrix%3A1.1.22--h27d5293_3'
+    ext.args   = {[
+        "scoring": params.vartrix_scoring_method,
+        "padding": params.vartrix_padding,
+        "umi": params.vartrix_umi
+    ]}
+  } 
+}
 
-
+process {
+  withName: 'RDS_PROCESSING' {
+    memory='50 GB'
+    time='1h'
+    container = 'docker://lvaleriani/cnaqc:v5'
+  }
+  
   withName: 'VIBER' {
     memory='128 GB'
     time='2h'
     container='file:///fast/cdslab/ebusca00/singularity/cdslab.sif'
+    // container='file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
     ext.args = {[
       "K" : params.viber_K,
       "samples" : params.viber_samples,
@@ -84,6 +105,7 @@ process {
     memory='128 GB'
     time='2h'
     container='file:///fast/cdslab/ebusca00/singularity/cdslab.sif'
+    //container='file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
     ext.args = {[
       "K" : params.mobster_K,
       "samples" : params.mobster_samples,
@@ -104,7 +126,6 @@ process {
   }
 
   withName: "CTREE" {
-    errorStrategy='ignore'
     memory='50 GB'
     time='2h'
     container='file:///fast/cdslab/ebusca00/singularity/cdslab.sif'
@@ -119,14 +140,15 @@ process {
   withName: "JOINT_FIT" {
     memory='50 GB'
     time='2h'
-    container='file:///fast/cdslab/ebusca00/singularity/cdslab.sif'
+    container='file:///orfeo/LTS/CDSLab/LT_storage/shared/containers/singularity/cdslab.sif'
   }
+
 
   withName: 'SIG_PROFILER' {
     time='5h'
     memory='100 GB'
-    container = "docker://lculibrk/sigprofiler:latest"
-    //container = "docker://dceoy/sigprofiler"
+    //container = "docker://lculibrk/sigprofiler:latest"
+    container = "docker://dceoy/sigprofiler"
     ext.args   = {[
       "reference_genome": params.sigprofiler_reference_genome,
       "exome": params.sigprofiler_exome,
@@ -169,55 +191,42 @@ process {
     ]}
   }
 
-  withName: 'SPARSE_SIGNATURES' {
-    time = '10h'
-    memory = '100 GB'
-    cpus = 24
-    maxForks = 20
+    withName: 'SPARSE_SIGNATURES' {
+        time = '5h'
+        memory = '100 GB'
+        cpus = 24
+        maxForks = 20
+            
+        container = 'https://depot.galaxyproject.org/singularity/bioconductor-sparsesignatures%3A2.12.0--r43hdfd78af_0'
+        ext.args = {[
+          "K" : params.sparsesignatures_K,
+          "background_signature" : params.sparsesignatures_background_signature,
+          "beta" : params.sparsesignatures_beta,
+          "normalize_counts" : params.sparsesignatures_normalize_counts,
+          "nmf_runs" : params.sparsesignatures_nmf_runs,
+          "iterations" : params.sparsesignatures_iterations,
+          "max_iterations_lasso" : params.sparsesignatures_max_iterations_lasso,
+          "num_processes" : params.sparsesignatures_num_processes,
+          "cross_validation_entries" : params.sparsesignatures_cross_validation_entries,
+          "cross_validation_repetitions" : params.sparsesignatures_cross_validation_repetitions,
+          "cross_validation_iterations" : params.sparsesignatures_cross_validation_iterations,
+          "lambda_values_alpha" : params.sparsesignatures_lambda_values_alpha,
+          "lambda_values_beta" : params.sparsesignatures_lambda_values_beta,
+          "lambda_rate_alpha" : params.sparsesignatures_lambda_rate_alpha,
+          "verbose": params.sparsesignatures_verbose,
+          "seed": params.sparsesignatures_seed
+        ]}
+    }
 
-    //container = 'https://depot.galaxyproject.org/singularity/bioconductor-sparsesignatures%3A2.12.0--r43hdfd78af_0'
-    container = 'docker://lvaleriani/sparsesignature:v1'
-    ext.args = {[
-      "K" : params.sparsesignatures_K,
-      "background_signature" : params.sparsesignatures_background_signature,
-      "beta" : params.sparsesignatures_beta,
-      "normalize_counts" : params.sparsesignatures_normalize_counts,
-      "nmf_runs" : params.sparsesignatures_nmf_runs,
-      "iterations" : params.sparsesignatures_iterations,
-      "max_iterations_lasso" : params.sparsesignatures_max_iterations_lasso,
-      "num_processes" : params.sparsesignatures_num_processes,
-      "cross_validation_entries" : params.sparsesignatures_cross_validation_entries,
-      "cross_validation_repetitions" : params.sparsesignatures_cross_validation_repetitions,
-      "cross_validation_iterations" : params.sparsesignatures_cross_validation_iterations,
-      "lambda_values_alpha" : params.sparsesignatures_lambda_values_alpha,
-      "lambda_values_beta" : params.sparsesignatures_lambda_values_beta,
-      "lambda_rate_alpha" : params.sparsesignatures_lambda_rate_alpha,
-      "verbose": params.sparsesignatures_verbose,
-      "seed": params.sparsesignatures_seed
-    ]}
-  }
-
-  withName: 'RDS_PROCESSING' {
-    memory='50 GB'
-    time='1h'
-    container = 'docker://lvaleriani/cnaqc:v5'
-  }
-  
-  withName: 'JOIN_POSITIONS' {
-    container = 'docker://lvaleriani/cnaqc:v5'
-    memory = '50 GB'
-    time = '1h'
-    errorStrategy = 'finish'
-  }
-  
   withName: 'GET_POSITIONS' {
       container = 'docker://lvaleriani/cnaqc:v5'
       memory = '50 GB'
       time = '1h'
       errorStrategy = 'finish'
   }
+
   
-  withName: 'ANNOTATE_DRIVER' {
+  withName: 'JOIN_POSITIONS' {
       container = 'docker://lvaleriani/cnaqc:v5'
       memory = '50 GB'
       time = '1h'
@@ -225,10 +234,10 @@ process {
   }
 
   withName: 'BCFTOOLS_MPILEUP' {
-    container = 'https://depot.galaxyproject.org/singularity/bcftools%3A1.9--ha228f0b_4'
-    memory = '50 GB'
-    time = '1h'
-    errorStrategy = 'finish'
+      container = 'https://depot.galaxyproject.org/singularity/bcftools%3A1.9--ha228f0b_4'
+      memory = '50 GB'
+      time = '1h'
+      errorStrategy = 'finish'
   }
 
   withName: 'VCF_PROCESSING' {
@@ -242,27 +251,23 @@ process {
   }
 
   withName: 'CNA_PROCESSING' {
-    container = 'docker://lvaleriani/cnaqc:dev'
+    container = 'docker://lvaleriani/cnaqc:v5'
     memory = '50 GB'
     time = '1h'
     errorStrategy = 'finish'
   }
 
   withName: 'JOIN_CNAQC' {
-    container = 'docker://lvaleriani/cnaqc:dev'
+    container = 'docker://lvaleriani/cnaqc:v5'
     memory = '50 GB'
-    time = '1h'
+    time = '2h'
     errorStrategy = 'finish'
-    ext.args = {[
-      "qc_filter": params.joincnaqc_qc_filter,
-      "keep_original": params.joincnaqc_keep_original
-    ]}
   }
 
   withName: 'CNAQC' {
-    container = 'docker://lvaleriani/cnaqc:dev'
+    container = 'docker://lvaleriani/cnaqc:v5'
     memory = '100 GB'
-    time = '1h'
+    time = '2h'
     errorStrategy = 'finish'
     ext.args = {[
       "matching_strategy": params.cnaqc_matching_strategy,
@@ -283,5 +288,12 @@ process {
       "method":params.cnaqc_method,
       "plot_cn":params.cnaqc_plot_cn
     ]}
+  }
+
+  withName: 'TINC' {
+    container = 'docker://vvvirgy/tinc:v2'
+    memory = '100 GB'
+    time = '2h'
+    errorStrategy = 'finish'
   }
 }
