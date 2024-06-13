@@ -143,7 +143,8 @@ process CTREE {
 
       # Save report plot
       top_phylo = plot(trees[[1]])
-      phylos = lapply(trees[2:min(length(trees), 3)], plot) %>% patchwork::wrap_plots(nrow=1)
+      phylos = ggplot()
+      if (length(trees) > 1) phylos = lapply(trees[2:min(length(trees), 3)], plot) %>% patchwork::wrap_plots(nrow=1)
       ccf = plot_CCF_clusters(trees[[1]])
       info_transfer = plot_information_transfer(trees[[1]])
       clone_size = plot_clone_size(trees[[1]])

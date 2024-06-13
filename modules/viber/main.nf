@@ -169,10 +169,10 @@ process VIBER {
     # Save report plot
 
     n_samples = ncol(best_fit[["x"]]) - 1
-    marginals = ggplot()
+    marginals = multivariate = ggplot()
 
     try(expr = {marginals <<- VIBER::plot_1D(best_fit)} )
-    multivariate = plot(best_fit) %>% patchwork::wrap_plots()
+    try(expr = {multivariate = plot(best_fit) %>% patchwork::wrap_plots()} )
     top_p = patchwork::wrap_plots(marginals, multivariate, design=ifelse(n_samples>2, "A\nB\nB", "AAB"))
 
     mix_p = VIBER::plot_mixing_proportions(best_fit)
