@@ -30,6 +30,7 @@ process PLOT_REPORT_SINGLE_SAMPLE {
     library(ggplot2)
     library(magick)
     library(rhdf5)
+    library(patchwork)
 
     format_list = function(nf_list) {
       stringr::str_replace_all(nf_list, pattern="^\\[|\\]\$", replacement="") %>% 
@@ -61,7 +62,7 @@ process PLOT_REPORT_SINGLE_SAMPLE {
     # Dataset 
     maftools_oncoplot <- image_read_pdf("$maftools_oncoplot") %>% image_ggplot()
     maftools_summary <- image_read_pdf("$maftools_summary") %>% image_ggplot()
-    maftools <- maftools_oncoplot | maftools_summary
+    maftools <- maftools_summary + maftools_oncoplot + patchwork::plot_layout(nrow = 2)
     maftools
 
     image_read_pdf("$spareSig_plot")

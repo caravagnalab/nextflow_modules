@@ -49,6 +49,7 @@ process MOBSTERh {
     library(CNAqc)
     library(mobster)
     library(dplyr)
+    library(ggplot2)
     source("$moduleDir/getters.R")
 
     patientID = description = "$patientID"
@@ -121,8 +122,8 @@ process MOBSTERh {
       # save report plots
       report_fig = mobster::plot_model_selection(fit)
       saveRDS(report_fig, file=paste0("$outDir", "REPORT_plots_mobster.rds"))
-      ggsave(plot=report_fig, filename=paste0("$outDir", "REPORT_plots_mobster.pdf"), height=210, width=210, units="mm")
-      ggsave(plot=report_fig, filename=paste0("$outDir", "REPORT_plots_mobster.png"), height=210, width=210, units="mm")
+      ggplot2::ggsave(plot=report_fig, filename=paste0("$outDir", "REPORT_plots_mobster.pdf"), height=210, width=210, units="mm", dpi = 200)
+      ggplot2::ggsave(plot=report_fig, filename=paste0("$outDir", "REPORT_plots_mobster.png"), height=210, width=210, units="mm", dpi = 200)
     })
 
     """

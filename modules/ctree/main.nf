@@ -32,6 +32,8 @@ process CTREE {
     library(dplyr)
     library(VIBER)
     library(mobster)
+    library(ggplot2)
+    library(patchwork)
     
     initialize_ctree_obj = function(ctree_input) {
       if (!"variantID" %in% colnames(ctree_input) | !"is.driver" %in% colnames(ctree_input)) {
@@ -142,17 +144,23 @@ process CTREE {
       saveRDS(object=plot_tree, file=paste0("$outDir/", ctree_output, "_plots.rds"))
 
       # Save report plot
-      #top_phylo = plot(trees[[1]])
-      #phylos = ggplot()
+      top_phylo = plot(trees[[1]])
+      phylos = ggplot2::ggplot()
       #if (length(trees) > 1) phylos = lapply(trees[2:min(length(trees), 3)], plot) %>% patchwork::wrap_plots(nrow=1)
-      #ccf = plot_CCF_clusters(trees[[1]])
-      #info_transfer = plot_information_transfer(trees[[1]])
-      #clone_size = plot_clone_size(trees[[1]])
+      if (length(trees) > 1) phylos = lapply(trees[2:min(length(trees), 3)], plot)
+      phylos = ggpubr::ggarrange(plotlist = phylos)
+
+      ccf = ctree::plot_CCF_clusters(trees[[1]])
+      info_transfer = ctree::plot_information_transfer(trees[[1]])
+      clone_size = ctree::plot_clone_size(trees[[1]])
 
       #report_fig = patchwork::wrap_plots(ccf, info_transfer, top_phylo, clone_size, phylos, design="A#BB\nD#CC\nEEEE")
-      #saveRDS(object=report_fig, file=paste0("$outDir/REPORT_plots_", ctree_output, ".rds"))
-      #ggsave(plot=report_fig, filename=paste0("$outDir/REPORT_plots_", ctree_output, ".pdf"), height=297, width=210, units="mm")
-      #ggsave(plot=report_fig, filename=paste0("$outDir/REPORT_plots_", ctree_output, ".png"), height=297, width=210, units="mm")
+      report_fig = ggpubr::ggarrange(plotlist = list(ccf, info_transfer, top_phylo, clone_size, phylos), nrow = 3, ncol = 2)
+      
+      
+      saveRDS(object=report_fig, file=paste0("$outDir/REPORT_plots_", ctree_output, ".rds"))
+      ggplot2::ggsave(plot=report_fig, filename=paste0("$outDir/REPORT_plots_", ctree_output, ".pdf"), height=297, width=210, units="mm", dpi = 200)
+      ggplot2::ggsave(plot=report_fig, filename=paste0("$outDir/REPORT_plots_", ctree_output, ".png"), height=297, width=210, units="mm", dpi = 200)
     }
 
     """

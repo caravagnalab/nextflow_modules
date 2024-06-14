@@ -57,6 +57,7 @@ process VIBER {
     library(VIBER)
     library(dplyr)
     library(tidyverse)
+    library(ggplot2)
     source("$moduleDir/getters.R")
     dir.create("$outDir", recursive = TRUE)
 
@@ -167,22 +168,28 @@ process VIBER {
     }
 
     # Save report plot
-    #n_samples = ncol(best_fit[["x"]]) - 1
-    #marginals = multivariate = ggplot()
+    n_samples = ncol(best_fit[["x"]]) - 1
+    marginals = multivariate = ggplot()
 
-    #try(expr = {marginals <<- VIBER::plot_1D(best_fit)} )
+    try(expr = {marginals <<- VIBER::plot_1D(best_fit)} )
     #try(expr = {multivariate = plot(best_fit) %>% patchwork::wrap_plots()} )
-    #top_p = patchwork::wrap_plots(marginals, multivariate, design=ifelse(n_samples>2, "A\nB\nB", "AAB"))
+    #top_p = patchwork::wrap_plots(marginals, multivariate, design=ifelse(n_samples>2, "ABB", "AAB"))
 
-    #mix_p = VIBER::plot_mixing_proportions(best_fit)
-    #binom = VIBER::plot_peaks(best_fit)
-    #elbo = VIBER::plot_ELBO(best_fit)
+    try(expr = {multivariate = plot(best_fit)})
+    try(expr = {multivariate = ggpubr::ggarrange(plotlist = multivariate)})
+    top_p = ggpubr::ggarrange(plotlist = list(marginals, multivariate), widths=ifelse(n_samples>2, c(1,2), c(2,1)))
+
+    mix_p = VIBER::plot_mixing_proportions(best_fit)
+    binom = VIBER::plot_peaks(best_fit)
+    elbo = VIBER::plot_ELBO(best_fit)
     #bottom_p = patchwork::wrap_plots(mix_p, binom, elbo, design="ABBBC")
+    bottom_p = ggpubr::ggarrange(plotlist = list(mix_p, binom, elbo), widths = c(1,2,1), nrow = 1)
 
-    #report_fig = patchwork::wrap_plots(top_p, bottom_p, design=ifelse(n_samples>2, "A\nA\nA\nB", "A\nA\nB"))
-    #saveRDS(report_fig, file=paste0("$outDir", "REPORT_plots_viber.rds"))
-    #ggsave(plot=report_fig, filename=paste0("$outDir", "REPORT_plots_viber.pdf"), height=210, width=210, units="mm")
-    #ggsave(plot=report_fig, filename=paste0("$outDir", "REPORT_plots_viber.png"), height=210, width=210, units="mm")
+    #report_fig = patchwork::wrap_plots(top_p, bottom_p, design=ifelse(n_samples>2, "AAAB", "AAB"))
+    report_fig = ggpubr::ggarrange(top_p, bottom_p, nrow = 2, heights = ifelse(n_samples>2, c(3,1), c(2,1)))
+    saveRDS(report_fig, file=paste0("$outDir", "REPORT_plots_viber.rds"))
+    ggplot2::ggsave(plot=report_fig, filename=paste0("$outDir", "REPORT_plots_viber.pdf"), height=210, width=210, units="mm", dpi = 200)
+    ggplot2::ggsave(plot=report_fig, filename=paste0("$outDir", "REPORT_plots_viber.png"), height=210, width=210, units="mm", dpi = 200)
 
     """
 }

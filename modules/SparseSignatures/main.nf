@@ -13,10 +13,8 @@ process SPARSE_SIGNATURES {
   tuple val(datasetID), val(patientID), val(sampleID), path("signature_deconvolution/SparseSig/$datasetID/cv_means_mse.rds"), emit: signatures_cv_rds
   tuple val(datasetID), val(patientID), val(sampleID), path("signature_deconvolution/SparseSig/$datasetID/best_params_config.rds"), emit: signatures_bestConf_rds
   tuple val(datasetID), val(patientID), val(sampleID), path("signature_deconvolution/SparseSig/$datasetID/nmf_Lasso_out.rds"), emit: signatures_nmfOut_rds
-  tuple val(datasetID), val(patientID), val(sampleID), path("signature_deconvolution/SparseSig/$datasetID/plot_signatures.rds"), emit: signatures_plot_rds
-  tuple val(datasetID), val(patientID), val(sampleID), path("signature_deconvolution/SparseSig/$datasetID/plot_signatures.pdf"), emit: signatures_plot_pdf
-  tuple val(datasetID), val(patientID), val(sampleID), path("signature_deconvolution/SparseSig/$datasetID/plot_exposure.rds"), emit: exposure_plot_rds
-  tuple val(datasetID), val(patientID), val(sampleID), path("signature_deconvolution/SparseSig/$datasetID/plot_exposure.pdf"), emit: exposure_plot_pdf
+  tuple val(datasetID), val(patientID), val(sampleID), path("signature_deconvolution/SparseSig/$datasetID/plot_all.rds"), emit: signatures_plot_rds
+  tuple val(datasetID), val(patientID), val(sampleID), path("signature_deconvolution/SparseSig/$datasetID/plot_all.pdf"), emit: signatures_plot_pdf
                             
 
   script:
@@ -45,6 +43,7 @@ process SPARSE_SIGNATURES {
   library(SparseSignatures)
   library(ggplot2)
   library(stringr)
+  library(patchwork)
     
   res_dir = paste0("signature_deconvolution/SparseSig/", "$datasetID", "/")
   dir.create(res_dir, recursive = TRUE)
@@ -143,8 +142,8 @@ process SPARSE_SIGNATURES {
 
   signatures = nmf_Lasso_out[["beta"]]
   plot_signatures <- SparseSignatures::signatures.plot(beta=signatures, xlabels=FALSE)
-  ggplot2::ggsave(plot = plot_signatures, filename = paste0(res_dir, "plot_signatures.pdf"), width = 210, height = 297, units="mm", dpi = 200)
-  saveRDS(object = plot_signatures, file = paste0(res_dir, "plot_signatures.rds"))
+  #ggplot2::ggsave(plot = plot_signatures, filename = paste0(res_dir, "plot_signatures.pdf"), width = 210, height = 297, units="mm", dpi = 200)
+  #saveRDS(object = plot_signatures, file = paste0(res_dir, "plot_signatures.rds"))
 
 
   plot_exposure = nmf_Lasso_out\$alpha %>% 
@@ -159,13 +158,13 @@ process SPARSE_SIGNATURES {
           panel.background=element_blank(),
           axis.line=element_line(colour="black"))
   
-  ggplot2::ggsave(plot = plot_exposure, filename = paste0(res_dir, "plot_exposure.pdf"), width = 210, height = 297, units="mm", dpi = 200)
-  saveRDS(object = plot_exposure, file = paste0(res_dir, "plot_exposure.rds"))
+  #ggplot2::ggsave(plot = plot_exposure, filename = paste0(res_dir, "plot_exposure.pdf"), width = 210, height = 297, units="mm", dpi = 200)
+  #saveRDS(object = plot_exposure, file = paste0(res_dir, "plot_exposure.rds"))
 
 
-  #plt_all = ggpubr::ggarrange(plot_exposure, plot_signatures, ncol=2)
-  #ggplot2::ggsave(plot = plt_all, filename = paste0(res_dir, "plot_all.pdf"), width = 210, height = 297, units="mm", dpi = 200)
-  #saveRDS(object = plt_all, file = paste0(res_dir, "plt_all.rds"))
+  plt_all = patchwork::wrap_plots(plot_exposure, plot_signatures, ncol=2) + patchwork::plot_annotation(title = "$datasetID")
+  ggplot2::ggsave(plot = plt_all, filename = paste0(res_dir, "plot_all.pdf"), width = 210, height = 297, units="mm", dpi = 200)
+  saveRDS(object = plt_all, file = paste0(res_dir, "plt_all.rds"))
   
  """ 
  }
