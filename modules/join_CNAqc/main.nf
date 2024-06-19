@@ -27,8 +27,6 @@ process JOIN_CNAQC {
     samples = substr("$sampleID", 2, nchar("$sampleID")-1)
     samples = strsplit(samples, ", ")[[1]]
 
-    #source(paste0("$moduleDir", '/join_CNAqc.R'))
-
     result = lapply(strsplit("$rds_list", " ")[[1]], FUN = function(file){
              readRDS(file)
              }) 

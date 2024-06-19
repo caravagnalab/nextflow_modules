@@ -32,30 +32,30 @@ process PLOT_REPORT_SINGLE_SAMPLE {
     library(rhdf5)
     library(patchwork)
 
-    format_list = function(nf_list) {
-      stringr::str_replace_all(nf_list, pattern="^\\[|\\]\$", replacement="") %>% 
-        stringr::str_replace_all(pattern="\\], \\[", replacement="\\]:\\[") %>% 
+    format_sampleID = function(sample_ids) {
+        stringr::str_replace_all(sample_ids, pattern="^\\[|\\]\$", replacement="") %>% 
+        stringr::str_replace_all(pattern="^\\[|\\]\$", replacement="") %>% 
+        stringr::str_replace_all(pattern="\\],\\[", replacement=":") %>% 
         strsplit(':') %>% unlist()
     }
 
-    patientID = format_list("$patientID")
-    sampleID = format_list("$sampleID")
+    format_patientID = function(patient_ids){
+        stringr::str_replace_all(patient_ids, pattern="^\\[|\\]\$", replacement="") %>% 
+        strsplit(', ') %>% unlist()
+    }
 
-    cnaqc_data_plot = format_list("$cnaqc_data_plot")
-    cnaqc_data_qc = format_list("$cnaqc_data_qc")
+    patientID = format_patientID("$patientID")
+    sampleID = format_sampleID("$sampleID")
 
-    viber_pdf = format_list("$viber_pdf")
-    mobster_pdf = format_list("$mobster_pdf")
-    ctree_mobster_pdf = format_list("$ctree_mobster_pdf")
+    cnaqc_data_plot = format_patientID("$cnaqc_data_plot")
+    cnaqc_data_qc = format_patientID("$cnaqc_data_qc")
+
+    viber_pdf = format_patientID("$viber_pdf")
+    mobster_pdf = format_patientID("$mobster_pdf")
+    ctree_mobster_pdf = format_patientID("$ctree_mobster_pdf")
 
 
-    # tsv_joint <- read.table(file = "~/single_sample/CNAqc2tsv/TEST/MSeq_Set06/joint_table.tsv",header = T, sep = "\t")
-    # pyclone_fit <- read.table(file = "~/MSeq_Set06/best_fit.txt", header = T)
-    # plot_pyclone = plot_summary_pyclone(x = tsv_joint,
-    #                       y = pyclone_fit,
-    #                       h5_file = "/path/to/all_fits.h5",
-    #                       d1 = "Set6_42",
-    #                       d2 = "Set6_44")
+    #tsv_joint = read.table(file = "$joint_table", header = T, sep = "\t")
 
     pdf(file = "report/$datasetID/final_report.pdf", paper = 'a4')
 
@@ -67,12 +67,10 @@ process PLOT_REPORT_SINGLE_SAMPLE {
 
     image_read_pdf("$spareSig_plot")
     
-    # Patient
-
     # Sample
     lapply(1:length(patientID), function(p){
 
-      samples_pID = format_list(sampleID[[p]])
+      samples_pID = format_patientID(sampleID[[p]])
 
       lapply(1:length(samples_pID), function(s){
         
@@ -82,17 +80,18 @@ process PLOT_REPORT_SINGLE_SAMPLE {
         image_read_pdf( format_list(viber_pdf[[p]])[[s]] ) %>% image_ggplot()
         image_read_pdf( format_list(mobster_pdf[[p]])[[s]] ) %>% image_ggplot()
         image_read_pdf( format_list(ctree_mobster_pdf[[p]])[[s]] ) %>% image_ggplot()
-        # plot_pyclone
+        
+        #pyclone_fit = read.table(header = T)
+        #pyclone_h5 = 
+        #plot_pyclone = plot_summary_pyclone(x = tsv_joint,
+        #              y = pyclone_fit,
+        #              h5_file = pyclone_h5,
+        #              d1 = p)
       
       })
     })
 
     dev.off()
-
-
-
-
-
 
     """
 

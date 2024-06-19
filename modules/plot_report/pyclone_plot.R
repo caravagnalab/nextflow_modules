@@ -152,13 +152,16 @@ pyclone_cluster_peaks <- function (x, y,cex = 1, colors = NA)
   return(p)
 }
 
-
-
-plot_summary_pyclone <- function(x,y,h5_file, d1, d2, cex = 1, alpha = 0.3, cut_zeroes = TRUE){
+plot_summary_pyclone <- function(x, y, h5_file, d1, d2 = NULL, cex = 1, alpha = 0.3, cut_zeroes = TRUE){
   n_samples <- 2
-  marginals <- pyclone_plot_1D(x = x,y=y,colors = NA)
-  multivariate <- pyclone_plot_2D(x = x, y = y,d1 = d1, d2 =d2,cex = cex,alpha = 0.3, cut_zeroes = TRUE)
+  marginals <- pyclone_plot_1D(x = x, y = y, colors = NA)
+  if (is.null(d2)){
+    multivariate <- ggplot()
+  } else{
+    multivariate <- pyclone_plot_2D(x = x, y = y, d1 = d1, d2 =d2,cex = cex,alpha = 0.3, cut_zeroes = TRUE)
+  }
   top_p = patchwork::wrap_plots(marginals, multivariate, design=ifelse(n_samples>2, "A\nB\nB", "AAB"))
+  
   elbo <- pyclone_ELBO(h5_file)
   mix_p <- pyclone_mixing_proportion(x = y)
   binom <- pyclone_cluster_peaks(x, y,cex)

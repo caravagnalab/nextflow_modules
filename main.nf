@@ -50,7 +50,7 @@ workflow {
   }
   
   QC(FORMATTER_CNA.out, annotation)
-  SUBCLONAL_DECONVOLUTION(QC.out.rds_join)
+  //SUBCLONAL_DECONVOLUTION(QC.out.rds_join)
   MUTATIONAL_SIGNATURES(QC.out.rds_join)
 
   // if (params.mode == 'singlesample'){

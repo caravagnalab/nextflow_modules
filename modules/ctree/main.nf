@@ -33,7 +33,6 @@ process CTREE {
     library(VIBER)
     library(mobster)
     library(ggplot2)
-    library(patchwork)
     
     initialize_ctree_obj = function(ctree_input) {
       if (!"variantID" %in% colnames(ctree_input) | !"is.driver" %in% colnames(ctree_input)) {
@@ -154,7 +153,7 @@ process CTREE {
       info_transfer = ctree::plot_information_transfer(trees[[1]])
       clone_size = ctree::plot_clone_size(trees[[1]])
 
-      #report_fig = patchwork::wrap_plots(ccf, info_transfer, top_phylo, clone_size, phylos, design="A#BB\nD#CC\nEEEE")
+      #report_fig = patchwork::wrap_plots(ccf, info_transfer, top_phylo, clone_size, phylos, design="A#BBD#CCEEEE")
       report_fig = ggpubr::ggarrange(plotlist = list(ccf, info_transfer, top_phylo, clone_size, phylos), nrow = 3, ncol = 2)
       
       
