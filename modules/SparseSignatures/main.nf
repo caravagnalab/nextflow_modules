@@ -158,7 +158,7 @@ process SPARSE_SIGNATURES {
 
   plt_all = patchwork::wrap_plots(plot_exposure, plot_signatures, ncol=2) + patchwork::plot_annotation(title = "$datasetID")
   ggplot2::ggsave(plot = plt_all, filename = paste0(res_dir, "plot_all.pdf"), width = 210, height = 297, units="mm", dpi = 200)
-  saveRDS(object = plt_all, file = paste0(res_dir, "plt_all.rds"))
+  saveRDS(object = plt_all, file = paste0(res_dir, "plot_all.rds"))
 
  """ 
  }
