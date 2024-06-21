@@ -46,7 +46,7 @@ process TINC {
     TINC_fit = TINC::autofit(input_mut, cna = CNAs, FAST = FALSE)
     tinc_plot = plot(TINC_fit)
     saveRDS(filename = paste0(res_dir, "/TINC_plot.rds"), object = tinc_plot)
-    ggplot2::ggsave(plot = tinc_plot, filename = paste(res_dir, "/TINC_plot.pdf"))
+    ggplot2::ggsave(plot = tinc_plot, filename = paste(res_dir, "/TINC_plot.pdf"), width = 210, height = 297, units="mm", dpi = 200)
     saveRDS(filename = paste0(res_dir, "/TINC_fit.rds"), object = TINC_fit)
 
     """

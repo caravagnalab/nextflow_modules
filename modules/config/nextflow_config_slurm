@@ -202,6 +202,13 @@ process {
     container = 'docker://lvaleriani/cnaqc:dev1'
   }
   
+  withName: 'TINC' {
+    container = 'docker://vvvirgy/tinc:v2'
+    memory = '100 GB'
+    time = '2h'
+    errorStrategy = 'finish'
+  }
+  
   withName: 'JOIN_POSITIONS' {
     container = 'docker://lvaleriani/cnaqc:dev1'
     memory = '50 GB'
@@ -287,14 +294,16 @@ process {
   withName: "PLOT_REPORT_SINGLE_SAMPLE" {
     memory='50 GB'
     time='2h'
-    container="docker://lvaleriani/plot:v1"
+    container="docker://lvaleriani/plot:v2"
+    errorStrategy = 'finish'
     
   }
   
   withName: "PLOT_REPORT_MULTI_SAMPLE" {
     memory='50 GB'
     time='2h'
-    container="docker://lvaleriani/plot:v1"
+    container="docker://lvaleriani/plot:v2"
+    errorStrategy = 'finish'
     
   }
 }
