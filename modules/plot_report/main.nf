@@ -34,6 +34,7 @@ process PLOT_REPORT_SINGLE_SAMPLE {
     library(rhdf5)
     library(patchwork)
 
+
     format_ID = function(ids) {
       stringr::str_replace_all(ids, pattern="^\\\\[|\\\\]\$", replacement="") %>% 
       strsplit(', ') %>% unlist()
@@ -43,6 +44,17 @@ process PLOT_REPORT_SINGLE_SAMPLE {
         strsplit(path, ' ') %>% unlist()
     }
 
+    patient_ID = format_ID("$pID_sig")
+    sID = stringr::str_replace_all("$sID_sig", pattern="^\\\\[|\\\\]\$", replacement="") %>% 
+              stringr::str_replace_all(pattern="\\\\], \\\\[", replacement=";") %>% 
+              strsplit(';')  %>%  unlist()
+  
+    sample_ID = lapply(sID, FUN = function(p){
+      stringr::str_replace_all(p, pattern="^\\\\[|\\\\]\$", replacement="") %>% 
+        strsplit(', ') %>% unlist()
+    })
+    names(sample_ID) = patient_ID
+ 
     cnaqc_data_plot = split_path("$cnaqc_data_plot")
     names(cnaqc_data_plot) = format_ID("$sID_cnaqcData")
 
@@ -80,29 +92,31 @@ process PLOT_REPORT_SINGLE_SAMPLE {
     signatures = image_read_pdf("$spareSig_plot") %>% image_ggplot()
     print(signatures)
     
-    sampleID = format_ID("$sID_cnaqcData")
-    for (i in sampleID){
-      print(image_read_pdf(cnaqc_data_plot[[i]]) %>% image_ggplot())
-      print(image_read_pdf(cnaqc_qc_plot[[i]]) %>% image_ggplot())
-      print(image_read_pdf(viber_pdf[[i]]) %>% image_ggplot())
-      print(image_read_pdf(mobster_pdf[[i]]) %>% image_ggplot())
-      print(image_read_pdf(ctree_mobster_pdf[[i]]) %>% image_ggplot())
+    # Patient
+    for (p in patient_ID){
+      current_sID = sample_ID[[p]]
 
-      # PLOT PYCLONE
-      table =  read.table(file = table_pyclone[[i]], header = T, sep = "\\t")
-      best = read.table(pyclone_best[[i]], header = T)
-      fit = pyclone_fits[[i]]
-      plot_pyclone = plot_summary_pyclone(
-                      x = table,
-                      y = best,
-                      h5_file = fit,
-                      d1 = i)
-      print(plot_pyclone)
+      # Sample
+      for (s in current_sID){
+        print(image_read_pdf(cnaqc_data_plot[[s]]) %>% image_ggplot())
+        print(image_read_pdf(cnaqc_qc_plot[[s]]) %>% image_ggplot())
+        print(image_read_pdf(viber_pdf[[s]]) %>% image_ggplot())
+        print(image_read_pdf(mobster_pdf[[s]]) %>% image_ggplot())
+        print(image_read_pdf(ctree_mobster_pdf[[s]]) %>% image_ggplot())
+
+        # PLOT PYCLONE
+        table =  read.table(file = table_pyclone[[s]], header = T, sep = "\\t")
+        best = read.table(pyclone_best[[s]], header = T)
+        fit = pyclone_fits[[s]]
+        plot_pyclone = plot_summary_pyclone(
+                        x = table,
+                        y = best,
+                        h5_file = fit,
+                        d1 = i)
+        print(plot_pyclone)
+      }    
     }
-
-    # Sample
     dev.off()
-
     """
 
 
