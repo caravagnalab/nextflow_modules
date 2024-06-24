@@ -294,7 +294,7 @@ process {
   withName: "PLOT_REPORT_SINGLE_SAMPLE" {
     memory='50 GB'
     time='2h'
-    container="docker://lvaleriani/plot:v2"
+    container="docker://lvaleriani/plot:v3"
     errorStrategy = 'finish'
     
   }
@@ -302,7 +302,7 @@ process {
   withName: "PLOT_REPORT_MULTI_SAMPLE" {
     memory='50 GB'
     time='2h'
-    container="docker://lvaleriani/plot:v2"
+    container="docker://lvaleriani/plot:v3"
     errorStrategy = 'finish'
     
   }

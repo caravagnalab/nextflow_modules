@@ -26,6 +26,8 @@ workflow SUBCLONAL_DECONVOLUTION {
     ctree_viber_pdf = null
     mobster_pdf = null
     ctree_mobster_pdf = null
+    pyclone_table = null
+
 
     // single sample subclonal deconvolution
     if (params.mode && params.mode.split(",").contains("singlesample")) {
@@ -36,7 +38,7 @@ workflow SUBCLONAL_DECONVOLUTION {
             VIBER_SINGLE(input_joint_table)
             // working but not producing outputs with the current VIBER function `get_clone_trees()` when only one sample
             CTREE_VIBER(VIBER_SINGLE.out.viber_rds)
-            //emit:
+
             viber_pdf = VIBER_SINGLE.out.viber_report_pdf
             ctree_viber_pdf = CTREE_VIBER.out.ctree_report_pdf
         }
@@ -48,17 +50,18 @@ workflow SUBCLONAL_DECONVOLUTION {
             FORMATTER_RDS_SINGLE(input_joint_table, "rds")
             PYCLONEVI_SINGLE(FORMATTER_RDS_SINGLE.out) 
             CTREE_PYCLONEVI(PYCLONEVI_SINGLE.out.ctree_input)
-            //emit:
+
             pyclone_fits = PYCLONEVI_SINGLE.out.pyclone_all_fits
             pyclone_best = PYCLONEVI_SINGLE.out.pyclone_best_fit
             ctree_pyclone_pdf = CTREE_PYCLONEVI.out.ctree_report_pdf
+            pyclone_table = FORMATTER_RDS_SINGLE.out
         }
 
 
         if (params.tools && params.tools.split(",").contains("mobster")) {
             MOBSTERh_SINGLE(input_joint_table)
             CTREE_MOBSTERh(MOBSTERh_SINGLE.out.mobster_best_rds)
-            //emit:
+
             mobster_pdf = MOBSTERh_SINGLE.out.mobster_report_pdf
             ctree_mobster_pdf = CTREE_MOBSTERh.out.ctree_report_pdf
         }
@@ -85,7 +88,7 @@ workflow SUBCLONAL_DECONVOLUTION {
         if (params.tools && params.tools.split(",").contains("viber")) {
             VIBER_MULTI(input_joint_table)
             CTREE_VIBER(VIBER_MULTI.out.viber_rds)
-            //emit:
+
             viber_pdf = VIBER_MULTI.out.viber_report_pdf
             ctree_viber_pdf = CTREE_VIBER.out.ctree_report_pdf
         }
@@ -97,7 +100,7 @@ workflow SUBCLONAL_DECONVOLUTION {
 
             PYCLONEVI_MULTI(FORMATTER_RDS_MULTI.out)
             CTREE_PYCLONEVI(PYCLONEVI_MULTI.out.ctree_input)
-            //emit:
+
             pyclone_fits = PYCLONEVI_MULTI.out.pyclone_all_fits
             pyclone_best = PYCLONEVI_MULTI.out.pyclone_best_fit
             ctree_pyclone_pdf = CTREE_PYCLONEVI.out.ctree_report_pdf
@@ -112,4 +115,5 @@ workflow SUBCLONAL_DECONVOLUTION {
     ctree_viber_pdf
     mobster_pdf
     ctree_mobster_pdf
+    pyclone_table
 }

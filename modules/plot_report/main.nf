@@ -3,22 +3,24 @@ process PLOT_REPORT_SINGLE_SAMPLE {
   
   input:
     
-    tuple val(datasetID),   val(patientID), val(sampleID), path(maftools_oncoplot) 
-    tuple val(datasetID),   val(patientID), val(sampleID), path(maftools_summary)
-    tuple val(datasetID),   val(patientID), val(sampleID), path(cnaqc_data_plot,  stageAs: 'cnaqc_data*.pdf')
-    tuple val(datasetID),   val(patientID), val(sampleID), path(cnaqc_qc_plot,  stageAs: 'cnaqc_qc*.pdf')
-    tuple val(datasetID),   val(patientID), val(sampleID), path(spareSig_plot)
-    tuple val(datasetID),   val(patientID), val(sampleID), path(viber_pdf)
+    tuple val(dID_maftool), val(pID_maftool), val(sID_maftool), path(maftools_oncoplot) 
+    tuple val(dID_maftool), val(pID_maftool), val(sID_maftool), path(maftools_summary)
+    tuple val(dID_cnaqcData), val(pID_cnaqcData), val(sID_cnaqcData), path(cnaqc_data_plot,  stageAs: 'cnaqc_data*.pdf')
+    tuple val(dID_cnaqcQC), val(pID_cnaqcQC), val(sID_cnaqcQC), path(cnaqc_qc_plot,  stageAs: 'cnaqc_qc*.pdf')
+    tuple val(dID_sig), val(pID_sig), val(sID_sig), path(spareSig_plot)
+    tuple val(dID_viber), val(pID_viber), val(sID_viber), path(viber_pdf, stageAs: 'viber*.pdf')
     //tuple val(datasetID),   val(patientID), val(sampleID), path(ctree_viber_pdf)
-    tuple val(datasetID),   val(patientID), val(sampleID), path(pyclone_fits)
-    tuple val(datasetID),   val(patientID), val(sampleID), path(pyclone_best)
+    tuple val(dID_pycloneFit), val(pID_pycloneFit), val(sID_pycloneFit), path(pyclone_fits, stageAs: 'pyclone*.h5')
+    tuple val(dID_pycloneBest), val(pID_pycloneBest), val(sID_pycloneBest), path(pyclone_best, stageAs: 'pyclone_best*.txt')
     //tuple val(datasetID),   val(patientID), val(sampleID), path(ctree_pyclone_pdf)
-    tuple val(datasetID),   val(patientID), val(sampleID), path(mobster_pdf)
-    tuple val(datasetID),   val(patientID), val(sampleID), path(ctree_mobster_pdf)
+    tuple val(dID_mobster), val(pID_mobster), val(sID_mobster), path(mobster_pdf, stageAs: 'mobster*.pdf')
+    tuple val(dID_ctreeMob), val(pID_ctreeMob), val(sID_ctreeMob), path(ctree_mobster_pdf, stageAs: 'ctree_mob*.pdf')
+    tuple val(dID_table), val(pID_table), val(sID_table), path(pyclone_table, stageAs: 'pyclone_table*.tsv')
+  
   
   output:
 
-    tuple val(datasetID), val(patientID), val (sampleID), path("report/$datasetID/final_report.pdf"), emit: pdf
+    path("report/$dID_sig/final_report.pdf"), emit: pdf
 
   script:
 
@@ -32,65 +34,73 @@ process PLOT_REPORT_SINGLE_SAMPLE {
     library(rhdf5)
     library(patchwork)
 
-    format_sampleID = function(sample_ids) {
-        stringr::str_replace_all(sample_ids, pattern="^\\[|\\]\$", replacement="") %>% 
-        stringr::str_replace_all(pattern="^\\[|\\]\$", replacement="") %>% 
-        stringr::str_replace_all(pattern="\\],\\[", replacement=":") %>% 
-        strsplit(':') %>% unlist()
+    format_ID = function(ids) {
+      stringr::str_replace_all(ids, pattern="^\\\\[|\\\\]\$", replacement="") %>% 
+      strsplit(', ') %>% unlist()
     }
 
-    format_patientID = function(patient_ids){
-        stringr::str_replace_all(patient_ids, pattern="^\\[|\\]\$", replacement="") %>% 
-        strsplit(', ') %>% unlist()
+    split_path = function(path){
+        strsplit(path, ' ') %>% unlist()
     }
 
-    patientID = format_patientID("$patientID")
-    sampleID = format_sampleID("$sampleID")
+    cnaqc_data_plot = split_path("$cnaqc_data_plot")
+    names(cnaqc_data_plot) = format_ID("$sID_cnaqcData")
 
-    cnaqc_data_plot = format_patientID("$cnaqc_data_plot")
-    cnaqc_data_qc = format_patientID("$cnaqc_data_qc")
+    cnaqc_qc_plot = split_path("$cnaqc_qc_plot")
+    names(cnaqc_qc_plot) = format_ID("$sID_cnaqcQC")
 
-    viber_pdf = format_patientID("$viber_pdf")
-    mobster_pdf = format_patientID("$mobster_pdf")
-    ctree_mobster_pdf = format_patientID("$ctree_mobster_pdf")
+    table_pyclone = split_path("$pyclone_table")
+    names(table_pyclone) = format_ID("$sID_table")
 
+    pyclone_fits = split_path("$pyclone_fits")
+    names(pyclone_fits) = format_ID("$sID_pycloneFit")
 
-    #tsv_joint = read.table(file = "$joint_table", header = T, sep = "\t")
+    pyclone_best = split_path("$pyclone_best")
+    names(pyclone_best) = format_ID("$sID_pycloneBest")
 
-    pdf(file = "report/$datasetID/final_report.pdf", paper = 'a4')
+    viber_pdf = split_path("$viber_pdf")
+    names(viber_pdf) = format_ID("$sID_viber")
+
+    mobster_pdf = split_path("$mobster_pdf")
+    names(mobster_pdf) = format_ID("$sID_mobster")
+
+    ctree_mobster_pdf = split_path("$ctree_mobster_pdf")
+    names(ctree_mobster_pdf) = format_ID("$sID_ctreeMob")
+    
+    res_dir = paste0("report/", "$dID_sig", "/")
+    dir.create(res_dir, recursive = T)
+    pdf(file = paste0(res_dir, "final_report.pdf"), paper = 'a4')
 
     # Dataset 
-    maftools_oncoplot <- image_read_pdf("$maftools_oncoplot") %>% image_ggplot()
-    maftools_summary <- image_read_pdf("$maftools_summary") %>% image_ggplot()
-    maftools <- maftools_summary + maftools_oncoplot + patchwork::plot_layout(nrow = 2)
-    maftools
+    maftools_oncoplot = image_read_pdf("$maftools_oncoplot") %>% image_ggplot()
+    maftools_summary = image_read_pdf("$maftools_summary") %>% image_ggplot()
+    maftools = maftools_summary + maftools_oncoplot + patchwork::plot_layout(nrow = 2)
+    print(maftools)
 
-    image_read_pdf("$spareSig_plot")
+    signatures = image_read_pdf("$spareSig_plot") %>% image_ggplot()
+    print(signatures)
     
+    sampleID = format_ID("$sID_cnaqcData")
+    for (i in sampleID){
+      print(image_read_pdf(cnaqc_data_plot[[i]]) %>% image_ggplot())
+      print(image_read_pdf(cnaqc_qc_plot[[i]]) %>% image_ggplot())
+      print(image_read_pdf(viber_pdf[[i]]) %>% image_ggplot())
+      print(image_read_pdf(mobster_pdf[[i]]) %>% image_ggplot())
+      print(image_read_pdf(ctree_mobster_pdf[[i]]) %>% image_ggplot())
+
+      # PLOT PYCLONE
+      table =  read.table(file = table_pyclone[[i]], header = T, sep = "\\t")
+      best = read.table(pyclone_best[[i]], header = T)
+      fit = pyclone_fits[[i]]
+      plot_pyclone = plot_summary_pyclone(
+                      x = table,
+                      y = best,
+                      h5_file = fit,
+                      d1 = i)
+      print(plot_pyclone)
+    }
+
     # Sample
-    lapply(1:length(patientID), function(p){
-
-      samples_pID = format_patientID(sampleID[[p]])
-
-      lapply(1:length(samples_pID), function(s){
-        
-        image_read_pdf( format_list(cnaqc_data_plot[[p]])[[s]] ) %>% image_ggplot()
-        image_read_pdf( format_list(cnaqc_qc_plot[[p]])[[s]] ) %>% image_ggplot()
-
-        image_read_pdf( format_list(viber_pdf[[p]])[[s]] ) %>% image_ggplot()
-        image_read_pdf( format_list(mobster_pdf[[p]])[[s]] ) %>% image_ggplot()
-        image_read_pdf( format_list(ctree_mobster_pdf[[p]])[[s]] ) %>% image_ggplot()
-        
-        #pyclone_fit = read.table(header = T)
-        #pyclone_h5 = 
-        #plot_pyclone = plot_summary_pyclone(x = tsv_joint,
-        #              y = pyclone_fit,
-        #              h5_file = pyclone_h5,
-        #              d1 = p)
-      
-      })
-    })
-
     dev.off()
 
     """

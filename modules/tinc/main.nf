@@ -22,8 +22,8 @@ process TINC {
     require(tidyverse)
     require(TINC)
 
-    res_dir = paste0("/QC/TINC/", "$datasetID", "/", "$patientID", "/", "$sampleID")
-    dir.create(res_dir)
+    res_dir = paste0("QC/TINC/", "$datasetID", "/", "$patientID", "/", "$sampleID")
+    dir.create(res_dir, recursive = TRUE)
 
     all_mutations = readRDS("$snv_RDS")
     samples = names(all_mutations)

@@ -12,7 +12,13 @@ workflow MUTATIONAL_SIGNATURES {
     joint_table
 
     main:
-    
+    plot_pdf = null
+    plot_rds = null
+    signatures_nmfOut = null 
+    bestConf = null
+    sign_cv = null
+
+
     if (params.tools && params.tools.split(',').contains('sparsesignatures')) {
         out = FORMATTER_RDS(joint_table, "rds")
         SPARSE_SIGNATURES(out.groupTuple(by: 0)) // run SparseSignatures

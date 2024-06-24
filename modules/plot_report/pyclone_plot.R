@@ -1,3 +1,7 @@
+library(dplyr)
+library(ggplot2)
+library(patchwork)
+
 my_ggplot_theme <- function (cex = 1) 
 {
   cex_opt = 1
@@ -43,9 +47,9 @@ pyclone_ELBO <- function (h5_file, cex = 1)
   # stats$elbo
   # stopifnot(inherits(x, "vb_bmm"))
   ELBO = tidyr::tibble(step = 1:length(stats$elbo), ELBO = stats$elbo)
-  ggplot(ELBO, aes(step, ELBO)) + geom_line(color = "steelblue") + 
-    geom_point(size = 1.5 * cex) + mobster:::my_ggplot_theme(cex) +
-    labs(title = bquote(bold("ELBO")))
+  plt <- ggplot(ELBO, aes(step, ELBO)) + geom_line(color = "steelblue") + 
+    geom_point(size = 1.5 * cex) + #+ mobster:::my_ggplot_theme(cex) +
+    labs(title = bquote(bold("ELBO"))) + my_ggplot_theme(cex)
 }
 
 
@@ -74,7 +78,7 @@ pyclone_plot_1D <- function (x, y, colors = NA)
     by_row = sample_ids %>% length()
   myp = ggplot(F_data_n) + geom_histogram(aes(x = VAF, fill = cluster_id), 
                                           binwidth = 0.01) + facet_wrap(~sample_id) + 
-    xlim(0.01, 1.01) + mobster:::my_ggplot_theme() + guides(fill = guide_legend("Cluster"))
+    xlim(0.01, 1.01) + guides(fill = guide_legend("Cluster")) + my_ggplot_theme(cex)
   if (!all(is.na(colors))) 
     myp = myp + scale_fill_manual(values = colors)
   return(myp)
@@ -152,13 +156,14 @@ pyclone_cluster_peaks <- function (x, y,cex = 1, colors = NA)
   return(p)
 }
 
+
 plot_summary_pyclone <- function(x, y, h5_file, d1, d2 = NULL, cex = 1, alpha = 0.3, cut_zeroes = TRUE){
   n_samples <- 2
   marginals <- pyclone_plot_1D(x = x, y = y, colors = NA)
   if (is.null(d2)){
     multivariate <- ggplot()
   } else{
-    multivariate <- pyclone_plot_2D(x = x, y = y, d1 = d1, d2 =d2,cex = cex,alpha = 0.3, cut_zeroes = TRUE)
+    multivariate <- pyclone_plot_2D(x = x, y = y, d1 = d1, d2 = d2,cex = cex,alpha = 0.3, cut_zeroes = TRUE)
   }
   top_p = patchwork::wrap_plots(marginals, multivariate, design=ifelse(n_samples>2, "A\nB\nB", "AAB"))
   
@@ -169,3 +174,4 @@ plot_summary_pyclone <- function(x, y, h5_file, d1, d2 = NULL, cex = 1, alpha = 
   report_fig = patchwork::wrap_plots(top_p, bottom_p, design=ifelse(n_samples>2, "A\nA\nA\nB", "A\nA\nB"))
   return(report_fig)
 }
+
