@@ -88,7 +88,8 @@ pyclone_plot_1D <- function (x, y, colors = NA)
 # x is the found in CNAqc2tsv/TEST/MSeq_Set06/*/joint_table.tsv
 # y is the best_fit.tsv from pylone
 ###############################################################
-pyclone_plot_2D <- function (x, y, d1, d2, cex = 1, alpha = 0.3, cut_zeroes = TRUE){
+pyclone_plot_2D <- function (x, y, d1, d2, cex = 1, alpha = 0.3, cut_zeroes = TRUE)
+{
   caption = ""
   patient_id <- data.frame(do.call('rbind', strsplit(as.character(y$mutation_id),':',fixed=TRUE))) %>% 
     dplyr::select(X1) %>% 
@@ -103,16 +104,20 @@ pyclone_plot_2D <- function (x, y, d1, d2, cex = 1, alpha = 0.3, cut_zeroes = TR
     dplyr::mutate(VAF=as.numeric(VAF)) %>% 
     tidyr::pivot_wider(values_from = VAF,names_from = sample_id)
   
-  p = ggplot(data = data, aes(x = eval(parse(text = d1)), y = eval(parse(text = d2)), 
-                              colour = factor(cluster_id))) + geom_point(alpha = alpha, 
-                                                                         size = 1 * cex) + labs(title = bquote(bold(.(d1)) ~ "vs" ~ 
-                                                                                                                 bold(.(d2))), caption = caption, x = d1, y = d2) + guides(color = guide_legend(title = "Cluster", 
-                                                                                                                                                                                                override.aes = list(alpha = 1))) + VIBER:::my_ggplot_theme(cex) + 
-    theme(legend.position = "bottom", legend.key.size = unit(0.3 * 
-                                                               cex, "cm"), legend.text = element_text(size = 8 * 
-                                                                                                        cex)) + geom_vline(xintercept = 0, colour = "darkgray", 
-                                                                                                                           size = 0.3) + geom_hline(yintercept = 0, colour = "darkgray", 
-                                                                                                                                                    size = 0.3) + guides(fill = "none")
+  p = ggplot(data = data, aes(x = eval(parse(text = d1)), y = eval(parse(text = d2)), colour = factor(cluster_id))) + 
+    geom_point(alpha = alpha, size = 1 * cex) + 
+    labs(title = bquote(bold(.(d1)) ~ "vs" ~ bold(.(d2))), 
+         caption = caption, 
+         x = d1, 
+         y = d2) + 
+    guides(color = guide_legend(title = "Cluster", 
+                                override.aes = list(alpha = 1))) + 
+    theme(legend.position = "bottom", 
+          legend.key.size = unit(0.3 * cex, "cm"), 
+          legend.text = element_text(size = 8 * cex)) + 
+    geom_vline(xintercept = 0, colour = "darkgray", size = 0.3) + 
+    geom_hline(yintercept = 0, colour = "darkgray", size = 0.3) + 
+    guides(fill = "none") + my_ggplot_theme(cex)
   return(p)
 }
 
@@ -120,7 +125,7 @@ pyclone_plot_2D <- function (x, y, d1, d2, cex = 1, alpha = 0.3, cut_zeroes = TR
 
 pyclone_cluster_peaks <- function (x, y,cex = 1, colors = NA) 
 {
-  patient_id <- data.frame(do.call('rbind', strsplit(as.character(y$mutation_id),':',fixed=TRUE))) %>% 
+  patient_id <- data.frame(do.call('rbind', strsplit(as.character(y$mutation_id), ':', fixed=TRUE))) %>% 
     dplyr::select(X1) %>% 
     unique()
   x <- x %>% 
@@ -131,10 +136,8 @@ pyclone_cluster_peaks <- function (x, y,cex = 1, colors = NA)
   
   peaks <- joined %>% 
     dplyr::mutate(cluster_id=as.character(cluster_id)) %>% 
-    group_by(cluster_id,sample_id) %>% 
-    summarise(assignement_prob=mean(VAF),
-              .groups = 'drop')
-  
+    group_by(cluster_id, sample_id) %>% 
+    summarise(assignement_prob=mean(VAF), .groups = 'drop')
   colnames(peaks) <- c("cluster_id","Dimension","assignement_prob")
   # > peaks
   # Var1 Var2      value
@@ -146,10 +149,13 @@ pyclone_cluster_peaks <- function (x, y,cex = 1, colors = NA)
   # prop$sample_id <-
   # prop$proportion = paste0("Mix. prop. ", prop$prop, 
   #                          "%")
-  p = ggplot(peaks, aes(x = Dimension, y = assignement_prob, ymax = assignement_prob, 
-                        ymin = 0, color = cluster_id)) + geom_linerange() + geom_point() + 
-    my_ggplot_theme(cex) + facet_wrap(~cluster_id, nrow = 1) + 
-    ylim(0, 1) + labs(title = bquote(bold("Binomial peaks")))
+  p = ggplot(peaks, aes(x = Dimension, y = assignement_prob, ymax = assignement_prob, ymin = 0, color = cluster_id)) + 
+    geom_linerange() + 
+    geom_point() + 
+    my_ggplot_theme(cex) +
+    facet_wrap(~cluster_id, nrow = 1) + 
+    ylim(0, 1) +
+    labs(title = bquote(bold("Binomial peaks")))
   # geom_text(data = prop, aes(label = proportion, x = 1, 
   #                            y = 1), inherit.aes = FALSE, hjust = 0, size = 2.5 * 
   #             cex) 
@@ -157,7 +163,8 @@ pyclone_cluster_peaks <- function (x, y,cex = 1, colors = NA)
 }
 
 
-plot_summary_pyclone <- function(x, y, h5_file, d1, d2 = NULL, cex = 1, alpha = 0.3, cut_zeroes = TRUE){
+plot_summary_pyclone <- function(x, y, h5_file, d1, d2 = NULL, cex = 1, alpha = 0.3, cut_zeroes = TRUE)
+{
   n_samples <- 2
   marginals <- pyclone_plot_1D(x = x, y = y, colors = NA)
   if (is.null(d2)){

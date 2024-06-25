@@ -34,7 +34,6 @@ process PLOT_REPORT_SINGLE_SAMPLE {
     library(rhdf5)
     library(patchwork)
 
-
     format_ID = function(ids) {
       stringr::str_replace_all(ids, pattern="^\\\\[|\\\\]\$", replacement="") %>% 
       strsplit(', ') %>% unlist()
@@ -105,8 +104,8 @@ process PLOT_REPORT_SINGLE_SAMPLE {
         print(image_read_pdf(ctree_mobster_pdf[[s]]) %>% image_ggplot())
 
         # PLOT PYCLONE
-        table =  read.table(file = table_pyclone[[s]], header = T, sep = "\\t")
-        best = read.table(pyclone_best[[s]], header = T)
+        table =  read.table(file = table_pyclone[[s]], header = T,fill = T, sep = "\\t")
+        best = read.table(pyclone_best[[s]], header = T, fill = T)
         fit = pyclone_fits[[s]]
         plot_pyclone = plot_summary_pyclone(
                         x = table,

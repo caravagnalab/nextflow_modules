@@ -100,7 +100,8 @@ workflow SUBCLONAL_DECONVOLUTION {
 
             PYCLONEVI_MULTI(FORMATTER_RDS_MULTI.out)
             CTREE_PYCLONEVI(PYCLONEVI_MULTI.out.ctree_input)
-
+            
+            pyclone_table = FORMATTER_RDS_MULTI.out
             pyclone_fits = PYCLONEVI_MULTI.out.pyclone_all_fits
             pyclone_best = PYCLONEVI_MULTI.out.pyclone_best_fit
             ctree_pyclone_pdf = CTREE_PYCLONEVI.out.ctree_report_pdf

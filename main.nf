@@ -50,34 +50,37 @@ workflow {
   }
   
   QC(FORMATTER_CNA.out, annotation)
-  //SUBCLONAL_DECONVOLUTION(QC.out.rds_join)
+  SUBCLONAL_DECONVOLUTION(QC.out.rds_join)
   MUTATIONAL_SIGNATURES(QC.out.rds_join)
 
-  // if (params.mode == 'singlesample'){
-  //    PLOT_REPORT_SINGLE_SAMPLE(VARIANT_ANNOTATION.out.maf_oncoplot, 
-  //            VARIANT_ANNOTATION.out.maf_summary_plot,
-  //            QC.out.plot_cnaqc_data.groupTuple(by: [0]), 
-  //            QC.out.plot_cnaqc_qc.groupTuple(by: [0]),
-  //            MUTATIONAL_SIGNATURES.out.plot_pdf,
-  //            SUBCLONAL_DECONVOLUTION.out.viber_pdf.groupTuple(by: [0]),
-  //            SUBCLONAL_DECONVOLUTION.out.pyclone_fits.groupTuple(by: [0]),
-  //            SUBCLONAL_DECONVOLUTION.out.pyclone_best.groupTuple(by: [0]),
-  //            SUBCLONAL_DECONVOLUTION.out.mobster_pdf.groupTuple(by: [0]),
-  //            SUBCLONAL_DECONVOLUTION.out.ctree_mobster_pdf.groupTuple(by: [0])
-  //            )
-
-  // } else if  (params.mode == 'multisample') {
-  //     PLOT_REPORT_MULTI_SAMPLE(VARIANT_ANNOTATION.out.maf_oncoplot, 
-  //            VARIANT_ANNOTATION.out.maf_summary_plot,
-  //            QC.out.plot_cnaqc_data.groupTuple(by: [0]), 
-  //            QC.out.plot_cnaqc_qc.groupTuple(by: [0]),
-  //            MUTATIONAL_SIGNATURES.out.plot_pdf.groupTuple(by: [0]),
-  //            SUBCLONAL_DECONVOLUTION.out.viber_pdf.groupTuple(by: [0]),
-  //            SUBCLONAL_DECONVOLUTION.out.ctree_viber_pdf.groupTuple(by: [0]),
-  //            SUBCLONAL_DECONVOLUTION.out.pyclone_fits.groupTuple(by: [0]),
-  //            SUBCLONAL_DECONVOLUTION.out.pyclone_best.groupTuple(by: [0]),
-  //            SUBCLONAL_DECONVOLUTION.out.ctree_pyclone_pdf.groupTuple(by: [0])
-  //            )
-  // }
+  if (params.mode == 'singlesample'){
+     PLOT_REPORT_SINGLE_SAMPLE(
+             VARIANT_ANNOTATION.out.maf_oncoplot, 
+             VARIANT_ANNOTATION.out.maf_summary_plot,
+             QC.out.plot_cnaqc_data.groupTuple(by: 0), 
+             QC.out.plot_cnaqc_qc.groupTuple(by: 0),
+             MUTATIONAL_SIGNATURES.out.plot_pdf,
+             SUBCLONAL_DECONVOLUTION.out.viber_pdf.groupTuple(by: 0),
+             SUBCLONAL_DECONVOLUTION.out.pyclone_fits.groupTuple(by: 0),
+             SUBCLONAL_DECONVOLUTION.out.pyclone_best.groupTuple(by: 0),
+             SUBCLONAL_DECONVOLUTION.out.mobster_pdf.groupTuple(by: 0),
+             SUBCLONAL_DECONVOLUTION.out.ctree_mobster_pdf.groupTuple(by: 0),
+             SUBCLONAL_DECONVOLUTION.out.pyclone_table.groupTuple(by: 0)
+             )
+  } else if  (params.mode == 'multisample') {
+      PLOT_REPORT_MULTI_SAMPLE(
+            VARIANT_ANNOTATION.out.maf_oncoplot, 
+            VARIANT_ANNOTATION.out.maf_summary_plot,
+            QC.out.plot_cnaqc_data.groupTuple(by: 0), 
+            QC.out.plot_cnaqc_qc.groupTuple(by: 0),
+            MUTATIONAL_SIGNATURES.out.plot_pdf,
+            SUBCLONAL_DECONVOLUTION.out.viber_pdf.groupTuple(by: 0),
+            SUBCLONAL_DECONVOLUTION.out.ctree_viber_pdf.groupTuple(by: 0),
+            SUBCLONAL_DECONVOLUTION.out.pyclone_fits.groupTuple(by: 0),
+            SUBCLONAL_DECONVOLUTION.out.pyclone_best.groupTuple(by: 0),
+            //SUBCLONAL_DECONVOLUTION.out.ctree_pyclone_pdf.groupTuple(by: [0]),
+            SUBCLONAL_DECONVOLUTION.out.pyclone_table.groupTuple(by: 0)
+            )
+  }
 }
 
