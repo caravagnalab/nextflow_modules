@@ -9,9 +9,9 @@ process TINC {
   
   output:
 
-    tuple val(datasetID), val(patientID), val(sampleID), path("QC/TINC/$datasetID/$patientID/$sampleID/TINC/*tinc_plot.rds"), emit: plot_rds
-    tuple val(datasetID), val(patientID), val(sampleID), path("QC/TINC/$datasetID/$patientID/$sampleID/TINC/*tinc_fit.rds"), emit: fit_rds
-    tuple val(datasetID), val(patientID), val(sampleID), path("QC/TINC/$datasetID/$patientID/$sampleID/TINC/*plot.pdf"), emit: plot_pdf
+    tuple val(datasetID), val(patientID), val(sampleID), path("QC/TINC/$datasetID/$patientID/$sampleID/*tinc_plot.rds"), emit: plot_rds
+    tuple val(datasetID), val(patientID), val(sampleID), path("QC/TINC/$datasetID/$patientID/$sampleID/*tinc_fit.rds"), emit: fit_rds
+    tuple val(datasetID), val(patientID), val(sampleID), path("QC/TINC/$datasetID/$patientID/$sampleID/*plot.pdf"), emit: plot_pdf
 
     script:
 

@@ -9,7 +9,7 @@ process PLOT_REPORT_MULTI_SAMPLE {
     tuple val(dID_cnaqcQC), val(pID_cnaqcQC), val(sID_cnaqcQC), path(cnaqc_qc_plot,  stageAs: 'cnaqc_qc*.pdf')
     tuple val(dID_sig), val(pID_sig), val(sID_sig), path(spareSig_plot)
     tuple val(dID_viber), val(pID_viber), val(sID_viber), path(viber_pdf, stageAs: 'viber*.pdf')
-    tuple val(dID_ctreeViber),   val(pID_ctreeViber), val(sID_ctreeViber), path(ctree_viber_pdf, stageAs: 'ctree_viber*.pdf')
+    tuple val(dID_ctreeViber), val(pID_ctreeViber), val(sID_ctreeViber), path(ctree_viber_pdf, stageAs: 'ctree_viber*.pdf')
     tuple val(dID_pycloneFit), val(pID_pycloneFit), val(sID_pycloneFit), path(pyclone_fits, stageAs: 'pyclone*.h5')
     tuple val(dID_pycloneBest), val(pID_pycloneBest), val(sID_pycloneBest), path(pyclone_best, stageAs: 'pyclone_best*.txt')
     //tuple val(dID_ctreePyclone),   val(pID_ctreePyclone), val(sID_ctreePyclone), path(ctree_pyclone_pdf, stageAs: 'ctree_pyclone*.txt')
