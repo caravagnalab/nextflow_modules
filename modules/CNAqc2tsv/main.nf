@@ -9,7 +9,8 @@ process RDS_PROCESSING {
       tuple val(datasetID), val(patientID),  val(sampleID), path(join_cnaqc)
 
     output:
-      tuple val(datasetID), val(patientID), val(sampleID), path("formatter/CNAqc2tsv/$datasetID/$patientID/joint_table.tsv"), emit: tsv
+      tuple val(datasetID), val(patientID), val(sampleID), path("formatter/CNAqc2tsv/$datasetID/$patientID/joint_table_mut.tsv"), emit: tsv
+      tuple val(datasetID), val(patientID), val(sampleID), path("formatter/CNAqc2tsv/$datasetID/$patientID/joint_table_cnv.tsv"), emit: tsv
     
     script:
 
@@ -29,19 +30,37 @@ process RDS_PROCESSING {
     dir.create(res_dir, recursive = TRUE)
  
     multi_cnaqc = readRDS(file = "$join_cnaqc")
-    mutations_multisample <- get_sample(m_cnaqc_obj = multi_cnaqc,sample = get_sample_name(multi_cnaqc),
+    multisample <- get_sample(m_cnaqc_obj = multi_cnaqc,sample = get_sample_name(multi_cnaqc),
                                     which_obj = "original")
-    multisample_jointTable <- list()
+
+
+    # Extract mutations data
+
+    multisampleMut_jointTable <- list()
+    
 
     for (s in get_sample_name(multi_cnaqc)){
       purity <- mutations_multisample[[s]][["purity"]]
-      multisample_jointTable[[s]] <- mutations_multisample[[s]][["mutations"]] %>%
+      multisampleMut_jointTable[[s]] <- multisample[[s]][["mutations"]] %>%
         dplyr::mutate(purity=purity)
       }
     
-    joint_table <- bind_rows(multisample_jointTable)
+    joint_table_mut <- bind_rows(multisampleMut_jointTable)
 
-    write.table(joint_table, file = paste0(res_dir,"joint_table.tsv"), append = F, quote = F, sep = "\t", row.names = FALSE)
+    write.table(joint_table_mut, file = paste0(res_dir,"joint_table_mut.tsv"), append = F, quote = F, sep = "\t", row.names = FALSE)
+
+    # Extract CNA data
+    
+    multisampleCNA_jointTable <- list()
+
+    for (s in get_sample_name(multi_cnaqc)){
+      multisampleCNA_jointTable[[s]] <- multisample[[s]][["cna"]] %>% 
+      dplyr::mutate(sample_id = s)
+    }
+    
+    joint_table_cna <- bind_rows(multisampleCNA_jointTable)
+
+    write.table(joint_table_cna, file = paste0(res_dir,"joint_table_cna.tsv"), append = F, quote = F, sep = "\t", row.names = FALSE)
     
     """
 }
