@@ -62,19 +62,16 @@ process SIG_PROFILER {
       from SigProfilerMatrixGenerator.scripts import SigProfilerMatrixGeneratorFunc as matGen
       #from SigProfilerMatrixGenerator import install as genInstall
   
-    
-      #if os.path.exists(output_path):
-       #shutil.rmtree(output_path)
-    
-      os.mkdir("$datasetID")
-      #os.mkdir("signature_deconvolution/Sigprofiler/$datasetID/")
-   
+      
       input_path = "$datasetID/"
+      
+      if not os.path.exists(input_path):
+          os.mkdir(input_path)
+   
       output_path = "output/SBS/CLL.SBS96.all"
       output_folder_sigprof = "results/SBS96/"
 
       input_data = pd.read_csv("$joint_table", sep = "\\t")
-      #'/orfeo/LTS/LADE/LT_storage/lvaleriani/nextflow_modules/work/28/a52d0fb3d52c3a96126331f9b9226c/joint_table.tsv'
     
       #input data preprocessing
       def input_processing(data):
@@ -118,7 +115,7 @@ process SIG_PROFILER {
                                nmf_replicates = int("$nmf_replicates"),
                                resample = bool("$resample"),
                                matrix_normalization = "$matrix_normalization", 
-                               seeds= "$seeds",
+                               #seeds= "$seeds",
                                nmf_init = "$nmf_init", 
                                min_nmf_iterations = int("$min_nmf_iterations"), 
                                max_nmf_iterations = int("$max_nmf_iterations"),
@@ -126,7 +123,7 @@ process SIG_PROFILER {
                                nmf_tolerance = float("$nmf_tolerance"), 
                                cpu = int("$cpu"),
                                #gpu = bool("$gpu"),
-                               batch_size = int("$batch_size"),
+                               #batch_size = int("$batch_size"),
                                stability = float("$stability"),
                                min_stability = float("$min_stability"),
                                combined_stability = float("$combined_stability"),
