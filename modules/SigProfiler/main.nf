@@ -1,8 +1,5 @@
-//
-// Mutational signature extraction with SigProfilerExtractor
-//
-
 process SIG_PROFILER {
+    //container = 'docker://katiad/sigprofiler:dev1'
     publishDir params.publish_dir, mode: 'copy'
 
     input:
@@ -24,7 +21,6 @@ process SIG_PROFILER {
       def tsb_stat                          = args!='' && args.tsb_stat                     ? "$args.tsb_stat" : ""
       def seqInfo                           = args!='' && args.seqInfo                      ? "$args.seqInfo" : ""
       def cushion                           = args!='' && args.cushion                      ? "$args.cushion" : ""
-      def volume                            = args!='' && args.volume                       ? "$args.volume" : ""
       def input_type                        = args!='' && args.input_type                   ? "$args.input_type" : ""
       def context_type                      = args!='' && args.context_type                 ? "$args.context_type" : ""
       def minimum_signatures                = args!='' && args.minimum_signatures           ? "$args.minimum_signatures" : ""
@@ -64,20 +60,20 @@ process SIG_PROFILER {
       import pandas as pd
       from SigProfilerExtractor import sigpro as sig
       from SigProfilerMatrixGenerator.scripts import SigProfilerMatrixGeneratorFunc as matGen
-      from SigProfilerMatrixGenerator import install as genInstall
+      #from SigProfilerMatrixGenerator import install as genInstall
   
     
       #if os.path.exists(output_path):
        #shutil.rmtree(output_path)
     
       os.mkdir("$datasetID")
-      os.mkdir("signature_deconvolution/Sigprofiler/$datasetID/")
+      #os.mkdir("signature_deconvolution/Sigprofiler/$datasetID/")
    
       input_path = "$datasetID/"
       output_path = "output/SBS/CLL.SBS96.all"
       output_folder_sigprof = "results/SBS96/"
 
-      input_data = pd.read_csv("$joint_table", sep = "\t")
+      input_data = pd.read_csv("$joint_table", sep = "\\t")
       #'/orfeo/LTS/LADE/LT_storage/lvaleriani/nextflow_modules/work/28/a52d0fb3d52c3a96126331f9b9226c/joint_table.tsv'
     
       #input data preprocessing
@@ -93,30 +89,30 @@ process SIG_PROFILER {
       input_data = input_processing(input_data)
 
       #saving input matrix to txt
-      input_data.to_csv("input_path/input_data.txt", sep="\t", index=False, header=True)
+      input_data.to_csv("$datasetID/input_data.txt", sep="\\t", index=False, header=True)
 
       #download desired reference genome
-      genInstall.install('$reference_genome', rsync=False, bash=True)
+      #genInstall.install('$reference_genome', rsync=False, bash=True)
 
       #mutation's counts matrix generation
       input_matrix = matGen.SigProfilerMatrixGeneratorFunc(
               project = "$datasetID", 
               reference_genome = "$reference_genome", 
-              path_to_input_files = input_path,
-              exome = bool("$exome"),
-              bed_file = eval("$bed_file"),
-              chrom_based = bool("$chrom_based"),
-              plot = bool("$plot"),
-              tsb_stat = bool("$tsb_stat"),
-              seqInfo = bool("$seqInfo),
-              cushion = int("$cushion))
+              path_to_input_files = input_path)
+              #exome = bool("$exome"),
+              #bed_file = eval("$bed_file"),
+              #chrom_based = bool("$chrom_based"),
+              #plot = bool("$plot"),
+              #tsb_stat = bool("$tsb_stat"),
+              #seqInfo = bool("$seqInfo"),
+              #cushion = int("$cushion"))
 
       # Perform model fitting
       sig.sigProfilerExtractor(input_type = "$input_type", 
-                               out_put = "results", 
+                               output = "results", 
                                input_data = input_path+output_path,  
                                context_type = "$context_type",  
-                               exome = "$exome",
+                               exome = bool("$exome"),
                                minimum_signatures = int("$minimum_signatures"),  
                                maximum_signatures = int("$maximum_signatures"), 
                                nmf_replicates = int("$nmf_replicates"),
@@ -129,17 +125,17 @@ process SIG_PROFILER {
                                nmf_test_conv = int("$nmf_test_conv"), 
                                nmf_tolerance = float("$nmf_tolerance"), 
                                cpu = int("$cpu"),
-                               gpu = bool("$gpu"),
+                               #gpu = bool("$gpu"),
                                batch_size = int("$batch_size"),
                                stability = float("$stability"),
                                min_stability = float("$min_stability"),
                                combined_stability = float("$combined_stability"),
                                cosmic_version = float("$cosmic_version"),
-                               de_novo_fit_penalty = float("$de_novo_fit_penalty"),
+                               #de_novo_fit_penalty = float("$de_novo_fit_penalty"),
                                nnls_add_penalty = float("$nnls_add_penalty"),
                                nnls_remove_penalty = float("$nnls_remove_penalty"),
                                initial_remove_penalty = float("$initial_remove_penalty"),
-                               refit_denovo_signatures = bool("$refit_denovo_signatures"),
+                               #refit_denovo_signatures = bool("$refit_denovo_signatures"),
                                make_decomposition_plots = bool("$make_decomposition_plots"), 
                                collapse_to_SBS96 = bool("$collapse_to_SBS96"), 
                                get_all_signature_matrices = bool("$get_all_signature_matrices"),
@@ -148,6 +144,7 @@ process SIG_PROFILER {
     
 
       #save the output results
+      os.mkdir("signature_deconvolution/Sigprofiler/$datasetID/")
 
       source_dir = "output_folder_sigprof"
       dest_dir = "signature_deconvolution/Sigprofiler/$datasetID/"

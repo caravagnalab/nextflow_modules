@@ -1,12 +1,13 @@
 nextflow.enable.dsl=2
 cleanup=false
 
-includeConfig "$baseDir/modules/config/params.config"
+includeConfig "$baseDir/nextflow_modules/modules/config/params.config"
 
 singularity {
-  enabled = true
-  singularity.envWhitelist = ["SINGULARITY_TMPDIR"]
-  runOptions = '--bind /orfeo:/orfeo --bind $SINGULARITY_TMPDIR:/tmp'
+   enabled = true
+   envWhitelist = ["SINGULARITY_TMPDIR"]
+   runOptions = '--bind /orfeo:/orfeo --bind $SINGULARITY_TMPDIR:/tmp --writable-tmpfs'
+   cacheDir = ["NXF_SINGULARITY_CACHEDIR"]
 }
 
 process {
@@ -124,9 +125,12 @@ process {
 
   withName: 'SIG_PROFILER' {
     time='5h'
-    memory='100 GB'
-    container = "docker://lculibrk/sigprofiler:latest"
-    //container = "docker://dceoy/sigprofiler"
+    memory='150 GB'
+    container='docker://katiad/sigprofiler:dev1'
+    //container='file:///orfeo/LTS/CDSLab/LT_storage/kdavydzenka/tmp/sigprofiler_dev1.sif'
+    //singularity.runOptions = '--bind /orfeo:/orfeo  --writable-tmpfs'
+    //singularity.cacheDir = ["NXF_SINGULARITY_CACHEDIR"]
+
     ext.args   = {[
       "reference_genome": params.sigprofiler_reference_genome,
       "exome": params.sigprofiler_exome,
@@ -136,7 +140,7 @@ process {
       "tsb_stat": params.sigprofiler_tsb_stat,
       "seqInfo": params.sigprofiler_seqInfo,
       "cushion": params.sigprofiler_cushion,
-      "volume": params.sigprofiler_volume,
+      //"volume": params.sigprofiler_volume,
       "input_type": params.sigprofiler_input_type,
       "context_type": params.sigprofiler_context_type,
       "minimum_signatures": params.sigprofiler_minimum_signatures,
