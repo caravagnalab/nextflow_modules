@@ -58,6 +58,7 @@ process SIG_PROFILER {
       import os
       import shutil
       import pandas as pd
+      import multiprocessing
       from SigProfilerExtractor import sigpro as sig
       from SigProfilerMatrixGenerator.scripts import SigProfilerMatrixGeneratorFunc as matGen
       #from SigProfilerMatrixGenerator import install as genInstall
@@ -92,59 +93,62 @@ process SIG_PROFILER {
       #genInstall.install('$reference_genome', rsync=False, bash=True)
 
       #mutation's counts matrix generation
-      input_matrix = matGen.SigProfilerMatrixGeneratorFunc(
-              project = "$datasetID", 
-              reference_genome = "$reference_genome", 
-              path_to_input_files = input_path)
-              #exome = bool("$exome"),
-              #bed_file = eval("$bed_file"),
-              #chrom_based = bool("$chrom_based"),
-              #plot = bool("$plot"),
-              #tsb_stat = bool("$tsb_stat"),
-              #seqInfo = bool("$seqInfo"),
-              #cushion = int("$cushion"))
+      if __name__ == '__main__':
+          input_matrix = matGen.SigProfilerMatrixGeneratorFunc(
+                  project = "$datasetID", 
+                  reference_genome = "$reference_genome", 
+                  path_to_input_files = input_path)
+                  #exome = bool("$exome"),
+                  #bed_file = eval("$bed_file"),
+                  #chrom_based = bool("$chrom_based"),
+                  #plot = bool("$plot"),
+                  #tsb_stat = bool("$tsb_stat"),
+                  #seqInfo = bool("$seqInfo"),
+                  #cushion = int("$cushion"))
 
       # Perform model fitting
-      sig.sigProfilerExtractor(input_type = "$input_type", 
-                               output = "results", 
-                               input_data = input_path+output_path,  
-                               context_type = "$context_type",  
-                               exome = bool("$exome"),
-                               minimum_signatures = int("$minimum_signatures"),  
-                               maximum_signatures = int("$maximum_signatures"), 
-                               nmf_replicates = int("$nmf_replicates"),
-                               resample = bool("$resample"),
-                               matrix_normalization = "$matrix_normalization", 
-                               #seeds= "$seeds",
-                               nmf_init = "$nmf_init", 
-                               min_nmf_iterations = int("$min_nmf_iterations"), 
-                               max_nmf_iterations = int("$max_nmf_iterations"),
-                               nmf_test_conv = int("$nmf_test_conv"), 
-                               nmf_tolerance = float("$nmf_tolerance"), 
-                               cpu = int("$cpu"),
-                               #gpu = bool("$gpu"),
-                               #batch_size = int("$batch_size"),
-                               stability = float("$stability"),
-                               min_stability = float("$min_stability"),
-                               combined_stability = float("$combined_stability"),
-                               cosmic_version = float("$cosmic_version"),
-                               #de_novo_fit_penalty = float("$de_novo_fit_penalty"),
-                               nnls_add_penalty = float("$nnls_add_penalty"),
-                               nnls_remove_penalty = float("$nnls_remove_penalty"),
-                               initial_remove_penalty = float("$initial_remove_penalty"),
-                               #refit_denovo_signatures = bool("$refit_denovo_signatures"),
-                               make_decomposition_plots = bool("$make_decomposition_plots"), 
-                               collapse_to_SBS96 = bool("$collapse_to_SBS96"), 
-                               get_all_signature_matrices = bool("$get_all_signature_matrices"),
-                               export_probabilities = bool("$export_probabilities"))
+      #if __name__ == '__main__':
+          sig.sigProfilerExtractor(input_type = "$input_type", 
+                                   output = "results", 
+                                   input_data = input_path+output_path,  
+                                   #context_type = "$context_type",  
+                                   exome = bool("$exome"),
+                                   minimum_signatures = int("$minimum_signatures"),  
+                                   maximum_signatures = int("$maximum_signatures"), 
+                                   nmf_replicates = int("$nmf_replicates"),
+                                   resample = bool("$resample"),
+                                   matrix_normalization = "$matrix_normalization", 
+                                   seeds= "$seeds",
+                                   nmf_init = "$nmf_init", 
+                                   min_nmf_iterations = int("$min_nmf_iterations"), 
+                                   max_nmf_iterations = int("$max_nmf_iterations"),
+                                   nmf_test_conv = int("$nmf_test_conv"), 
+                                   nmf_tolerance = float("$nmf_tolerance"), 
+                                   cpu = int("$cpu"),
+                                   #gpu = bool("$gpu"),
+                                   batch_size = int("$batch_size"),
+                                   #stability = float("$stability"),
+                                   #min_stability = float("$min_stability"),
+                                   #combined_stability = float("$combined_stability"),
+                                   cosmic_version = float("$cosmic_version"),
+                                   #de_novo_fit_penalty = float("$de_novo_fit_penalty"),
+                                   #nnls_add_penalty = float("$nnls_add_penalty"),
+                                   #nnls_remove_penalty = float("$nnls_remove_penalty"),
+                                   #initial_remove_penalty = float("$initial_remove_penalty"),
+                                   #refit_denovo_signatures = bool("$refit_denovo_signatures"),
+                                   make_decomposition_plots = bool("$make_decomposition_plots"), 
+                                   collapse_to_SBS96 = bool("$collapse_to_SBS96"), 
+                                   get_all_signature_matrices = bool("$get_all_signature_matrices"),
+                                   export_probabilities = bool("$export_probabilities"))
     
     
 
       #save the output results
-      os.mkdir("signature_deconvolution/Sigprofiler/$datasetID/")
-
-      source_dir = "output_folder_sigprof"
       dest_dir = "signature_deconvolution/Sigprofiler/$datasetID/"
-      shutil.copytree(source_dir, dest_dir)
+      source_dir = "results"
+
+      
+      shutil.copytree(source_dir, dest_dir, dirs_exist_ok=True)
+
    """
 }

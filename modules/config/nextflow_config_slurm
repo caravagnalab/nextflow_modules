@@ -126,9 +126,11 @@ process {
   withName: 'SIG_PROFILER' {
     time='12h'
     memory='150 GB'
-    container='docker://katiad/sigprofiler:dev1'
-    //container='file:///orfeo/LTS/CDSLab/LT_storage/kdavydzenka/tmp/sigprofiler_dev1.sif'
-    //singularity.runOptions = '--bind /orfeo:/orfeo  --writable-tmpfs'
+    cpus = 24
+    maxForks = 20
+    //container='docker://katiad/sigprofiler:dev1'
+    container='file:///orfeo/LTS/CDSLab/LT_storage/kdavydzenka/tmp/sigprofiler_dev1.sif'
+    singularity.runOptions = '--bind /orfeo:/orfeo  --writable-tmpfs'
     //singularity.cacheDir = ["NXF_SINGULARITY_CACHEDIR"]
 
     ext.args   = {[
@@ -155,7 +157,7 @@ process {
       "nmf_test_conv": params.sigprofiler_nmf_test_conv,
       "nmf_tolerance": params.sigprofiler_nmf_tolerance,
       "cpu": params.sigprofiler_cpu,
-      //"gpu": params.sigprofiler_gpu,
+      "gpu": params.sigprofiler_gpu,
       "batch_size": params.sigprofiler_batch_size,
       "stability": params.sigprofiler_stability,
       "min_stability": params.sigprofiler_min_stability,
