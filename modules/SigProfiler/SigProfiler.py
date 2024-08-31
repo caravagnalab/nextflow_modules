@@ -7,12 +7,9 @@ from SigProfilerExtractor import sigpro as sig
 from SigProfilerMatrixGenerator.scripts import SigProfilerMatrixGeneratorFunc as matGen
 from SigProfilerMatrixGenerator import install as genInstall
 
-#create directory
-#path = '/orfeo/scratch/cdslab/kdavydzenka/SIGPROFILER/'
-#os.mkdir(path)
 
 #import input data
-joint_table = "/u/cdslab/kdavydzenka/mutationsTable.tsv"
+joint_table = "/orfeo/LTS/CDSLab/LT_storage/kdavydzenka/TEST_data/mutationsTable.tsv"
 input_data = pd.read_csv(joint_table, sep = '\t')
 input_path_sigprof = "/u/cdslab/kdavydzenka/CLL/input_multisample/"
 
@@ -49,7 +46,7 @@ output_path = "output/SBS/CLL.SBS96.all"
 # Perform model fitting
 sig.sigProfilerExtractor(input_type = "matrix", 
                          output = "results", 
-                         input_data = input_path+output_path,  
+                         input_data = input_path_sigprof+output_path,  
                          exome = False,
                          minimum_signatures = 1,
                          maximum_signatures = 10,
@@ -62,9 +59,9 @@ sig.sigProfilerExtractor(input_type = "matrix",
                          max_nmf_iterations = 1000000, 
                          nmf_test_conv = 10000, 
                          nmf_tolerance = 1e-15,
-                         cpu = 4,
+                         cpu = 6,
                          gpu = False,
-                         cosmic_version = 3.1,
+                         cosmic_version = 3.4,
                          make_decomposition_plots = True, 
                          collapse_to_SBS96 = True, 
                          get_all_signature_matrices = True,
